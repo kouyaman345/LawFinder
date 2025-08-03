@@ -1,0 +1,1165 @@
+openapi: 3.0.3
+info:
+  title: LawFinder API
+  description: |
+    法令検索・法改正支援システムのREST API仕様書
+    
+    ## 概要
+    本APIは、日本の法令データの検索、参照関係の取得、改正影響分析などの機能を提供します。
+    
+    ## 認証
+    Phase 2では、JWT (JSON Web Token) による認証が必要です。
+    
+    ## レート制限
+    - 認証なし: 100リクエスト/分
+    - 認証あり: 1000リクエスト/分
+  version: 1.0.0
+  contact:
+    name: LawFinder Support
+    email: support@lawfinder.jp
+  license:
+    name: MIT License
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.lawfinder.jp/v1
+    description: Production server
+  - url: https://staging-api.lawfinder.jp/v1
+    description: Staging server
+  - url: http://localhost:3000/api/v1
+    description: Development server
+
+tags:
+  - name: laws
+    description: 法令関連のエンドポイント
+  - name: articles
+    description: 条文関連のエンドポイント
+  - name: references
+    description: 参照関係関連のエンドポイント
+  - name: analysis
+    description: 分析機能のエンドポイント
+  - name: search
+    description: 検索機能のエンドポイント
+  - name: auth
+    description: 認証関連のエンドポイント（Phase 2）
+
+security:
+  - BearerAuth: []
+
+paths:
+  # 法令関連エンドポイント
+  /laws:
+    get:
+      tags:
+        - laws
+      summary: 法令一覧取得
+      description: 法令の一覧を取得します。ページネーション、フィルタリング、ソート機能を提供します。
+      operationId: getLaws
+      parameters:
+        - name: page
+          in: query
+          description: ページ番号（1から開始）
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: 1ページあたりの件数
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: law_type
+          in: query
+          description: 法令種別でフィルタ
+          schema:
+            type: string
+            enum: [Act, CabinetOrder, MinisterialOrdinance, Rule, Regulation]
+        - name: promulgate_date_from
+          in: query
+          description: 公布日の開始日（YYYY-MM-DD）
+          schema:
+            type: string
+            format: date
+        - name: promulgate_date_to
+          in: query
+          description: 公布日の終了日（YYYY-MM-DD）
+          schema:
+            type: string
+            format: date
+        - name: status
+          in: query
+          description: 施行状態
+          schema:
+            type: string
+            enum: [active, repealed, not_yet_enforced]
+        - name: sort
+          in: query
+          description: ソート順
+          schema:
+            type: string
+            enum: [law_id, law_title, promulgate_date, -law_id, -law_title, -promulgate_date]
+            default: -promulgate_date
+      responses:
+        200:
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LawSummary'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /laws/{law_id}:
+    get:
+      tags:
+        - laws
+      summary: 法令詳細取得
+      description: 指定された法令IDの詳細情報を取得します
+      operationId: getLawById
+      parameters:
+        - name: law_id
+          in: path
+          required: true
+          description: 法令ID
+          schema:
+            type: string
+            pattern: '^\d{3}[A-Z]{2}\d{10}$'
+            example: "129AC0000000089"
+        - name: include
+          in: query
+          description: 含める関連データ
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [articles, references, amendments]
+            style: form
+            explode: false
+      responses:
+        200:
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LawDetail'
+        404:
+          $ref: '#/components/responses/NotFound'
+
+  /laws/{law_id}/articles:
+    get:
+      tags:
+        - laws
+        - articles
+      summary: 法令の条文一覧取得
+      description: 指定された法令の全条文を階層構造で取得します
+      operationId: getLawArticles
+      parameters:
+        - name: law_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: include_paragraphs
+          in: query
+          description: 項を含めるか
+          schema:
+            type: boolean
+            default: true
+        - name: include_items
+          in: query
+          description: 号を含めるか
+          schema:
+            type: boolean
+            default: false
+      responses:
+        200:
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  law_id:
+                    type: string
+                  law_title:
+                    type: string
+                  articles:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Article'
+
+  # 条文関連エンドポイント
+  /articles/{article_id}:
+    get:
+      tags:
+        - articles
+      summary: 条文詳細取得
+      description: 指定された条文IDの詳細情報を取得します
+      operationId: getArticleById
+      parameters:
+        - name: article_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "129AC0000000089_art1"
+      responses:
+        200:
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleDetail'
+
+  /articles/{article_id}/references:
+    get:
+      tags:
+        - articles
+        - references
+      summary: 条文の参照関係取得
+      description: 指定された条文が参照している、または参照されている関係を取得します
+      operationId: getArticleReferences
+      parameters:
+        - name: article_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: direction
+          in: query
+          description: 参照の方向
+          schema:
+            type: string
+            enum: [outgoing, incoming, both]
+            default: both
+        - name: reference_type
+          in: query
+          description: 参照タイプでフィルタ
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [APPLY, DEEM, REPLACE, EXCEPT, FOLLOW, LIMIT]
+      responses:
+        200:
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  article_id:
+                    type: string
+                  outgoing_references:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Reference'
+                  incoming_references:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Reference'
+
+  # 参照関係エンドポイント
+  /references:
+    post:
+      tags:
+        - references
+      summary: 参照関係抽出実行
+      description: テキストから法令参照を抽出します（Phase 2）
+      operationId: extractReferences
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                  description: 参照を抽出するテキスト
+                context:
+                  type: object
+                  properties:
+                    current_law_id:
+                      type: string
+                    current_article_num:
+                      type: integer
+      responses:
+        200:
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  references:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ExtractedReference'
+
+  /references/{reference_id}:
+    get:
+      tags:
+        - references
+      summary: 参照関係詳細取得
+      description: 指定された参照関係の詳細情報を取得します
+      operationId: getReferenceById
+      parameters:
+        - name: reference_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReferenceDetail'
+
+  # 分析エンドポイント
+  /analysis/impact:
+    post:
+      tags:
+        - analysis
+      summary: 改正影響分析
+      description: 法令改正による影響範囲を分析します（ハネ改正検出）
+      operationId: analyzeImpact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - amended_law_id
+                - amended_articles
+              properties:
+                amended_law_id:
+                  type: string
+                  description: 改正対象の法令ID
+                amended_articles:
+                  type: array
+                  description: 改正対象の条文番号リスト
+                  items:
+                    type: integer
+                analysis_depth:
+                  type: integer
+                  description: 分析の深度（参照の階層）
+                  minimum: 1
+                  maximum: 5
+                  default: 3
+                include_indirect:
+                  type: boolean
+                  description: 間接参照を含めるか
+                  default: true
+                confidence_threshold:
+                  type: number
+                  description: AI解析の信頼度閾値
+                  minimum: 0
+                  maximum: 1
+                  default: 0.7
+      responses:
+        200:
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImpactAnalysisResult'
+        202:
+          description: 分析開始（非同期処理）
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  job_id:
+                    type: string
+                    description: ジョブID
+                  status_url:
+                    type: string
+                    description: ステータス確認URL
+
+  /analysis/graph:
+    post:
+      tags:
+        - analysis
+      summary: 参照関係グラフ取得
+      description: 指定された法令・条文を中心とした参照関係グラフを取得します
+      operationId: getReferenceGraph
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - center_node
+              properties:
+                center_node:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum: [law, article]
+                    id:
+                      type: string
+                depth:
+                  type: integer
+                  minimum: 1
+                  maximum: 3
+                  default: 2
+                max_nodes:
+                  type: integer
+                  minimum: 10
+                  maximum: 500
+                  default: 100
+                layout:
+                  type: string
+                  enum: [force, hierarchical, circular]
+                  default: force
+      responses:
+        200:
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GraphData'
+
+  # 検索エンドポイント
+  /search:
+    get:
+      tags:
+        - search
+      summary: 全文検索
+      description: 法令・条文の全文検索を実行します
+      operationId: search
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: 検索クエリ
+          schema:
+            type: string
+            minLength: 2
+        - name: search_type
+          in: query
+          description: 検索タイプ
+          schema:
+            type: string
+            enum: [fulltext, law_title, article_content]
+            default: fulltext
+        - name: filters
+          in: query
+          description: フィルタ条件（JSON形式）
+          schema:
+            type: string
+          example: '{"law_type": "Act", "promulgate_date_from": "2020-01-01"}'
+        - name: highlight
+          in: query
+          description: 検索結果のハイライト
+          schema:
+            type: boolean
+            default: true
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        200:
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  query:
+                    type: string
+                  total_hits:
+                    type: integer
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SearchResult'
+                  facets:
+                    type: object
+                    properties:
+                      law_type:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Facet'
+                      year:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Facet'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+  /search/suggest:
+    get:
+      tags:
+        - search
+      summary: 検索サジェスト
+      description: 入力テキストに基づく検索候補を返します
+      operationId: getSuggestions
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: 入力テキスト
+          schema:
+            type: string
+            minLength: 1
+        - name: type
+          in: query
+          description: サジェストタイプ
+          schema:
+            type: string
+            enum: [law_title, term, all]
+            default: all
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        200:
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suggestions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        text:
+                          type: string
+                        type:
+                          type: string
+                        score:
+                          type: number
+
+  # 認証エンドポイント（Phase 2）
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: ログイン
+      description: ユーザー認証を行い、アクセストークンを発行します
+      operationId: login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        200:
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  refresh_token:
+                    type: string
+                  token_type:
+                    type: string
+                    default: Bearer
+                  expires_in:
+                    type: integer
+                    description: トークンの有効期限（秒）
+                  user:
+                    $ref: '#/components/schemas/User'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/refresh:
+    post:
+      tags:
+        - auth
+      summary: トークンリフレッシュ
+      description: リフレッシュトークンを使用して新しいアクセストークンを取得します
+      operationId: refreshToken
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refresh_token
+              properties:
+                refresh_token:
+                  type: string
+      responses:
+        200:
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  expires_in:
+                    type: integer
+
+  /auth/logout:
+    post:
+      tags:
+        - auth
+      summary: ログアウト
+      description: 現在のセッションを終了します
+      operationId: logout
+      responses:
+        204:
+          description: 成功
+
+components:
+  schemas:
+    # 法令関連スキーマ
+    LawSummary:
+      type: object
+      properties:
+        law_id:
+          type: string
+          example: "129AC0000000089"
+        law_type:
+          type: string
+          enum: [Act, CabinetOrder, MinisterialOrdinance, Rule, Regulation]
+        law_title:
+          type: string
+          example: "民法"
+        law_title_kana:
+          type: string
+          example: "みんぽう"
+        promulgate_date:
+          type: string
+          format: date
+        enforce_date:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [active, repealed, not_yet_enforced]
+        article_count:
+          type: integer
+        reference_count:
+          type: integer
+
+    LawDetail:
+      allOf:
+        - $ref: '#/components/schemas/LawSummary'
+        - type: object
+          properties:
+            enact_statement:
+              type: array
+              items:
+                type: string
+            articles:
+              type: array
+              items:
+                $ref: '#/components/schemas/Article'
+            amendments:
+              type: array
+              items:
+                $ref: '#/components/schemas/Amendment'
+            references_summary:
+              type: object
+              properties:
+                outgoing_count:
+                  type: integer
+                incoming_count:
+                  type: integer
+                reference_types:
+                  type: object
+                  additionalProperties:
+                    type: integer
+
+    # 条文関連スキーマ
+    Article:
+      type: object
+      properties:
+        article_id:
+          type: string
+          example: "129AC0000000089_art1"
+        article_num:
+          type: integer
+        article_title:
+          type: string
+        paragraphs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Paragraph'
+
+    ArticleDetail:
+      allOf:
+        - $ref: '#/components/schemas/Article'
+        - type: object
+          properties:
+            law_id:
+              type: string
+            law_title:
+              type: string
+            full_text:
+              type: string
+            references:
+              type: object
+              properties:
+                outgoing:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Reference'
+                incoming:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Reference'
+
+    Paragraph:
+      type: object
+      properties:
+        paragraph_id:
+          type: string
+        paragraph_num:
+          type: integer
+        content:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+
+    Item:
+      type: object
+      properties:
+        item_id:
+          type: string
+        item_num:
+          type: integer
+        content:
+          type: string
+
+    # 参照関係スキーマ
+    Reference:
+      type: object
+      properties:
+        reference_id:
+          type: string
+        source:
+          type: object
+          properties:
+            node_type:
+              type: string
+              enum: [law, article, paragraph, item]
+            node_id:
+              type: string
+            text:
+              type: string
+        target:
+          type: object
+          properties:
+            node_type:
+              type: string
+            node_id:
+              type: string
+            text:
+              type: string
+        primary_type:
+          type: string
+          enum: [APPLY, DEEM, REPLACE, EXCEPT, FOLLOW, LIMIT, REGARDLESS, RELATE, STIPULATE]
+        secondary_types:
+          type: array
+          items:
+            type: string
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+        ai_analysis:
+          type: object
+          properties:
+            verified:
+              type: boolean
+            model:
+              type: string
+            analyzed_at:
+              type: string
+              format: date-time
+
+    ReferenceDetail:
+      allOf:
+        - $ref: '#/components/schemas/Reference'
+        - type: object
+          properties:
+            source_text:
+              type: string
+            context:
+              type: string
+            conditions:
+              type: array
+              items:
+                type: string
+            exceptions:
+              type: array
+              items:
+                type: string
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+
+    ExtractedReference:
+      type: object
+      properties:
+        text:
+          type: string
+        position:
+          type: object
+          properties:
+            start:
+              type: integer
+            end:
+              type: integer
+        type:
+          type: string
+        confidence:
+          type: number
+        possible_targets:
+          type: array
+          items:
+            type: object
+            properties:
+              law_id:
+                type: string
+              article_num:
+                type: integer
+              score:
+                type: number
+
+    # 分析関連スキーマ
+    ImpactAnalysisResult:
+      type: object
+      properties:
+        job_id:
+          type: string
+        status:
+          type: string
+          enum: [completed, processing, failed]
+        summary:
+          type: object
+          properties:
+            total_affected_laws:
+              type: integer
+            total_affected_articles:
+              type: integer
+            direct_impacts:
+              type: integer
+            indirect_impacts:
+              type: integer
+            max_depth_reached:
+              type: integer
+        affected_items:
+          type: array
+          items:
+            type: object
+            properties:
+              law_id:
+                type: string
+              law_title:
+                type: string
+              affected_articles:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    article_id:
+                      type: string
+                    article_num:
+                      type: integer
+                    impact_type:
+                      type: string
+                    impact_path:
+                      type: array
+                      items:
+                        type: string
+                    confidence:
+                      type: number
+        visualization_url:
+          type: string
+          description: グラフ可視化のURL
+        executed_at:
+          type: string
+          format: date-time
+
+    GraphData:
+      type: object
+      properties:
+        nodes:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              label:
+                type: string
+              type:
+                type: string
+                enum: [law, article, paragraph]
+              properties:
+                type: object
+        edges:
+          type: array
+          items:
+            type: object
+            properties:
+              source:
+                type: string
+              target:
+                type: string
+              type:
+                type: string
+              label:
+                type: string
+              weight:
+                type: number
+        layout:
+          type: object
+          properties:
+            type:
+              type: string
+            positions:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  x:
+                    type: number
+                  y:
+                    type: number
+
+    # 検索関連スキーマ
+    SearchResult:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [law, article]
+        id:
+          type: string
+        title:
+          type: string
+        snippet:
+          type: string
+          description: ハイライト付きスニペット
+        score:
+          type: number
+        metadata:
+          type: object
+
+    Facet:
+      type: object
+      properties:
+        value:
+          type: string
+        count:
+          type: integer
+
+    # その他の共通スキーマ
+    Amendment:
+      type: object
+      properties:
+        amendment_id:
+          type: string
+        amendment_law_id:
+          type: string
+        amendment_date:
+          type: string
+          format: date
+        description:
+          type: string
+
+    User:
+      type: object
+      properties:
+        user_id:
+          type: string
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          type: string
+          enum: [admin, editor, viewer]
+        organization:
+          type: string
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total_pages:
+          type: integer
+        total_items:
+          type: integer
+        has_next:
+          type: boolean
+        has_previous:
+          type: boolean
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+        timestamp:
+          type: string
+          format: date-time
+
+  responses:
+    BadRequest:
+      description: リクエストが不正です
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "INVALID_REQUEST"
+            message: "Invalid query parameters"
+            details:
+              field: "promulgate_date_from"
+              error: "Invalid date format"
+
+    Unauthorized:
+      description: 認証が必要です
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "UNAUTHORIZED"
+            message: "Authentication required"
+
+    Forbidden:
+      description: アクセス権限がありません
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: リソースが見つかりません
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "NOT_FOUND"
+            message: "Law not found"
+            details:
+              law_id: "129AC0000000089"
+
+    InternalServerError:
+      description: サーバーエラーが発生しました
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT認証トークン（Phase 2で必須）
+
+  parameters:
+    LawIdParam:
+      name: law_id
+      in: path
+      required: true
+      description: 法令ID
+      schema:
+        type: string
+        pattern: '^\d{3}[A-Z]{2}\d{10}$'
+
+    ArticleIdParam:
+      name: article_id
+      in: path
+      required: true
+      description: 条文ID
+      schema:
+        type: string
+
+    PageParam:
+      name: page
+      in: query
+      description: ページ番号
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+
+    LimitParam:
+      name: limit
+      in: query
+      description: 取得件数
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
