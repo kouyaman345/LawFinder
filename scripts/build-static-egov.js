@@ -27,7 +27,7 @@ class EGovStaticSiteGenerator {
       const lawData = await this.parseLawXML(file);
       if (lawData) {
         this.lawIndex.set(lawData.lawId, lawData);
-        console.log(`  - ${lawData.lawTitle} を読み込みました`);
+        console.log(`  - ${lawData.lawTitle} を読み込みました（${lawData.articles.length}条）`);
       }
     }
 
@@ -58,32 +58,14 @@ class EGovStaticSiteGenerator {
     const titleMatch = xmlContent.match(/<LawTitle[^>]*>([^<]+)<\/LawTitle>/);
     const lawTitle = titleMatch ? titleMatch[1] : '無題';
     
-    // 本則部分を抽出（附則を除外）
+    // 階層構造（編・章・節）の抽出（本則部分のみ）
     const mainProvisionMatch = xmlContent.match(/<MainProvision[^>]*>([\s\S]*?)<\/MainProvision>/);
     const mainContent = mainProvisionMatch ? mainProvisionMatch[1] : xmlContent;
-    
-    // 階層構造（編・章・節）の抽出
     const structure = this.extractStructure(mainContent);
     
-    // 条文の抽出
-    const articles = [];
-    const articleMatches = mainContent.matchAll(/<Article\s+Num="([^"]+)"[^>]*>([\s\S]*?)<\/Article>/g);
-    
-    for (const match of articleMatches) {
-      const articleNum = match[1];
-      const articleContent = match[2];
+    // 条文の抽出（改善版 - 本則と附則の両方から抽出）
+    const articles = this.extractArticlesImproved(xmlContent);
       
-      const captionMatch = articleContent.match(/<ArticleCaption>([^<]+)<\/ArticleCaption>/);
-      const articleTitle = captionMatch ? captionMatch[1] : null;
-      
-      const paragraphs = this.extractParagraphs(articleContent);
-      
-      articles.push({
-        articleNum,
-        articleTitle,
-        paragraphs
-      });
-    }
 
     return {
       lawId,
@@ -91,6 +73,81 @@ class EGovStaticSiteGenerator {
       articles,
       structure
     };
+  }
+
+  extractArticlesImproved(xmlContent) {
+    const articles = [];
+    let currentIndex = 0;
+    
+    while (currentIndex < xmlContent.length) {
+      // Article開始タグを探す（正確にマッチ）
+      const startIndex = xmlContent.indexOf('<Article ', currentIndex);
+      if (startIndex === -1) break;
+      
+      // Num属性を取得
+      const tagEndIndex = xmlContent.indexOf('>', startIndex);
+      if (tagEndIndex === -1) {
+        currentIndex = startIndex + 1;
+        continue;
+      }
+      
+      const tagContent = xmlContent.substring(startIndex, tagEndIndex);
+      const numMatch = tagContent.match(/Num="([^"]+)"/); 
+      if (!numMatch) {
+        currentIndex = startIndex + 1;
+        continue;
+      }
+      
+      const articleNum = numMatch[1];
+      
+      // 対応する終了タグを探す（入れ子を考慮）
+      let depth = 0;
+      let searchIndex = tagEndIndex;
+      let endIndex = -1;
+      
+      while (searchIndex < xmlContent.length) {
+        const nextOpenIndex = xmlContent.indexOf('<Article ', searchIndex + 1);
+        const nextCloseIndex = xmlContent.indexOf('</Article>', searchIndex + 1);
+        
+        if (nextCloseIndex === -1) break;
+        
+        // 次の開始タグが終了タグより前にある場合
+        if (nextOpenIndex !== -1 && nextOpenIndex < nextCloseIndex) {
+          depth++;
+          searchIndex = nextOpenIndex;
+        } else {
+          // 終了タグが先
+          if (depth === 0) {
+            endIndex = nextCloseIndex + 10; // </Article>の長さ
+            break;
+          }
+          depth--;
+          searchIndex = nextCloseIndex;
+        }
+      }
+      
+      if (endIndex === -1) break;
+      
+      // 条文内容を抽出
+      const articleContent = xmlContent.substring(startIndex, endIndex);
+      
+      // ArticleCaptionを抽出
+      const captionMatch = articleContent.match(/<ArticleCaption>([^<]+)<\/ArticleCaption>/);
+      const articleTitle = captionMatch ? captionMatch[1] : null;
+      
+      // 段落を抽出
+      const paragraphs = this.extractParagraphs(articleContent);
+      
+      articles.push({
+        articleNum,
+        articleTitle,
+        paragraphs
+      });
+      
+      currentIndex = endIndex;
+    }
+    
+    return articles;
   }
 
   extractStructure(xmlContent) {
@@ -371,20 +428,263 @@ class EGovStaticSiteGenerator {
     </div>
   </footer>
   
+  <!-- 参照元に戻るボタン -->
+  <div id="back-to-source" style="display: none;">
+    <button class="back-button">
+      <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+      </svg>
+      参照元に戻る
+    </button>
+  </div>
+  
   <script>
-    // スムーズスクロール
+    // ハイライトアニメーション用のスタイル追加
+    const style = document.createElement('style');
+    style.textContent = \`
+      @keyframes highlight-fade {
+        0% {
+          background-color: #ffeb3b;
+          box-shadow: 0 0 20px rgba(255, 235, 59, 0.8);
+        }
+        100% {
+          background-color: transparent;
+          box-shadow: none;
+        }
+      }
+      
+      /* ハイライト用の疑似要素 */
+      .highlight-target {
+        position: relative;
+        z-index: 1;
+      }
+      
+      .highlight-target::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: transparent;
+        border-radius: 4px;
+        z-index: -1;
+        pointer-events: none;
+        animation: highlight-fade 2s ease-out;
+      }
+      
+      /* 段落の場合 - flexレイアウトを考慮 */
+      .paragraph.highlight-target::before {
+        top: -4px;
+        left: -4px;
+        right: -4px;
+        bottom: -4px;
+      }
+      
+      /* 条文全体の場合 */
+      .article.highlight-target::before {
+        top: -8px;
+        left: -8px;
+        right: -8px;
+        bottom: -8px;
+      }
+      
+      /* overflow visibleを確保 */
+      .article.highlight-target,
+      .paragraph.highlight-target {
+        overflow: visible;
+      }
+      
+      /* 戻るボタンのスタイル */
+      #back-to-source {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+      }
+      
+      .back-button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 20px;
+        background-color: #fff;
+        border: 2px solid #0066cc;
+        border-radius: 25px;
+        color: #0066cc;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+      }
+      
+      .back-button:hover {
+        background-color: #0066cc;
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+      }
+      
+      .back-button .icon {
+        width: 20px;
+        height: 20px;
+      }
+      
+      @keyframes slide-up {
+        from {
+          transform: translateY(100px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      
+      #back-to-source.show {
+        display: block;
+        animation: slide-up 0.3s ease-out;
+      }
+    \`;
+    document.head.appendChild(style);
+    
+    // ナビゲーション履歴
+    let navigationHistory = [];
+    let currentPosition = null;
+    
+    // スムーズスクロールとハイライト
+    function handleAnchorClick(e) {
+      const href = this.getAttribute('href');
+      if (!href || !href.startsWith('#')) return;
+      
+      e.preventDefault();
+      
+      // 現在位置を記録
+      const currentElement = document.elementFromPoint(window.innerWidth / 2, window.innerHeight / 2);
+      if (currentElement) {
+        const closestAnchor = currentElement.closest('[id]');
+        if (closestAnchor) {
+          currentPosition = {
+            id: closestAnchor.id,
+            scrollY: window.scrollY
+          };
+          navigationHistory.push(currentPosition);
+          
+          // 履歴が多すぎる場合は古いものを削除
+          if (navigationHistory.length > 10) {
+            navigationHistory.shift();
+          }
+          
+          // 戻るボタンを表示
+          showBackButton();
+        }
+      }
+      
+      const target = document.querySelector(href);
+      if (target) {
+        // 既存のハイライトを削除
+        document.querySelectorAll('.highlight-target').forEach(el => {
+          el.classList.remove('highlight-target');
+        });
+        
+        // スクロール（画面中央に表示）
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+        
+        // ハイライトを追加
+        setTimeout(() => {
+          target.classList.add('highlight-target');
+          
+          // アニメーション終了後にクラスを削除
+          setTimeout(() => {
+            target.classList.remove('highlight-target');
+          }, 2000);
+        }, 300); // スクロール完了を待つ
+      }
+    }
+    
+    // 戻るボタンの表示
+    function showBackButton() {
+      const backButton = document.getElementById('back-to-source');
+      backButton.classList.add('show');
+      backButton.style.display = 'block';
+    }
+    
+    // 戻るボタンの非表示
+    function hideBackButton() {
+      const backButton = document.getElementById('back-to-source');
+      backButton.classList.remove('show');
+      setTimeout(() => {
+        backButton.style.display = 'none';
+      }, 300);
+    }
+    
+    // すべての内部リンクにイベントリスナーを追加
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
+      anchor.addEventListener('click', handleAnchorClick);
+    });
+    
+    // 戻るボタンのクリックハンドラー
+    document.querySelector('.back-button').addEventListener('click', function() {
+      if (navigationHistory.length > 0) {
+        const lastPosition = navigationHistory.pop();
+        
+        // 履歴がなくなったら戻るボタンを非表示
+        if (navigationHistory.length === 0) {
+          hideBackButton();
+        }
+        
+        // 元の位置に戻る
+        if (lastPosition.id) {
+          const target = document.getElementById(lastPosition.id);
+          if (target) {
+            // 既存のハイライトを削除
+            document.querySelectorAll('.highlight-target').forEach(el => {
+              el.classList.remove('highlight-target');
+            });
+            
+            // スクロール
+            target.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center'
+            });
+            
+            // ハイライトを追加
+            setTimeout(() => {
+              target.classList.add('highlight-target');
+              setTimeout(() => {
+                target.classList.remove('highlight-target');
+              }, 2000);
+            }, 300);
+          }
+        } else {
+          // IDがない場合はスクロール位置で戻る
+          window.scrollTo({
+            top: lastPosition.scrollY,
+            behavior: 'smooth'
           });
         }
-      });
+      }
     });
+    
+    // ページ読み込み時にハッシュがある場合の処理
+    if (window.location.hash) {
+      const target = document.querySelector(window.location.hash);
+      if (target) {
+        setTimeout(() => {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+          });
+          target.classList.add('highlight-target');
+          setTimeout(() => {
+            target.classList.remove('highlight-target');
+          }, 2000);
+        }, 100);
+      }
+    }
   </script>
 </body>
 </html>`;
