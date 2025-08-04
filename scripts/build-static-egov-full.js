@@ -486,31 +486,80 @@ class EGovFullStaticSiteGenerator {
   extractReferencesFromArticle(article, sourceLawId) {
     const references = [];
     const patterns = [
+      // 条文範囲参照（例：第七十七条から第七十九条まで）
+      { regex: /第([０-９0-9一二三四五六七八九十百千]+)条から第([０-９0-9一二三四五六七八九十百千]+)条まで/g, type: 'RANGE_REFERENCE' },
+      // 複数条文参照（例：前二条、前三条）
+      { regex: /前([二三四五六七八九十])条/g, type: 'MULTIPLE_ARTICLE_REFERENCE' },
+      // 「この章」「この編」「この節」参照
+      { regex: /この(章|編|節)/g, type: 'STRUCTURE_REFERENCE' },
+      // 次の各号・次に掲げる
+      { regex: /次の各号|次に掲げる/g, type: 'ITEM_LIST_REFERENCE' },
+      // 準用規定
+      { regex: /(準用する|準用される)/g, type: 'APPLICATION_REFERENCE' },
+      // 「の」付き条文参照（例：第二十七条の七）
+      { regex: /第([０-９0-9一二三四五六七八九十百千]+)条の([０-９0-9一二三四五六七八九十]+)(?!項)/g, type: 'INTERNAL_REFERENCE' },
       // 条文＋項の参照
-      { regex: /第([０-９0-9一二三四五六七八九十百千]+)条第([０-９0-9一二三四五六七八九十]+)項/g, type: 'INTERNAL_REFERENCE' },
-      // 条文のみ
-      { regex: /第([０-９0-9一二三四五六七八九十百千]+)条(?!第)/g, type: 'INTERNAL_REFERENCE' },
-      // 「の二」付きの条文（例：第二十七条の七）
-      { regex: /第([０-９0-9一二三四五六七八九十百千]+)条の([０-９0-9一二三四五六七八九十]+)/g, type: 'INTERNAL_REFERENCE' },
+      { regex: /第([０-９0-9一二三四五六七八九十百千]+)条第([０-９0-9一二三四五六七八九十]+)項/g, type: 'ARTICLE_PARAGRAPH_REFERENCE' },
+      // 条文のみ（前のパターンに一致しないもの）
+      { regex: /第([０-９0-9一二三四五六七八九十百千]+)条(?!第|の|から)/g, type: 'INTERNAL_REFERENCE' },
       // 章の参照
       { regex: /第([０-９0-9一二三四五六七八九十百千]+)章/g, type: 'CHAPTER_REFERENCE' },
-      { regex: /前章|次章/g, type: 'RELATIVE_CHAPTER_REFERENCE' },
+      // 編の参照
+      { regex: /第([０-９0-9一二三四五六七八九十百千]+)編/g, type: 'PART_REFERENCE' },
       // 相対参照
       { regex: /前条|次条/g, type: 'RELATIVE_ARTICLE_REFERENCE' },
       { regex: /前項|次項|同項|同条/g, type: 'RELATIVE_REFERENCE' },
+      { regex: /前章|次章/g, type: 'RELATIVE_CHAPTER_REFERENCE' },
       // 複合参照
       { regex: /同項第([０-９0-9一二三四五六七八九十]+)号/g, type: 'COMPLEX_REFERENCE' },
       { regex: /前項第([０-９0-9一二三四五六七八九十]+)号/g, type: 'COMPLEX_REFERENCE' },
       { regex: /同条第([０-９0-9一二三四五六七八九十]+)項/g, type: 'COMPLEX_REFERENCE' },
-      // 複数条文の範囲（例：第百五十九条から第百六十一条まで）
-      { regex: /第([０-９0-9一二三四五六七八九十百千]+)条から第([０-９0-9一二三四五六七八九十百千]+)条まで/g, type: 'RANGE_REFERENCE' }
+      // 外部法令参照
+      { regex: /(民法|商法|刑法|民事訴訟法|独占禁止法|労働基準法|消費税法|会社法)(?:（[^）]+）)?第([０-９0-9一二三四五六七八九十百千]+)条/g, type: 'EXTERNAL_REFERENCE' }
     ];
     
     const processText = (text) => {
       for (const pattern of patterns) {
         const matches = text.matchAll(pattern.regex);
         for (const match of matches) {
-          if (pattern.type === 'INTERNAL_REFERENCE' && match[0].includes('の')) {
+          if (pattern.type === 'RANGE_REFERENCE') {
+            // 範囲参照
+            references.push({
+              sourceArticle: article.articleNum,
+              sourceText: match[0],
+              targetArticle: this.convertToArabic(match[1]),
+              targetArticleEnd: this.convertToArabic(match[2]),
+              type: pattern.type,
+              sourceLawId
+            });
+          } else if (pattern.type === 'MULTIPLE_ARTICLE_REFERENCE') {
+            // 複数条文参照（前二条など）
+            const num = this.convertToArabic(match[1]);
+            references.push({
+              sourceArticle: article.articleNum,
+              sourceText: match[0],
+              relativeCount: num,
+              type: pattern.type,
+              sourceLawId
+            });
+          } else if (pattern.type === 'STRUCTURE_REFERENCE') {
+            // この章・この編・この節
+            references.push({
+              sourceArticle: article.articleNum,
+              sourceText: match[0],
+              structureType: match[1],
+              type: pattern.type,
+              sourceLawId
+            });
+          } else if (pattern.type === 'ITEM_LIST_REFERENCE' || pattern.type === 'APPLICATION_REFERENCE') {
+            // 各号列記・準用規定
+            references.push({
+              sourceArticle: article.articleNum,
+              sourceText: match[0],
+              type: pattern.type,
+              sourceLawId
+            });
+          } else if (pattern.type === 'INTERNAL_REFERENCE' && match[0].includes('の')) {
             // 「第二十七条の七」のような形式
             const mainArticle = this.convertToArabic(match[1]);
             const subArticle = match[2] ? this.convertToArabic(match[2]) : null;
@@ -522,13 +571,32 @@ class EGovFullStaticSiteGenerator {
               type: pattern.type,
               sourceLawId
             });
-          } else if (pattern.type === 'RANGE_REFERENCE') {
-            // 範囲参照
+          } else if (pattern.type === 'ARTICLE_PARAGRAPH_REFERENCE') {
+            // 条文＋項の参照
             references.push({
               sourceArticle: article.articleNum,
               sourceText: match[0],
               targetArticle: this.convertToArabic(match[1]),
-              targetArticleEnd: this.convertToArabic(match[2]),
+              targetParagraph: this.convertToArabic(match[2]),
+              type: pattern.type,
+              sourceLawId
+            });
+          } else if (pattern.type === 'EXTERNAL_REFERENCE') {
+            // 外部法令参照
+            references.push({
+              sourceArticle: article.articleNum,
+              sourceText: match[0],
+              targetLawName: match[1],
+              targetArticle: this.convertToArabic(match[2]),
+              type: pattern.type,
+              sourceLawId
+            });
+          } else if (pattern.type === 'CHAPTER_REFERENCE' || pattern.type === 'PART_REFERENCE') {
+            // 章・編の参照
+            references.push({
+              sourceArticle: article.articleNum,
+              sourceText: match[0],
+              targetNumber: this.convertToArabic(match[1]),
               type: pattern.type,
               sourceLawId
             });

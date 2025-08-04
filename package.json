@@ -11,14 +11,14 @@
     "lint": "eslint src/**/*.ts",
     "typecheck": "tsc --noEmit",
     "build:static": "node scripts/build-static-simple.js",
-    "build:static:full": "node scripts/build-static-full.js",
     "build:static:llm": "node scripts/build-static-llm.js",
-    "build:static:egov": "node scripts/build-static-egov-full.js",
+    "build:static:egov": "node scripts/build-static-egov-mainprovision-fixed.js",
     "build:static:egov:full": "node scripts/build-static-egov-full.js",
-    "build:static:site": "node scripts/build-static-site.js",
+    "build:static:egov:old": "node scripts/build-static-egov.js",
     "parse:xml": "node scripts/parse-xml.js",
     "serve": "node scripts/serve.js",
-    "dev:static": "npm run build && npm run build:static && npm run serve"
+    "dev:static": "npm run build:static:egov && npm run serve",
+    "dev:static:llm": "npm run build:static:llm && npm run serve"
   },
   "keywords": [
     "law",
