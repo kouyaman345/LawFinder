@@ -1,0 +1,1 @@
+{"version":3,"file":"ReferenceId.d.ts","sourceRoot":"","sources":["../../../src/domain/value-objects/ReferenceId.ts"],"names":[],"mappings":"AAEA,qBAAa,WAAW;IACV,OAAO,CAAC,QAAQ,CAAC,MAAM;gBAAN,MAAM,EAAE,MAAM;IAM3C,MAAM,CAAC,QAAQ,IAAI,WAAW;IAI9B,IAAI,KAAK,IAAI,MAAM,CAElB;IAED,MAAM,CAAC,KAAK,EAAE,WAAW,GAAG,OAAO;IAInC,QAAQ,IAAI,MAAM;CAGnB"}

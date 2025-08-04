@@ -3,3 +3,4 @@ laws_data*
 *.zip
 laws_data.zip
 laws_sample
+node_modules
