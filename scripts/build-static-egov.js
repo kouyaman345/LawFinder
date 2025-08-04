@@ -19,7 +19,7 @@ class EGovStaticSiteGenerator {
     
     // XMLファイルを読み込んで法令データを抽出
     const files = await fs.readdir(XML_DATA_PATH);
-    const xmlFiles = files.filter(f => f.endsWith('.xml')).slice(0, 2); // テスト用に2件のみ
+    const xmlFiles = files.filter(f => f.endsWith('.xml')); // すべてのXMLファイルを処理
     console.log(`${xmlFiles.length}件の法令を処理します\n`);
 
     console.log('Phase 1: 法令データの読み込み');
@@ -262,9 +262,18 @@ class EGovStaticSiteGenerator {
     
     // 参照パターンのマッチング
     const patterns = [
-      { regex: /第([０-９0-9一二三四五六七八九十百千]+)条/g, type: 'INTERNAL_REFERENCE' },
+      // 条文＋項の参照（第十七条第二項など）
+      { regex: /第([０-９0-9一二三四五六七八九十百千]+)条第([０-９0-9一二三四五六七八九十]+)項/g, type: 'INTERNAL_REFERENCE' },
+      // 条文のみの参照
+      { regex: /第([０-９0-9一二三四五六七八九十百千]+)条(?!第)/g, type: 'INTERNAL_REFERENCE' },
+      // 章の参照（第五章、次章など）
+      { regex: /第([０-９0-9一二三四五六七八九十百千]+)章/g, type: 'CHAPTER_REFERENCE' },
+      { regex: /前章|次章/g, type: 'RELATIVE_CHAPTER_REFERENCE' },
+      // 外部法令への参照
       { regex: /(民法|商法|刑法|会社法|労働基準法|民事訴訟法|刑事訴訟法|憲法|行政法|税法|独占禁止法|消費税法|所得税法|法人税法|相続税法|関税法|消費者契約法|特定商取引法|個人情報保護法|著作権法|特許法|商標法|意匠法|実用新案法|不正競争防止法|独占禁止法|下請法|建築基準法|都市計画法|道路法|河川法|森林法|農地法|漁業法|鉱業法|電気事業法|ガス事業法|水道法|下水道法|廃棄物処理法|大気汚染防止法|水質汚濁防止法|土壌汚染対策法|騒音規制法|振動規制法|悪臭防止法|自然公園法|自然環境保全法|鳥獣保護法|種の保存法|外来生物法|動物愛護法|食品衛生法|薬事法|医療法|医師法|歯科医師法|保健師助産師看護師法|介護保険法|国民健康保険法|国民年金法|厚生年金保険法|雇用保険法|労働者災害補償保険法|最低賃金法|労働契約法|パートタイム労働法|労働者派遣法|男女雇用機会均等法|育児・介護休業法|労働組合法|労働関係調整法|国家公務員法|地方公務員法|教育基本法|学校教育法|社会教育法|私立学校法|文化財保護法|児童福祉法|母子保健法|生活保護法|社会福祉法|老人福祉法|身体障害者福祉法|知的障害者福祉法|精神保健福祉法|発達障害者支援法|障害者総合支援法|障害者差別解消法|児童虐待防止法|DV防止法|ストーカー規制法|暴力団対策法|銃刀法|火薬類取締法|高圧ガス保安法|消防法|道路交通法|船舶法|船員法|海上運送法|港湾法|航空法|鉄道事業法|貨物自動車運送事業法|倉庫業法|通関法|外国為替及び外国貿易法|輸出入取引法|関税定率法|とん税法|特別とん税法|電波法|放送法|電気通信事業法|郵便法|金融商品取引法|銀行法|保険業法|信託法|資金決済法|貸金業法|割賦販売法|出資法|利息制限法|破産法|民事再生法|会社更生法|特定調停法|仲裁法|公証人法|弁護士法|司法書士法|行政書士法|税理士法|公認会計士法|不動産鑑定士法|土地家屋調査士法|社会保険労務士法|中小企業診断士法|技術士法|建築士法|測量法|旅行業法|宅地建物取引業法|マンション管理適正化法|住宅品質確保法|景観法|屋外広告物法|風俗営業法|旅館業法|公衆浴場法|興行場法|美容師法|理容師法|クリーニング業法|獣医師法|家畜伝染病予防法|と畜場法|食鳥処理法|飼料安全法|肥料取締法|農薬取締法|種苗法|家畜改良増殖法|競馬法|自転車競技法|小型自動車競走法|モーターボート競走法|警察法|海上保安庁法|自衛隊法|日米安全保障条約|国際連合憲章|難民条約|国籍法|出入国管理法|外国人登録法|旅券法|戸籍法|住民基本台帳法|印鑑登録法|公職選挙法|政治資金規正法|政党助成法|国会法|内閣法|裁判所法|検察庁法|地方自治法|地方税法|地方交付税法|地方公営企業法|警察法|消防組織法|災害対策基本法|災害救助法|被災者生活再建支援法|激甚災害法|原子力基本法|原子力規制法|放射線障害防止法|原子力災害対策特別措置法|新型インフルエンザ対策特別措置法|感染症法|検疫法|予防接種法|臓器移植法|血液法|毒物劇物取締法|麻薬及び向精神薬取締法|覚せい剤取締法|大麻取締法|あへん法|安全保障貿易管理|化学兵器禁止法|生物兵器禁止法|対人地雷禁止法|クラスター弾禁止法|国際刑事裁判所規程|国際人道法|国際人権法).*?第([０-９0-9一二三四五六七八九十百千]+)条/g, type: 'EXTERNAL_REFERENCE' },
-      { regex: /(前項|次項|前条|次条|同項|同条)/g, type: 'RELATIVE_REFERENCE' },
+      // 相対参照（前条、次条など）
+      { regex: /前条|次条/g, type: 'RELATIVE_ARTICLE_REFERENCE' },
+      { regex: /前項|次項|同項|同条/g, type: 'RELATIVE_REFERENCE' },
       { regex: /同項第([０-９0-9一二三四五六七八九十]+)号/g, type: 'COMPLEX_REFERENCE' },
       { regex: /前項第([０-９0-9一二三四五六七八九十]+)号/g, type: 'COMPLEX_REFERENCE' }
     ];
@@ -433,21 +442,22 @@ class EGovStaticSiteGenerator {
         ${titleDisplay ? `<span class="article-title">${titleDisplay}</span>` : ''}
       </div>
       
-      ${article.paragraphs.map((para, idx) => this.renderParagraph(para, idx, article.paragraphs.length, articleRefs, lawId)).join('\n')}
+      ${article.paragraphs.map((para, idx) => this.renderParagraph(para, idx, article.paragraphs.length, articleRefs, lawId, article.articleNum)).join('\n')}
     </div>`;
   }
 
-  renderParagraph(paragraph, index, totalParagraphs, references, lawId) {
+  renderParagraph(paragraph, index, totalParagraphs, references, lawId, articleNum) {
     const hasNumber = totalParagraphs > 1 && index > 0;
+    const paragraphNum = hasNumber ? index + 1 : 1;
     let content = this.escapeHtml(paragraph.content);
     
-    // 参照リンクの適用
-    content = this.applyReferenceLinks(content, references, lawId);
+    // 参照リンクの適用（現在の条文番号と項番号を渡す）
+    content = this.applyReferenceLinks(content, references, lawId, articleNum, paragraphNum);
     
-    let html = '<div class="paragraph">';
+    let html = `<div class="paragraph" id="art${articleNum}-para${paragraphNum}">`;
     
     if (hasNumber) {
-      html += `<span class="paragraph-num">${index + 1}</span>`;
+      html += `<span class="paragraph-num">${paragraphNum}</span>`;
       html += `<div class="paragraph-text">${content}`;
     } else {
       html += `<div class="paragraph-text no-indent">${content}`;
@@ -457,7 +467,7 @@ class EGovStaticSiteGenerator {
     if (paragraph.items.length > 0) {
       html += '<div class="items">';
       for (const item of paragraph.items) {
-        html += this.renderItem(item, references, lawId);
+        html += this.renderItem(item, references, lawId, articleNum, paragraphNum);
       }
       html += '</div>';
     }
@@ -466,9 +476,9 @@ class EGovStaticSiteGenerator {
     return html;
   }
 
-  renderItem(item, references, lawId) {
+  renderItem(item, references, lawId, articleNum, paragraphNum) {
     let content = this.escapeHtml(item.content);
-    content = this.applyReferenceLinks(content, references, lawId);
+    content = this.applyReferenceLinks(content, references, lawId, articleNum, paragraphNum);
     
     let html = `<div class="item">
       <span class="item-num">${item.title}</span>
@@ -478,7 +488,7 @@ class EGovStaticSiteGenerator {
     if (item.subitems.length > 0) {
       html += '<div class="subitems">';
       for (const subitem of item.subitems) {
-        html += this.renderSubitem(subitem, references, lawId);
+        html += this.renderSubitem(subitem, references, lawId, articleNum, paragraphNum);
       }
       html += '</div>';
     }
@@ -487,9 +497,9 @@ class EGovStaticSiteGenerator {
     return html;
   }
 
-  renderSubitem(subitem, references, lawId) {
+  renderSubitem(subitem, references, lawId, articleNum, paragraphNum) {
     let content = this.escapeHtml(subitem.content);
-    content = this.applyReferenceLinks(content, references, lawId);
+    content = this.applyReferenceLinks(content, references, lawId, articleNum, paragraphNum);
     
     let html = `<div class="subitem">
       <span class="subitem-num">${subitem.title}</span>
@@ -500,7 +510,7 @@ class EGovStaticSiteGenerator {
       html += '<div class="subsubitems">';
       for (const subsubitem of subitem.subsubitems) {
         let subsubContent = this.escapeHtml(subsubitem.content);
-        subsubContent = this.applyReferenceLinks(subsubContent, references, lawId);
+        subsubContent = this.applyReferenceLinks(subsubContent, references, lawId, articleNum, paragraphNum);
         
         html += `<div class="subsubitem">
           <span class="subsubitem-num">${subsubitem.title}</span>
@@ -514,26 +524,122 @@ class EGovStaticSiteGenerator {
     return html;
   }
 
-  applyReferenceLinks(text, references, lawId) {
+  applyReferenceLinks(text, references, lawId, currentArticleNum = null, currentParagraphNum = null) {
     let result = text;
     
     // 参照を長い順にソート（より具体的な参照を優先）
     const sortedRefs = references.sort((a, b) => b.sourceText.length - a.sourceText.length);
     
+    // 処理済みの位置を記録するためのマーカー
+    const markers = [];
+    let markedText = text;
+    
     for (const ref of sortedRefs) {
       const escapedText = ref.sourceText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const regex = new RegExp(escapedText, 'g');
+      
+      let replacement = '';
       
       if (ref.type === 'INTERNAL_REFERENCE') {
         const targetArticle = ref.sourceText.match(/第([０-９0-9一二三四五六七八九十百千]+)条/);
         if (targetArticle) {
           const articleNum = this.convertToArabic(targetArticle[1]);
-          result = result.replace(regex, `<a href="#art${articleNum}" class="ref-link internal-ref">${ref.sourceText}</a>`);
+          replacement = `<a href="#art${articleNum}" class="ref-link internal-ref">${ref.sourceText}</a>`;
         }
       } else if (ref.type === 'EXTERNAL_REFERENCE') {
-        result = result.replace(regex, `<a href="#" class="ref-link external-ref">${ref.sourceText}</a>`);
+        // 外部参照の場合は、法令名と条文番号を分離して処理
+        const match = ref.sourceText.match(/(.*?)第([０-９0-9一二三四五六七八九十百千]+)条/);
+        if (match) {
+          const lawName = match[1];
+          const articleNum = this.convertToArabic(match[2]);
+          // 読み込まれている法令へのリンクを生成
+          let linkedLawId = null;
+          for (const [lawId, lawData] of this.lawIndex) {
+            if (lawData.lawTitle === lawName || lawData.lawTitle.includes(lawName)) {
+              linkedLawId = lawId;
+              break;
+            }
+          }
+          
+          if (linkedLawId) {
+            replacement = `<a href="${linkedLawId}.html#art${articleNum}" class="ref-link external-ref">${ref.sourceText}</a>`;
+          } else {
+            replacement = `<span class="ref-link external-ref">${ref.sourceText}</span>`;
+          }
+        }
+      } else if (ref.type === 'RELATIVE_ARTICLE_REFERENCE') {
+        // 前条・次条の処理
+        if (currentArticleNum && ref.sourceText === '前条' && currentArticleNum > 1) {
+          replacement = `<a href="#art${currentArticleNum - 1}" class="ref-link internal-ref">${ref.sourceText}</a>`;
+        } else if (currentArticleNum && ref.sourceText === '次条') {
+          replacement = `<a href="#art${currentArticleNum + 1}" class="ref-link internal-ref">${ref.sourceText}</a>`;
+        } else {
+          replacement = `<span class="ref-link relative-ref">${ref.sourceText}</span>`;
+        }
+      } else if (ref.type === 'CHAPTER_REFERENCE' || ref.type === 'RELATIVE_CHAPTER_REFERENCE') {
+        // 章参照は青色（内部参照）として表示
+        replacement = `<span class="ref-link internal-ref">${ref.sourceText}</span>`;
+      } else if (ref.type === 'RELATIVE_REFERENCE') {
+        // 前項・次項・同項の処理
+        if (currentArticleNum && currentParagraphNum) {
+          if (ref.sourceText === '前項' && currentParagraphNum > 1) {
+            // 同じ条文内の前の項へ
+            replacement = `<a href="#art${currentArticleNum}-para${currentParagraphNum - 1}" class="ref-link internal-ref">${ref.sourceText}</a>`;
+          } else if (ref.sourceText === '次項' && currentParagraphNum < 10) { // 最大項数を仮に10とする
+            // 同じ条文内の次の項へ
+            replacement = `<a href="#art${currentArticleNum}-para${currentParagraphNum + 1}" class="ref-link internal-ref">${ref.sourceText}</a>`;
+          } else if (ref.sourceText === '同項') {
+            // 現在の項への参照（通常はリンク不要）
+            replacement = `<span class="ref-link relative-ref">${ref.sourceText}</span>`;
+          } else if (ref.sourceText === '同条') {
+            // 現在の条文への参照
+            replacement = `<a href="#art${currentArticleNum}" class="ref-link internal-ref">${ref.sourceText}</a>`;
+          } else {
+            replacement = `<span class="ref-link relative-ref">${ref.sourceText}</span>`;
+          }
+        } else {
+          replacement = `<span class="ref-link relative-ref">${ref.sourceText}</span>`;
+        }
       } else {
-        result = result.replace(regex, `<span class="ref-link relative-ref">${ref.sourceText}</span>`);
+        replacement = `<span class="ref-link relative-ref">${ref.sourceText}</span>`;
+      }
+      
+      if (replacement) {
+        // マーカーを使用して一度処理した部分を保護
+        let tempResult = markedText;
+        let match;
+        let lastIndex = 0;
+        const tempMarkers = [];
+        
+        while ((match = regex.exec(markedText)) !== null) {
+          // 既にマークされた範囲内かチェック
+          let isMarked = false;
+          for (const marker of markers) {
+            if (match.index >= marker.start && match.index < marker.end) {
+              isMarked = true;
+              break;
+            }
+          }
+          
+          if (!isMarked) {
+            tempMarkers.push({
+              start: match.index,
+              end: match.index + match[0].length
+            });
+          }
+        }
+        
+        // 後ろから置換していく（インデックスがずれないように）
+        tempMarkers.sort((a, b) => b.start - a.start);
+        for (const marker of tempMarkers) {
+          result = result.substring(0, marker.start) + replacement + result.substring(marker.end);
+          markers.push({
+            start: marker.start,
+            end: marker.start + replacement.length
+          });
+        }
+        
+        markedText = result;
       }
     }
     
@@ -541,16 +647,69 @@ class EGovStaticSiteGenerator {
   }
 
   convertToArabic(num) {
-    const kanjiToArabic = {
-      '一': 1, '二': 2, '三': 3, '四': 4, '五': 5,
-      '六': 6, '七': 7, '八': 8, '九': 9, '十': 10,
-      '十一': 11, '十二': 12, '十三': 13, '十四': 14, '十五': 15,
-      '十六': 16, '十七': 17, '十八': 18, '十九': 19, '二十': 20,
-      '三十': 30, '四十': 40, '五十': 50, '六十': 60, '七十': 70,
-      '八十': 80, '九十': 90, '百': 100, '二百': 200, '三百': 300
+    // 既に数字の場合はそのまま返す
+    if (/^[0-9０-９]+$/.test(num)) {
+      // 全角数字を半角に変換
+      return num.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0));
+    }
+    
+    // 漢数字変換マップ
+    const kanjiMap = {
+      '〇': 0, '一': 1, '二': 2, '三': 3, '四': 4, '五': 5,
+      '六': 6, '七': 7, '八': 8, '九': 9
     };
     
-    return kanjiToArabic[num] || num;
+    // 単純な漢数字（一〜九）
+    if (kanjiMap[num] !== undefined) {
+      return kanjiMap[num];
+    }
+    
+    // 複雑な漢数字の処理
+    let result = 0;
+    let temp = 0;
+    let unit = 1;
+    
+    // 千、百、十の単位を処理
+    if (num.includes('千')) {
+      const parts = num.split('千');
+      if (parts[0] === '') {
+        result += 1000;
+      } else {
+        const prefix = kanjiMap[parts[0]];
+        result += (prefix || 1) * 1000;
+      }
+      num = parts[1] || '';
+    }
+    
+    if (num.includes('百')) {
+      const parts = num.split('百');
+      if (parts[0] === '') {
+        result += 100;
+      } else {
+        const prefix = kanjiMap[parts[0]];
+        result += (prefix || 1) * 100;
+      }
+      num = parts[1] || '';
+    }
+    
+    if (num.includes('十')) {
+      const parts = num.split('十');
+      if (parts[0] === '') {
+        temp = 10;
+      } else {
+        const prefix = kanjiMap[parts[0]];
+        temp = (prefix || 1) * 10;
+      }
+      
+      if (parts[1] && kanjiMap[parts[1]] !== undefined) {
+        temp += kanjiMap[parts[1]];
+      }
+      result += temp;
+    } else if (num && kanjiMap[num] !== undefined) {
+      result += kanjiMap[num];
+    }
+    
+    return result || num;
   }
 
   async generateIndexPage() {

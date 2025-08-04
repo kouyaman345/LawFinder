@@ -5,436 +5,96 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>消費税法 | LawFinder 法令検索</title>
   <link rel="stylesheet" href="../assets/style.css">
-  <style>
-    /* ツールチップのスタイル */
-    .ref-tooltip {
-      position: absolute;
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      padding: 8px 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      z-index: 1000;
-      max-width: 400px;
-      font-size: 14px;
-      display: none;
-    }
-    .ref-tooltip.active {
-      display: block;
-    }
-    .ref-tooltip-title {
-      font-weight: bold;
-      margin-bottom: 4px;
-    }
-    .ref-tooltip-content {
-      color: #333;
-    }
-    
-    /* 戻るボタンのスタイル */
-    .back-to-source {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #0066cc;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 4px;
-      border: none;
-      cursor: pointer;
-      display: none;
-      z-index: 100;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
-    .back-to-source.active {
-      display: block;
-    }
-    .back-to-source:hover {
-      background: #0052a3;
-    }
-    
-    /* ハイライトスタイル */
-    .highlight-source {
-      background-color: #fff3cd !important;
-      border: 2px solid #ffc107;
-      padding: 2px;
-    }
-    .highlight-target {
-      background-color: #cfe2ff !important;
-      border: 2px solid #0066cc;
-      padding: 2px;
-    }
-    
-    /* 階層的な目次のスタイル */
-    .toc-parts, .toc-chapters, .toc-sections, .toc-articles {
-      list-style: none;
-      margin: 0;
-      padding-left: 0;
-    }
-    
-    .toc-chapters {
-      padding-left: 20px;
-    }
-    
-    .toc-sections {
-      padding-left: 20px;
-    }
-    
-    .toc-articles {
-      padding-left: 20px;
-    }
-    
-    .toc-part {
-      margin-bottom: 15px;
-    }
-    
-    .toc-part-title {
-      font-weight: bold;
-      font-size: 16px;
-      color: #003f8e;
-      display: block;
-      margin-bottom: 8px;
-      padding: 5px;
-      background-color: #f0f0f0;
-    }
-    
-    .toc-chapter {
-      margin-bottom: 10px;
-    }
-    
-    .toc-chapter-title {
-      font-weight: bold;
-      color: #0066cc;
-      display: block;
-      margin-bottom: 5px;
-    }
-    
-    .toc-section-item {
-      margin-bottom: 8px;
-    }
-    
-    .toc-section-title {
-      font-weight: 600;
-      color: #333;
-      display: block;
-      margin-bottom: 3px;
-    }
-    
-    .toc-article {
-      margin-bottom: 2px;
-    }
-    
-    .toc-article a {
-      color: #0066cc;
-      text-decoration: none;
-      font-size: 14px;
-    }
-    
-    .toc-article a:hover {
-      text-decoration: underline;
-    }
-  </style>
 </head>
 <body>
-  <div class="gov-header">
+  <header class="gov-header">
     <div class="container">
-      <h1 class="site-title">LawFinder 法令検索</h1>
-      <nav class="header-nav">
+      <h1 class="site-title">
+        <a href="../index.html">LawFinder 法令検索</a>
+      </h1>
+      <nav class="nav-menu">
         <a href="../index.html">ホーム</a>
         <a href="#">法令検索</a>
         <a href="#">新規制定・改正法令</a>
+        <a href="#">ヘルプ</a>
       </nav>
     </div>
-  </div>
+  </header>
   
-  <div class="breadcrumb">
-    <div class="container">
-      <a href="../index.html">ホーム</a> &gt;
-      <a href="../index.html">法令検索</a> &gt;
-      <span>消費税法</span>
-    </div>
-  </div>
-  
-  <main class="container">
-    <div class="law-header">
-      <h1 class="law-title">消費税法</h1>
-      <div class="law-number">昭和二十三年法律第百三十一号</div>
-    </div>
-    
-    <div class="law-toolbar">
-      <div class="toolbar-left">
-        <button class="btn-outline">印刷</button>
-        <button class="btn-outline">ダウンロード</button>
-        <button class="btn-outline">共有</button>
-      </div>
-      <div class="toolbar-right">
-        <span class="reference-badge">参照関係: 2件</span>
-        <span class="llm-badge">AI解析済み</span>
-      </div>
-    </div>
-    
-    <div class="law-content">
-      <div class="toc-section">
-        <h2 class="toc-title">目次</h2>
-        <ul class="toc-list"><li class="toc-article">
-            <a href="#art5">第5条 （納税義務者）</a>
-          </li><li class="toc-article">
-            <a href="#art30">第30条 （仕入れに係る消費税額の控除）</a>
-          </li><li class="toc-article">
-            <a href="#art45">第45条 （課税標準額及び税額の申告）</a>
-          </li></ul>
+  <main class="law-main">
+    <div class="law-container">
+      <div class="law-header">
+        <h2 class="law-title">消費税法</h2>
       </div>
       
-      <div class="articles-section">
+      <div class="law-layout">
+        <aside class="toc-sidebar">
+          <div class="toc-header">目次</div>
+          <div class="toc-content">
+            <ul class="toc-list"><li class="toc-article">
+          <a href="#art5">第5条 （納税義務者）</a>
+        </li><li class="toc-article">
+          <a href="#art30">第30条 （仕入れに係る消費税額の控除）</a>
+        </li><li class="toc-article">
+          <a href="#art45">第45条 （課税標準額及び税額の申告）</a>
+        </li></ul>
+          </div>
+        </aside>
         
-    <article class="law-article" id="art5">
+        <div class="law-text">
+          
+    <div class="article" id="art5">
       <div class="article-header">
-        <h3 class="article-number">第5条</h3>
+        <span class="article-number">第5条</span>
         <span class="article-title">（納税義務者）</span>
       </div>
       
-      <div class="article-content">
-        
-          <div class="paragraph">
-            事業者は、国内において行った課税資産の譲渡等につき、この法律により、消費税を納める義務がある。
-            
-          </div>
-          
-      </div>
-      
-      
-    </article>
+      <div class="paragraph" id="art5-para1"><div class="paragraph-text no-indent">事業者は、国内において行った課税資産の譲渡等につき、この法律により、消費税を納める義務がある。</div></div>
+    </div>
 
-    <article class="law-article" id="art30">
+    <div class="article" id="art30">
       <div class="article-header">
-        <h3 class="article-number">第30条</h3>
+        <span class="article-number">第30条</span>
         <span class="article-title">（仕入れに係る消費税額の控除）</span>
       </div>
       
-      <div class="article-content">
-        
-          <div class="paragraph first-paragraph">
-            事業者が、国内において行う課税仕入れについては、次の<a href="#art30" 
-                       class="ref-link relative-ref" 
-                       data-confidence="0.85"
-                       title="相対参照（信頼度: 85%）">各号</a>に掲げる場合の区分に応じ当該<a href="#art30" 
-                       class="ref-link relative-ref" 
-                       data-confidence="0.85"
-                       title="相対参照（信頼度: 85%）">各号</a>に定める日の属する課税期間の<a href="#art45" 
-                     class="ref-link internal-ref" 
-                     data-confidence="0.9"
-                     title="同一法令内の参照（信頼度: 90%）">第45条</a>第1項第2号に掲げる課税標準額に対する消費税額から、当該課税期間中に国内において行った課税仕入れに係る消費税額を控除する。
-            
-          </div>
-          
-          <div class="paragraph">
-            <span class="paragraph-number">2</span>　第1項の規定は、事業者が当該課税期間の課税仕入れ等の税額の控除に係る帳簿及び請求書等を保存しない場合には、適用しない。ただし、災害その他やむを得ない事情により、当該保存をすることができなかったことを当該事業者において証明した場合は、この限りでない。
-            
-          </div>
-          
-      </div>
-      
-      
-        <div class="article-references">
-          <button class="ref-toggle" onclick="this.parentElement.classList.toggle('expanded')">
-            <span class="ref-icon">▶</span>
-            参照関係 (2件)
-          </button>
-          <div class="ref-details">
-            
-              <div class="ref-item">
-                <span class="ref-type internal_reference">
-                  内部参照
-                </span>
-                <span class="ref-text">第45条</span>
-                <span class="ref-confidence">信頼度: 90%</span>
-              </div>
-            
-              <div class="ref-item">
-                <span class="ref-type relative_reference">
-                  相対参照
-                </span>
-                <span class="ref-text">各号</span>
-                <span class="ref-confidence">信頼度: 85%</span>
-              </div>
-            
-          </div>
-        </div>
-      
-    </article>
+      <div class="paragraph" id="art30-para1"><div class="paragraph-text no-indent">事業者が、国内において行う課税仕入れについては、次の各号に掲げる場合の区分に応じ当該各号に定める日の属する課税期間の<a href="#art45" class="ref-link internal-ref">第45条第1項</a>第2号に掲げる課税標準額に対する消費税額から、当該課税期間中に国内において行った課税仕入れに係る消費税額を控除する。</div></div>
+<div class="paragraph" id="art30-para2"><span class="paragraph-num">2</span><div class="paragraph-text">第1項の規定は、事業者が当該課税期間の課税仕入れ等の税額の控除に係る帳簿及び請求書等を保存しない場合には、適用しない。ただし、災害その他やむを得ない事情により、当該保存をすることができなかったことを当該事業者において証明した場合は、この限りでない。</div></div>
+    </div>
 
-    <article class="law-article" id="art45">
+    <div class="article" id="art45">
       <div class="article-header">
-        <h3 class="article-number">第45条</h3>
+        <span class="article-number">第45条</span>
         <span class="article-title">（課税標準額及び税額の申告）</span>
       </div>
       
-      <div class="article-content">
-        
-          <div class="paragraph">
-            事業者は、課税期間ごとに、当該課税期間の末日の翌日から2月以内に、次に掲げる事項を記載した申告書を税務署長に提出しなければならない。
-            
-          </div>
-          
-      </div>
-      
-      
-    </article>
+      <div class="paragraph" id="art45-para1"><div class="paragraph-text no-indent">事業者は、課税期間ごとに、当該課税期間の末日の翌日から2月以内に、次に掲げる事項を記載した申告書を税務署長に提出しなければならない。</div></div>
+    </div>
+        </div>
       </div>
     </div>
   </main>
   
   <footer class="gov-footer">
     <div class="container">
-      <div class="footer-content">
-        <p>LawFinder - 日本法令検索システム</p>
-        <p>ローカルLLM: Llama-3-ELYZA-JP-8B（モックモード）</p>
-      </div>
+      <p>LawFinder - 日本法令検索システム（e-Govスタイル版）</p>
     </div>
   </footer>
   
-  <button class="back-to-source" id="backToSource" onclick="backToReferenceSource()">
-    参照元に戻る
-  </button>
-  
-  <div class="ref-tooltip" id="refTooltip">
-    <div class="ref-tooltip-title" id="tooltipTitle"></div>
-    <div class="ref-tooltip-content" id="tooltipContent"></div>
-  </div>
-  
   <script>
-    let referenceSource = null;
-    let currentTooltipTarget = null;
-    
-    // 参照リンクのクリック処理
-    function handleReferenceClick(event) {
-      if (event.target.classList.contains('ref-link')) {
-        // 既存のハイライトを削除
-        document.querySelectorAll('.highlight-source, .highlight-target').forEach(el => {
-          el.classList.remove('highlight-source', 'highlight-target');
-        });
-        
-        // ジャンプ元をハイライト
-        event.target.classList.add('highlight-source');
-        referenceSource = event.target;
-        
-        // ジャンプ先をハイライト
-        const targetId = event.target.getAttribute('href');
-        if (targetId && targetId.startsWith('#')) {
-          setTimeout(() => {
-            const targetElement = document.querySelector(targetId);
-            if (targetElement) {
-              targetElement.classList.add('highlight-target');
-              // 戻るボタンを表示
-              document.getElementById('backToSource').classList.add('active');
-            }
-          }, 100);
-        }
-      }
-    }
-    
-    // 参照元に戻る
-    function backToReferenceSource() {
-      if (referenceSource) {
-        referenceSource.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        // ハイライトをリセット
-        setTimeout(() => {
-          document.querySelectorAll('.highlight-source, .highlight-target').forEach(el => {
-            el.classList.remove('highlight-source', 'highlight-target');
+    // スムーズスクロール
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
           });
-          document.getElementById('backToSource').classList.remove('active');
-          referenceSource = null;
-        }, 1000);
-      }
-    }
-    
-    // ツールチップの表示
-    function showTooltip(event) {
-      const link = event.target;
-      if (!link.classList.contains('ref-link')) return;
-      
-      currentTooltipTarget = link;
-      const tooltip = document.getElementById('refTooltip');
-      const titleEl = document.getElementById('tooltipTitle');
-      const contentEl = document.getElementById('tooltipContent');
-      
-      // リンクの情報を取得
-      const href = link.getAttribute('href');
-      const title = link.getAttribute('title') || '';
-      const refText = link.textContent;
-      
-      // ツールチップの内容を設定
-      if (href && href.startsWith('#')) {
-        const targetId = href.substring(1);
-        const targetElement = document.getElementById(targetId);
-        
-        if (targetElement) {
-          const articleHeader = targetElement.querySelector('.article-header');
-          if (articleHeader) {
-            const articleNumEl = articleHeader.querySelector('.article-number');
-            const articleTitleEl = articleHeader.querySelector('.article-title');
-            const articleNum = articleNumEl ? articleNumEl.textContent : '';
-            const articleTitle = articleTitleEl ? articleTitleEl.textContent : '';
-            titleEl.textContent = articleNum + ' ' + articleTitle;
-            
-            // 最初の段落の内容を取得（最大100文字）
-            const firstPara = targetElement.querySelector('.paragraph');
-            if (firstPara) {
-              let content = firstPara.textContent.trim();
-              if (content.length > 100) {
-                content = content.substring(0, 100) + '...';
-              }
-              contentEl.textContent = content;
-            }
-          }
-        } else if (href.includes('.html')) {
-          // 外部法令への参照
-          titleEl.textContent = refText;
-          contentEl.textContent = title;
         }
-      }
-      
-      // ツールチップの位置を設定
-      const rect = link.getBoundingClientRect();
-      tooltip.style.left = rect.left + 'px';
-      tooltip.style.top = (rect.bottom + 5) + 'px';
-      
-      // 画面外にはみ出る場合の調整
-      tooltip.classList.add('active');
-      const tooltipRect = tooltip.getBoundingClientRect();
-      if (tooltipRect.right > window.innerWidth) {
-        tooltip.style.left = (window.innerWidth - tooltipRect.width - 10) + 'px';
-      }
-      if (tooltipRect.bottom > window.innerHeight) {
-        tooltip.style.top = (rect.top - tooltipRect.height - 5) + 'px';
-      }
-    }
-    
-    // ツールチップを隠す
-    function hideTooltip() {
-      const tooltip = document.getElementById('refTooltip');
-      tooltip.classList.remove('active');
-      currentTooltipTarget = null;
-    }
-    
-    // イベントリスナーの設定
-    document.addEventListener('click', handleReferenceClick);
-    
-    // ツールチップのイベント
-    document.addEventListener('mouseover', (e) => {
-      if (e.target.classList.contains('ref-link')) {
-        showTooltip(e);
-      }
+      });
     });
-    
-    document.addEventListener('mouseout', (e) => {
-      if (e.target.classList.contains('ref-link')) {
-        hideTooltip();
-      }
-    });
-    
-    // スクロール時にツールチップを隠す
-    document.addEventListener('scroll', hideTooltip);
   </script>
 </body>
 </html>
