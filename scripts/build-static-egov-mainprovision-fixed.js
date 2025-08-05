@@ -152,6 +152,10 @@ class EGovMainProvisionStaticSiteGenerator {
       const titleMatch = articleContent.match(/<ArticleTitle>([^<]+)<\/ArticleTitle>/);
       let articleTitle = titleMatch ? titleMatch[1] : '';
       
+      // ArticleCaptionの取得
+      const captionMatch = articleContent.match(/<ArticleCaption>([^<]+)<\/ArticleCaption>/);
+      const articleCaption = captionMatch ? captionMatch[1].replace(/[（）]/g, '') : '';
+      
       // 条文番号と同じ場合はタイトルを空に
       if (articleTitle === `第${articleNum}条` || articleTitle === articleNum) {
         articleTitle = '';
@@ -173,6 +177,7 @@ class EGovMainProvisionStaticSiteGenerator {
       articles.push({
         articleNum,
         articleTitle,
+        articleCaption,
         paragraphs,
         part: structureContext.part,
         chapter: structureContext.chapter,
@@ -881,16 +886,30 @@ class EGovMainProvisionStaticSiteGenerator {
       list-style: none;
     }
     
-    .toc-sidebar > ul {
+    .toc-root {
       margin-left: 0;
     }
     
-    .toc-sidebar ul ul {
-      margin-left: 1.5rem;
+    .toc-articles {
+      margin-left: 2rem;
+      display: block;
+    }
+    
+    .toc-articles.collapsed {
+      display: none;
+    }
+    
+    .toc-chapters {
+      margin-left: 1rem;
+      display: block;
+    }
+    
+    .toc-chapters.collapsed {
+      display: none;
     }
     
     .toc-sidebar li {
-      margin: 0.25rem 0;
+      margin: 0.1rem 0;
     }
     
     .toc-sidebar a {
@@ -906,21 +925,68 @@ class EGovMainProvisionStaticSiteGenerator {
       text-decoration: underline;
     }
     
-    .toc-part {
+    .toc-part-header,
+    .toc-chapter-header {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      padding: 0.25rem 0;
+      user-select: none;
+    }
+    
+    .toc-part-header:hover,
+    .toc-chapter-header:hover {
+      background-color: #f0f0f0;
+    }
+    
+    .toc-toggle {
+      width: 1rem;
+      height: 1rem;
+      margin-right: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .toc-toggle svg {
+      width: 1rem;
+      height: 1rem;
+      transition: transform 0.2s;
+    }
+    
+    .toc-toggle.collapsed svg {
+      transform: rotate(-90deg);
+    }
+    
+    .h-4 {
+      height: 1rem;
+    }
+    
+    .w-4 {
+      width: 1rem;
+    }
+    
+    .toc-part .toc-text {
       font-weight: bold;
       color: #003d7a;
-      margin-top: 1rem;
+    }
+    
+    .toc-chapter .toc-text {
+      font-weight: bold;
+      color: #003d7a;
     }
     
     .toc-chapter {
-      font-weight: bold;
-      color: #003d7a;
-      margin-top: 0.75rem;
+      margin-left: 1rem;
     }
     
     .toc-section {
-      margin-left: 1rem;
+      margin-left: 2rem;
       color: #666;
+    }
+    
+    .toc-article {
+      font-size: 0.9rem;
     }
     
     .toc-article.deleted {
@@ -1035,6 +1101,12 @@ class EGovMainProvisionStaticSiteGenerator {
     
     .article-title {
       color: #666;
+    }
+    
+    .article-caption {
+      font-weight: normal;
+      color: #666;
+      margin-left: 0.5rem;
     }
     
     .paragraph {
@@ -1200,6 +1272,28 @@ class EGovMainProvisionStaticSiteGenerator {
 
   getJavaScript() {
     return `
+    // 目次の折りたたみ機能
+    document.querySelectorAll('.toc-part-header, .toc-chapter-header').forEach(header => {
+      header.addEventListener('click', function() {
+        const toggle = this.querySelector('.toc-toggle');
+        const parent = this.parentElement;
+        
+        // 直接の子要素を探す
+        let childList = null;
+        for (let child of parent.children) {
+          if (child.classList.contains('toc-chapters') || child.classList.contains('toc-articles')) {
+            childList = child;
+            break;
+          }
+        }
+        
+        if (childList) {
+          childList.classList.toggle('collapsed');
+          toggle.classList.toggle('collapsed');
+        }
+      });
+    });
+    
     // ナビゲーション履歴管理
     let navigationHistory = [];
     const backButton = document.getElementById('backButton');
@@ -1279,32 +1373,92 @@ class EGovMainProvisionStaticSiteGenerator {
     const toc = [];
     let currentPart = null;
     let currentChapter = null;
+    let partContent = [];
+    let chapterArticles = [];
+    
+    // 章と条文を追加するヘルパー関数
+    const flushChapterArticles = () => {
+      if (chapterArticles.length > 0) {
+        partContent.push(`<ul class="toc-articles">${chapterArticles.join('\n')}</ul>`);
+        partContent.push('</li>'); // 章を閉じる
+        chapterArticles = [];
+      }
+    };
+    
+    // 編の内容を追加するヘルパー関数
+    const flushPartContent = () => {
+      flushChapterArticles();
+      if (currentPart && partContent.length > 0) {
+        toc.push(`<ul class="toc-chapters">${partContent.join('\n')}</ul>`);
+        toc.push('</li>'); // 編を閉じる
+        partContent = [];
+      }
+    };
     
     for (const article of lawData.articles) {
       // 編の追加
       if (article.part && (!currentPart || currentPart.num !== article.part.num)) {
-        toc.push(`<li class="toc-part">${article.part.title}</li>`);
+        flushPartContent();
+        
+        toc.push(`<li class="toc-part">
+          <div class="toc-part-header">
+            <span class="toc-toggle">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </span>
+            <span class="toc-text">${article.part.title}</span>
+          </div>`);
         currentPart = article.part;
-        currentChapter = null; // 編が変わったら章をリセット
+        currentChapter = null;
       }
       
       // 章の追加
       if (article.chapter && (!currentChapter || currentChapter.num !== article.chapter.num)) {
-        toc.push(`<li class="toc-chapter">${article.chapter.title}</li>`);
+        flushChapterArticles();
+        
+        partContent.push(`<li class="toc-chapter">
+          <div class="toc-chapter-header">
+            <span class="toc-toggle">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </span>
+            <span class="toc-text">${article.chapter.title}</span>
+          </div>`);
         currentChapter = article.chapter;
       }
       
       // 条文リンク
+      let articleHtml = '';
       if (article.isRange) {
-        toc.push(`<li class="toc-article deleted">第${this.formatArticleNumber(article.startNum)}条から第${this.formatArticleNumber(article.endNum)}条まで　削除</li>`);
+        articleHtml = `<li class="toc-article deleted">第${this.formatArticleNumber(article.startNum)}条から第${this.formatArticleNumber(article.endNum)}条まで　削除</li>`;
       } else {
         const articleClass = article.isDeleted ? 'toc-article deleted' : 'toc-article';
-        const articleTitle = article.articleTitle ? `　（${article.articleTitle}）` : '';
-        toc.push(`<li class="${articleClass}"><a href="#art${article.articleNum}">第${this.formatArticleNumber(article.articleNum)}条${articleTitle}</a></li>`);
+        const articleCaption = article.articleCaption ? `　（${article.articleCaption}）` : '';
+        articleHtml = `<li class="${articleClass}"><a href="#art${article.articleNum}">第${this.formatArticleNumber(article.articleNum)}条${articleCaption}</a></li>`;
+      }
+      
+      // 条文を適切な配列に追加
+      if (currentChapter) {
+        chapterArticles.push(articleHtml);
+      } else if (currentPart) {
+        // 章がない場合は直接編に追加
+        if (partContent.length === 0 || (!currentChapter && partContent[partContent.length - 1].startsWith('<li'))) {
+          partContent.push(`<ul class="toc-articles">${articleHtml}</ul>`);
+        } else {
+          partContent.push(articleHtml);
+        }
+      } else {
+        // 編も章もない場合はトップレベルに追加
+        toc.push(articleHtml);
       }
     }
     
-    return `<ul>${toc.join('\n')}</ul>`;
+    // 最後の編/章の条文を追加
+    flushPartContent();
+    
+    return `<ul class="toc-root">${toc.join('\n')}</ul>`;
   }
 
   renderArticlesWithStructure(lawData, references) {
@@ -1356,7 +1510,7 @@ class EGovMainProvisionStaticSiteGenerator {
     <div class="article" id="art${article.articleNum}">
       <div class="article-header">
         <span class="article-number">第${this.formatArticleNumber(article.articleNum)}条</span>
-        ${article.articleTitle ? `<span class="article-title">（${this.escapeHtml(article.articleTitle)}）</span>` : ''}
+        ${article.articleCaption ? `<span class="article-caption">（${this.escapeHtml(article.articleCaption)}）</span>` : ''}
       </div>
       ${article.paragraphs.map((para, idx) => this.renderParagraph(para, idx + 1, references, lawId, article.articleNum)).join('\n')}
     </div>`;

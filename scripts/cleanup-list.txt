@@ -1,0 +1,33 @@
+# 削除予定のスクリプトファイル一覧
+
+## 古いバージョンのビルドスクリプト
+- build-static-egov.js (oldバージョンとして保存済み)
+- build-static-egov-fixed.js (一時的な修正版)
+- build-static-egov-mainprovision.js (fixedに置き換え済み)
+- build-static-simple.js (初期の簡易版)
+- build-static-site.js (初期バージョン)
+- build-static-full.js (fullに統合済み)
+- build-static-mock.js (モック版)
+- phase1-static-generator.js (Phase 1完了)
+
+## テスト・分析用スクリプト
+- test-article-extraction.js
+- test-large-xml.js
+- test-xml-parsing.js
+- check-xml-structure.js
+- check-article-extraction.js
+- generate-deleted-articles.js
+- analyze-criminal-law-references.js
+
+## 保持するスクリプト
+- build-static-egov-mainprovision-fixed.js (現在のメイン版)
+- build-static-egov-full.js (附則含む完全版)
+- build-static-llm.js (LLM統合版)
+- parse-xml.js (XMLパース用)
+- serve.js (開発サーバー)
+- startup.sh (LLMサーバー起動)
+- test-pipeline.js (パイプライン総合テスト)
+
+削除コマンド例:
+cd /home/coffee/projects/LawFinder/scripts
+rm build-static-egov.js build-static-egov-fixed.js build-static-egov-mainprovision.js build-static-simple.js build-static-site.js build-static-full.js build-static-mock.js phase1-static-generator.js test-article-extraction.js test-large-xml.js test-xml-parsing.js check-xml-structure.js generate-deleted-articles.js analyze-criminal-law-references.js check-article-extraction.js
