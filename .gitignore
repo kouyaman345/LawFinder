@@ -5,3 +5,5 @@ laws_data.zip
 laws_sample
 node_modules
 dist
+/src/generated/prisma
+.next

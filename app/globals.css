@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-white text-gray-900;
+  }
+}
+
+@layer components {
+  .egov-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .egov-header {
+    @apply bg-egov-blue text-white py-4;
+  }
+
+  .egov-nav {
+    @apply bg-egov-lightblue border-b border-egov-border;
+  }
+
+  .egov-card {
+    @apply bg-white rounded-lg shadow-md p-6 border border-egov-border;
+  }
+
+  .egov-button {
+    @apply px-4 py-2 bg-egov-blue text-white rounded hover:bg-egov-darkblue transition-colors;
+  }
+
+  .law-article {
+    @apply mb-6 p-4 border-l-4 border-egov-blue;
+  }
+
+  .law-paragraph {
+    @apply mb-3 pl-4;
+  }
+
+  .law-item {
+    @apply mb-2 pl-8;
+  }
+
+  .reference-link {
+    @apply text-egov-blue underline hover:text-egov-darkblue cursor-pointer;
+  }
+}
