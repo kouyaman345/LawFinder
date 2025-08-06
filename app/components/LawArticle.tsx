@@ -26,9 +26,10 @@ interface LawArticleProps {
   };
   references: DetectedReference[];
   currentLawId: string;
+  showFirstParagraphNumber?: boolean;
 }
 
-export function LawArticle({ article, references }: LawArticleProps) {
+export function LawArticle({ article, references, showFirstParagraphNumber = false }: LawArticleProps) {
   const applyReferenceLinks = (text: string, refs: DetectedReference[]) => {
     let processed = text;
     
@@ -129,20 +130,35 @@ export function LawArticle({ article, references }: LawArticleProps) {
       <div className="article-number">
         第{article.articleNum}条
         {article.articleTitle && (
-          <span className="article-title">（{article.articleTitle}）</span>
+          <span className="article-title">{article.articleTitle}</span>
         )}
       </div>
       
       <div className="article-content">
         {article.paragraphs.map((para, idx) => {
-          const paragraphNum = article.paragraphs.length > 1 ? idx + 1 : 0;
+          // 項が複数ある場合のみ番号付けを考慮
+          const hasMutipleParagraphs = article.paragraphs.length > 1;
+          const paragraphNum = hasMutipleParagraphs ? idx + 1 : 0;
+          
+          // 項番号表示の判定
+          let shouldShowNumber = false;
+          if (hasMutipleParagraphs) {
+            if (showFirstParagraphNumber) {
+              // オプションがONの場合：第一項から番号を表示
+              shouldShowNumber = true;
+            } else {
+              // オプションがOFFの場合：第二項以降のみ番号を表示
+              shouldShowNumber = paragraphNum > 1;
+            }
+          }
+          
           const paragraphRefs = articleRefs.filter(r => 
             para.content && para.content.includes(r.sourceText)
           );
           
           return (
             <div key={idx} className="article-paragraph">
-              {paragraphNum > 1 && (
+              {shouldShowNumber && (
                 <span className="paragraph-number">{paragraphNum}</span>
               )}
               <span>

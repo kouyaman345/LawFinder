@@ -1,6 +1,5 @@
 import Link from 'next/link';
-import { LawArticle } from '../../components/LawArticle';
-import { TableOfContents } from '../../components/TableOfContents';
+import { LawDetailClient } from '../../components/LawDetailClient';
 import { LawXMLParser } from '../../../src/lib/xml-parser';
 import { ReferenceDetector } from '../../../src/utils/reference-detector';
 import { promises as fs } from 'fs';
@@ -65,70 +64,11 @@ export default async function LawDetailPage(props: { params: Promise<{ id: strin
     }
     
     return (
-      <div className="law-page-layout">
-        {/* ヘッダー */}
-        <div className="gov-header">
-          <div className="header-container">
-            <h1 className="site-title">LawFinder 法令検索</h1>
-            <nav className="header-nav">
-              <Link href="/">ホーム</Link>
-              <Link href="/laws">法令検索</Link>
-              <Link href="#">新規制定・改正法令</Link>
-            </nav>
-          </div>
-        </div>
-
-        {/* パンくずリスト */}
-        <div className="breadcrumb">
-          <Link href="/">ホーム</Link>
-          <span> &gt; </span>
-          <Link href="/laws">法令一覧</Link>
-          <span> &gt; </span>
-          <span>{lawData.lawTitle}</span>
-        </div>
-
-        {/* メインコンテンツ */}
-        <div className="law-main-container">
-          {/* 目次セクション（左側） */}
-          <TableOfContents 
-            structure={lawData.structure} 
-            articles={lawData.articles}
-          />
-
-          {/* 条文表示エリア */}
-          <div className="articles-container">
-            {/* 法令ヘッダー */}
-            <div className="law-header">
-              <h1 className="law-title">{lawData.lawTitle}</h1>
-              <p className="law-number">{lawData.lawNum}</p>
-            </div>
-
-            {/* ツールバー */}
-            <div className="law-toolbar">
-              <div className="toolbar-left">
-                <button className="btn-outline">印刷</button>
-                <button className="btn-outline">ダウンロード</button>
-              </div>
-              <div className="toolbar-right">
-                <span className="reference-badge">参照関係: {allReferences.length}件</span>
-                <span className="llm-badge">実LLM解析済み</span>
-              </div>
-            </div>
-
-            {/* 条文セクション */}
-            <div className="articles-section">
-              {lawData.articles.map((article, index) => (
-                <LawArticle
-                  key={`article-${article.articleNum}-${index}`}
-                  article={article}
-                  references={allReferences}
-                  currentLawId={lawId}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+      <LawDetailClient
+        lawData={lawData}
+        allReferences={allReferences}
+        lawId={lawId}
+      />
     );
   } catch (error) {
     return (

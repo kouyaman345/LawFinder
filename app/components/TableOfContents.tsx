@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ChevronRightIcon, ChevronDownIcon, PlusIcon, MinusIcon } from '@heroicons/react/24/outline';
+import { ChevronRightIcon, ChevronDownIcon, PlusIcon, MinusIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
 interface TOCProps {
   structure: {
@@ -26,10 +26,12 @@ interface TOCProps {
     articleNum: string;
     articleTitle: string | null;
   }>;
+  onArticleVisibilityChange?: (articleId: string, isHidden: boolean) => void;
 }
 
-export function TableOfContents({ structure, articles }: TOCProps) {
+export function TableOfContents({ structure, articles, onArticleVisibilityChange }: TOCProps) {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
+  const [hiddenNodes, setHiddenNodes] = useState<Set<string>>(new Set());
   const [activeArticle, setActiveArticle] = useState<string>('');
 
   // 初期状態で第1レベルのみ展開
@@ -81,6 +83,24 @@ export function TableOfContents({ structure, articles }: TOCProps) {
     setExpandedNodes(newExpanded);
   };
 
+  const toggleVisibility = (nodeId: string, event: React.MouseEvent) => {
+    event.stopPropagation(); // 親要素のクリックイベントを防ぐ
+    const newHidden = new Set(hiddenNodes);
+    const isHidden = newHidden.has(nodeId);
+    
+    if (isHidden) {
+      newHidden.delete(nodeId);
+    } else {
+      newHidden.add(nodeId);
+    }
+    setHiddenNodes(newHidden);
+    
+    // 条文の表示非表示をコールバックで通知
+    if (onArticleVisibilityChange && nodeId.startsWith('article-')) {
+      onArticleVisibilityChange(nodeId, !isHidden);
+    }
+  };
+
   const expandAll = () => {
     const allNodes = new Set<string>();
     structure.parts.forEach(part => {
@@ -119,10 +139,15 @@ export function TableOfContents({ structure, articles }: TOCProps) {
     nodeType: 'part' | 'chapter' | 'section' | 'article',
     nodeData: any,
     level: number = 0,
-    key: string
+    key: string,
+    context: string = ''
   ) => {
-    const nodeId = `${nodeType}-${nodeData.num || nodeData.articleNum}`;
+    // 条文の場合、コンテキストを含むIDを生成
+    const nodeId = nodeType === 'article' 
+      ? `article-${context}-${nodeData.articleNum}`
+      : `${nodeType}-${nodeData.num || nodeData.articleNum}`;
     const isExpanded = expandedNodes.has(nodeId);
+    const isHidden = hiddenNodes.has(nodeId);
     const hasChildren = nodeType !== 'article' && (
       (nodeType === 'part' && nodeData.chapters?.length > 0) ||
       (nodeType === 'chapter' && (nodeData.sections?.length > 0 || nodeData.articles?.length > 0)) ||
@@ -134,7 +159,7 @@ export function TableOfContents({ structure, articles }: TOCProps) {
         <div 
           className={`toc-node-content toc-node-level-${level} ${
             nodeType === 'article' && activeArticle === nodeData.articleNum ? 'active' : ''
-          }`}
+          } ${isHidden ? 'toc-node-hidden' : ''}`}
           onClick={() => {
             if (nodeType === 'article') {
               scrollToArticle(nodeData.articleNum);
@@ -143,32 +168,46 @@ export function TableOfContents({ structure, articles }: TOCProps) {
             }
           }}
         >
-          <span className="toc-toggle-icon">
-            {hasChildren && (
-              isExpanded ? 
-                <ChevronDownIcon className="w-4 h-4" /> : 
-                <ChevronRightIcon className="w-4 h-4" />
-            )}
-          </span>
-          <span className={`toc-node-${nodeType}`}>
-            {nodeType === 'article' ? (
-              <>
-                第{nodeData.articleNum}条
-                {nodeData.articleTitle && ` ${nodeData.articleTitle}`}
-              </>
-            ) : (
-              nodeData.title
-            )}
-          </span>
+          <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+            <span className="toc-toggle-icon">
+              {hasChildren && (
+                isExpanded ? 
+                  <ChevronDownIcon className="w-4 h-4" /> : 
+                  <ChevronRightIcon className="w-4 h-4" />
+              )}
+            </span>
+            <span className={`toc-node-${nodeType}`}>
+              {nodeType === 'article' ? (
+                <>
+                  第{nodeData.articleNum}条
+                  {nodeData.articleTitle && ` ${nodeData.articleTitle}`}
+                </>
+              ) : (
+                nodeData.title
+              )}
+            </span>
+          </div>
+          {/* Eye/Eye-slash アイコン - 条文を含むすべてのノードに表示 */}
+          <button
+            className="toc-visibility-toggle"
+            onClick={(e) => toggleVisibility(nodeId, e)}
+            title={isHidden ? "表示" : "非表示"}
+          >
+            {isHidden ? 
+              <EyeSlashIcon className="w-4 h-4" /> : 
+              <EyeIcon className="w-4 h-4" />
+            }
+          </button>
         </div>
         
-        {/* 子ノードの表示 */}
-        {hasChildren && isExpanded && (
+        {/* 子ノードの表示 - 自身が非表示でない場合のみ */}
+        {hasChildren && isExpanded && !isHidden && (
           <div className="toc-children">
             {nodeType === 'part' && nodeData.chapters.map((chapterNum: string, idx: number) => {
               const chapter = structure.chapters.find(c => c.num === chapterNum);
               if (!chapter) return null;
-              return renderTreeNode('chapter', chapter, level + 1, `part-${nodeData.num}-chapter-${chapterNum}-${idx}`);
+              const newContext = context ? `${context}-part${nodeData.num}` : `part${nodeData.num}`;
+              return renderTreeNode('chapter', chapter, level + 1, `part-${nodeData.num}-chapter-${chapterNum}-${idx}`, newContext);
             })}
             
             {nodeType === 'chapter' && (
@@ -176,12 +215,14 @@ export function TableOfContents({ structure, articles }: TOCProps) {
                 {nodeData.sections.map((sectionNum: string, idx: number) => {
                   const section = structure.sections.find(s => s.num === sectionNum);
                   if (!section) return null;
-                  return renderTreeNode('section', section, level + 1, `chapter-${nodeData.num}-section-${sectionNum}-${idx}`);
+                  const newContext = context ? `${context}-chapter${nodeData.num}` : `chapter${nodeData.num}`;
+                  return renderTreeNode('section', section, level + 1, `chapter-${nodeData.num}-section-${sectionNum}-${idx}`, newContext);
                 })}
                 {nodeData.articles.map((articleNum: string, idx: number) => {
                   const article = articles.find(a => a.articleNum === articleNum);
                   if (!article) return null;
-                  return renderTreeNode('article', article, level + 1, `chapter-${nodeData.num}-article-${articleNum}-${idx}`);
+                  const newContext = context ? `${context}-chapter${nodeData.num}` : `chapter${nodeData.num}`;
+                  return renderTreeNode('article', article, level + 1, `chapter-${nodeData.num}-article-${articleNum}-${idx}`, newContext);
                 })}
               </>
             )}
@@ -189,7 +230,8 @@ export function TableOfContents({ structure, articles }: TOCProps) {
             {nodeType === 'section' && nodeData.articles.map((articleNum: string, idx: number) => {
               const article = articles.find(a => a.articleNum === articleNum);
               if (!article) return null;
-              return renderTreeNode('article', article, level + 1, `section-${nodeData.num}-article-${articleNum}-${idx}`);
+              const newContext = context ? `${context}-section${nodeData.num}` : `section${nodeData.num}`;
+              return renderTreeNode('article', article, level + 1, `section-${nodeData.num}-article-${articleNum}-${idx}`, newContext);
             })}
           </div>
         )}
@@ -223,14 +265,14 @@ export function TableOfContents({ structure, articles }: TOCProps) {
         <div className="toc-tree">
           {/* 編の表示 */}
           {structure.parts.map((part) => 
-            renderTreeNode('part', part, 0, `part-${part.num}`)
+            renderTreeNode('part', part, 0, `part-${part.num}`, '')
           )}
           
           {/* 編に属さない章 */}
           {structure.chapters.filter(chapter => 
             !structure.parts.some(part => part.chapters.includes(chapter.num))
           ).map((chapter, idx) => 
-            renderTreeNode('chapter', chapter, 0, `root-chapter-${chapter.num}-${idx}`)
+            renderTreeNode('chapter', chapter, 0, `root-chapter-${chapter.num}-${idx}`, '')
           )}
           
           {/* どこにも属さない条文 */}
@@ -242,17 +284,42 @@ export function TableOfContents({ structure, articles }: TOCProps) {
             });
             
             if (orphanArticles.length > 0) {
+              const orphanNodesExpanded = expandedNodes.has('orphan-articles');
+              const orphanNodesHidden = hiddenNodes.has('orphan-articles');
+              
               return (
                 <div key="orphan-articles-section" className="toc-node">
-                  <div className="toc-node-content toc-node-level-0">
-                    <span className="toc-toggle-icon"></span>
-                    <span className="toc-node-chapter">その他の条文</span>
+                  <div 
+                    className="toc-node-content toc-node-level-0"
+                    onClick={() => toggleNode('orphan-articles')}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+                      <span className="toc-toggle-icon">
+                        {orphanNodesExpanded ? 
+                          <ChevronDownIcon className="w-4 h-4" /> : 
+                          <ChevronRightIcon className="w-4 h-4" />
+                        }
+                      </span>
+                      <span className="toc-node-part">その他の条文</span>
+                    </div>
+                    <button
+                      className="toc-visibility-toggle"
+                      onClick={(e) => toggleVisibility('orphan-articles', e)}
+                      title={orphanNodesHidden ? "表示" : "非表示"}
+                    >
+                      {orphanNodesHidden ? 
+                        <EyeSlashIcon className="w-4 h-4" /> : 
+                        <EyeIcon className="w-4 h-4" />
+                      }
+                    </button>
                   </div>
-                  <div className="toc-children">
-                    {orphanArticles.map((article, idx) => 
-                      renderTreeNode('article', article, 1, `orphan-article-${article.articleNum}-${idx}`)
-                    )}
-                  </div>
+                  {orphanNodesExpanded && !orphanNodesHidden && (
+                    <div className="toc-children">
+                      {orphanArticles.map((article, idx) => 
+                        renderTreeNode('article', article, 1, `orphan-article-${article.articleNum}-${idx}`, 'orphan')
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             }
