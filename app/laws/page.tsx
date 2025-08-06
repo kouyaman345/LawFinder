@@ -45,7 +45,7 @@ export default function LawListPage() {
       });
       
       const response = await fetch(`/api/laws?${params}`);
-      const data: ApiResponse = await response.json();
+      const data = await response.json() as ApiResponse;
       
       setLaws(data.data);
       setTotalPages(data.pagination.totalPages);
@@ -87,7 +87,7 @@ export default function LawListPage() {
             <input
               type="text"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => setSearch((e.target as HTMLInputElement).value)}
               placeholder="法令名または法令番号で検索"
               className="flex-1 px-4 py-2 border border-egov-border rounded"
             />

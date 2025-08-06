@@ -2,46 +2,465 @@
 @tailwind components;
 @tailwind utilities;
 
+/* e-gov風のベーススタイル */
 @layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html, body {
+    height: 100%;
+  }
+
   body {
-    @apply bg-white text-gray-900;
+    font-family: "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ Pro", "Yu Gothic", "游ゴシック", "Meiryo", "メイリオ", sans-serif;
+    line-height: 1.8;
+    color: #333;
+    background-color: #f5f5f5;
   }
 }
 
 @layer components {
-  .egov-container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  /* 全体レイアウト */
+  .law-page-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
   }
 
-  .egov-header {
-    @apply bg-egov-blue text-white py-4;
+  /* ヘッダー */
+  .gov-header {
+    background-color: #003f8e;
+    color: white;
+    padding: 10px 0;
+    flex-shrink: 0;
   }
 
-  .egov-nav {
-    @apply bg-egov-lightblue border-b border-egov-border;
+  .header-container {
+    max-width: 100%;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
-  .egov-card {
-    @apply bg-white rounded-lg shadow-md p-6 border border-egov-border;
+  .site-title {
+    display: inline-block;
+    font-size: 20px;
+    margin-right: 40px;
   }
 
-  .egov-button {
-    @apply px-4 py-2 bg-egov-blue text-white rounded hover:bg-egov-darkblue transition-colors;
+  .header-nav {
+    display: inline-block;
   }
 
+  .header-nav a {
+    color: white;
+    text-decoration: none;
+    margin-right: 20px;
+    font-size: 14px;
+  }
+
+  .header-nav a:hover {
+    text-decoration: underline;
+  }
+
+  /* パンくずリスト */
+  .breadcrumb {
+    background-color: #fff;
+    padding: 8px 20px;
+    font-size: 12px;
+    border-bottom: 1px solid #ddd;
+    flex-shrink: 0;
+  }
+
+  .breadcrumb a {
+    color: #0066cc;
+    text-decoration: none;
+  }
+
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
+  /* メインコンテンツエリア */
+  .law-main-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* 目次セクション - e-gov準拠 */
+  .toc-section {
+    width: 350px;
+    background: #f8f8f8;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .toc-header {
+    background-color: #003f8e;
+    color: white;
+    padding: 8px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .toc-controls {
+    display: flex;
+    gap: 10px;
+  }
+
+  .toc-control-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 2px 8px;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 3px;
+  }
+
+  .toc-control-btn:hover {
+    background-color: rgba(255,255,255,0.1);
+  }
+
+  .toc-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 0;
+  }
+
+  /* ツリー構造のスタイル */
+  .toc-tree {
+    font-size: 13px;
+  }
+
+  .toc-node {
+    user-select: none;
+  }
+
+  .toc-node-content {
+    display: flex;
+    align-items: center;
+    padding: 3px 5px;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .toc-node-content:hover {
+    background-color: #e8e8e8;
+  }
+
+  /* インデントレベル */
+  .toc-node-level-0 { padding-left: 10px; }
+  .toc-node-level-1 { padding-left: 25px; }
+  .toc-node-level-2 { padding-left: 40px; }
+  .toc-node-level-3 { padding-left: 55px; }
+  .toc-node-level-4 { padding-left: 70px; }
+
+  /* ツリーアイコン */
+  .toc-toggle-icon {
+    width: 12px;
+    height: 12px;
+    margin-right: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .toc-toggle-icon svg {
+    width: 8px;
+    height: 8px;
+    transition: transform 0.2s;
+  }
+
+  .toc-toggle-icon.collapsed svg {
+    transform: rotate(-90deg);
+  }
+
+  /* ツリーライン */
+  .toc-tree-line {
+    position: absolute;
+    left: 16px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background-color: #ccc;
+  }
+
+  /* ノードタイプ別スタイル */
+  .toc-node-part {
+    font-weight: bold;
+    color: #003f8e;
+  }
+
+  .toc-node-chapter {
+    font-weight: bold;
+    color: #333;
+  }
+
+  .toc-node-section {
+    font-weight: normal;
+    color: #555;
+  }
+
+  .toc-node-article {
+    font-weight: normal;
+    color: #333;
+  }
+
+  .toc-node-article.active {
+    background-color: #e3f2fd;
+    font-weight: bold;
+  }
+
+  /* 条文表示エリア */
+  .articles-container {
+    flex: 1;
+    background: white;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  /* 法令ヘッダー */
+  .law-header {
+    padding: 20px 30px;
+    border-bottom: 2px solid #003f8e;
+    background: white;
+  }
+
+  .law-title {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  .law-number {
+    font-size: 14px;
+    color: #666;
+  }
+
+  /* ツールバー */
+  .law-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 30px;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .toolbar-left, .toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .btn-outline {
+    padding: 5px 15px;
+    border: 1px solid #666;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .btn-outline:hover {
+    background-color: #f5f5f5;
+  }
+
+  /* バッジ */
+  .reference-badge, .llm-badge {
+    padding: 3px 10px;
+    font-size: 12px;
+    border-radius: 3px;
+  }
+
+  .reference-badge {
+    background-color: #e3f2fd;
+    color: #1976d2;
+  }
+
+  .llm-badge {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+  }
+
+  /* 条文エリア */
+  .articles-section {
+    padding: 30px;
+  }
+
+  /* 条文 */
   .law-article {
-    @apply mb-6 p-4 border-l-4 border-egov-blue;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
   }
 
-  .law-paragraph {
-    @apply mb-3 pl-4;
+  .law-article:last-child {
+    border-bottom: none;
   }
 
-  .law-item {
-    @apply mb-2 pl-8;
+  .article-number {
+    font-size: 18px;
+    font-weight: bold;
+    color: #003f8e;
+    margin-bottom: 10px;
   }
 
-  .reference-link {
-    @apply text-egov-blue underline hover:text-egov-darkblue cursor-pointer;
+  .article-title {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 15px;
+  }
+
+  /* 項 */
+  .article-paragraph {
+    margin-bottom: 15px;
+    line-height: 1.8;
+  }
+
+  .paragraph-number {
+    display: inline-block;
+    width: 30px;
+    font-weight: bold;
+  }
+
+  /* 号 */
+  .article-item {
+    margin-left: 30px;
+    margin-bottom: 10px;
+  }
+
+  .item-number {
+    font-weight: bold;
+    margin-right: 10px;
+  }
+
+  /* 参照リンク */
+  .ref-link {
+    color: #0066cc;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 2px 0;
+  }
+
+  .ref-link:hover {
+    background-color: #e3f2fd;
+    text-decoration: none;
+  }
+
+  .ref-link.internal-ref {
+    color: #0066cc;
+  }
+
+  .ref-link.external-ref {
+    color: #d32f2f;
+  }
+
+  .ref-link.relative-ref {
+    color: #388e3c;
+  }
+
+  .ref-link.complex-ref {
+    color: #7b1fa2;
+  }
+
+  /* フッター（法令ページでは非表示） */
+  .gov-footer {
+    display: none;
+  }
+
+  /* ホームページ用スタイル */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .hero-section {
+    text-align: center;
+    padding: 50px 0;
+    background: white;
+    margin-bottom: 40px;
+    border: 1px solid #ddd;
+  }
+
+  .hero-section h1 {
+    font-size: 32px;
+    margin-bottom: 15px;
+    color: #003f8e;
+  }
+
+  .tech-info {
+    font-size: 14px;
+    color: #7b1fa2;
+    margin-top: 10px;
+  }
+
+  .law-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+
+  .law-card {
+    background: white;
+    padding: 20px;
+    border: 1px solid #ddd;
+    transition: box-shadow 0.3s;
+  }
+
+  .law-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+
+  .law-card h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .law-card h2 a {
+    color: #003f8e;
+    text-decoration: none;
+  }
+
+  .law-card h2 a:hover {
+    text-decoration: underline;
+  }
+
+  .law-card-meta {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    font-size: 13px;
+  }
+
+  .meta-item {
+    color: #666;
+  }
+
+  /* ホームページ用フッター */
+  .home-footer {
+    background-color: #003f8e;
+    color: white;
+    padding: 30px 0;
+    margin-top: 50px;
+  }
+
+  .footer-content {
+    text-align: center;
+    font-size: 14px;
   }
 }

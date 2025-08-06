@@ -1,65 +1,67 @@
 import Link from 'next/link';
 
 export default function HomePage() {
+  // サンプル法令データ
+  const sampleLaws = [
+    { id: '129AC0000000089', title: '民法', number: '明治二十九年法律第八十九号', refCount: 1 },
+    { id: '132AC0000000048', title: '商法', number: '明治三十二年法律第四十八号', refCount: 832 },
+    { id: '140AC0000000045', title: '刑法', number: '明治四十年法律第四十五号', refCount: 178 },
+    { id: '417AC0000000086', title: '会社法', number: '平成十七年法律第八十六号', refCount: 2136 },
+    { id: '322AC0000000049', title: '労働基準法', number: '昭和二十二年法律第四十九号', refCount: 67 },
+    { id: '323AC0000000131', title: '独占禁止法', number: '昭和二十二年法律第五十四号', refCount: 218 },
+    { id: '222AC0000000067', title: '民事訴訟法', number: '平成八年法律第百九号', refCount: 356 },
+    { id: '155AC0000000048', title: '消費税法', number: '昭和六十三年法律第百八号', refCount: 124 }
+  ];
+
   return (
-    <div className="min-h-screen">
-      <header className="egov-header">
-        <div className="egov-container">
-          <h1 className="text-2xl font-bold">LawFinder - 法令検索・法改正支援システム</h1>
+    <>
+      {/* ヘッダー */}
+      <div className="gov-header">
+        <div className="container">
+          <h1 className="site-title">LawFinder 法令検索</h1>
+          <nav className="header-nav">
+            <Link href="/">ホーム</Link>
+            <Link href="/laws">法令検索</Link>
+            <Link href="#">新規制定・改正法令</Link>
+          </nav>
         </div>
-      </header>
+      </div>
 
-      <nav className="egov-nav">
-        <div className="egov-container py-3">
-          <div className="flex space-x-6">
-            <Link href="/" className="hover:text-egov-blue">ホーム</Link>
-            <Link href="/laws" className="hover:text-egov-blue">法令一覧</Link>
-            <Link href="/search" className="hover:text-egov-blue">検索</Link>
-            <Link href="/references" className="hover:text-egov-blue">参照関係</Link>
-          </div>
-        </div>
-      </nav>
-
-      <main className="egov-container py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="egov-card">
-            <h2 className="text-xl font-bold mb-4">法令検索</h2>
-            <p className="text-gray-600 mb-4">
-              法令名、条文番号、キーワードから法令を検索できます。
-            </p>
-            <Link href="/search" className="egov-button">
-              検索する
-            </Link>
-          </div>
-
-          <div className="egov-card">
-            <h2 className="text-xl font-bold mb-4">法令一覧</h2>
-            <p className="text-gray-600 mb-4">
-              登録されている全ての法令を閲覧できます。
-            </p>
-            <Link href="/laws" className="egov-button">
-              一覧を見る
-            </Link>
-          </div>
-
-          <div className="egov-card">
-            <h2 className="text-xl font-bold mb-4">参照関係分析</h2>
-            <p className="text-gray-600 mb-4">
-              法令間の参照関係をグラフで可視化します。
-            </p>
-            <Link href="/references" className="egov-button">
-              分析する
-            </Link>
-          </div>
+      {/* メインコンテンツ */}
+      <main className="container">
+        <div className="hero-section">
+          <h1>日本法令検索システム</h1>
+          <p>法令間の参照関係を可視化し、改正影響を分析</p>
+          <p className="tech-info">実LLM（Mistral）による高精度な参照解析</p>
         </div>
 
-        <div className="mt-8 egov-card">
-          <h2 className="text-xl font-bold mb-4">最近更新された法令</h2>
-          <div className="space-y-2">
-            <p className="text-gray-600">データベースから最新の法令情報を取得中...</p>
-          </div>
+        <div className="law-grid">
+          {sampleLaws.map((law) => (
+            <div key={law.id} className="law-card">
+              <h2>
+                <Link href={`/laws/${law.id}`}>
+                  {law.title}
+                </Link>
+              </h2>
+              <p className="law-number">{law.number}</p>
+              <div className="law-card-meta">
+                <span className="meta-item">📊 参照関係: {law.refCount}件</span>
+                <span className="meta-item">🤖 実LLM解析済み</span>
+              </div>
+            </div>
+          ))}
         </div>
       </main>
-    </div>
+
+      {/* フッター */}
+      <footer className="home-footer">
+        <div className="container">
+          <div className="footer-content">
+            <p>LawFinder - 日本法令検索システム</p>
+            <p>ローカルLLM: Mistral（実LLM版）</p>
+          </div>
+        </div>
+      </footer>
+    </>
   );
 }

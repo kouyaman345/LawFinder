@@ -11,9 +11,15 @@ LawFinderは、日本政府が公開する法令標準XMLデータを活用し�
 
 ## 📋 要件
 
+### Phase 1（現在実装中）
 - Node.js 18以上
 - npm または yarn
-- （Phase 2以降）PostgreSQL、Neo4j、Elasticsearch、Redis
+- TypeScript 5.3以上
+- Ollama（オプション - LLM解析を使用する場合）
+
+### Phase 2（計画中）
+- PostgreSQL、Neo4j、Elasticsearch、Redis
+- 認証システム、APIサーバー
 
 ## 🛠️ インストール
 
@@ -25,6 +31,20 @@ cd lawfinder
 # 依存関係のインストール
 npm install
 ```
+
+## 🏗️ アーキテクチャ
+
+### Phase 1の技術スタック
+- **フロントエンド**: Next.js 15 + React 19 + TypeScript
+- **スタイリング**: Tailwind CSS
+- **静的サイト生成**: カスタムNode.jsスクリプト
+- **LLM統合**: Ollama (Mistral)
+
+### Phase 2で追加予定
+- **バックエンド**: Express.js + TypeScript
+- **データベース**: PostgreSQL (Prisma) + Neo4j
+- **検索エンジン**: Elasticsearch
+- **キャッシュ**: Redis
 
 ## 🚦 クイックスタート（Phase 1）
 

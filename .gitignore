@@ -5,5 +5,11 @@ laws_data.zip
 laws_sample
 node_modules
 dist
+dist/static
 /src/generated/prisma
 .next
+.next.backup
+.next.lock
+
+
+neo4j/
