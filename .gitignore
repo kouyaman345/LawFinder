@@ -9,6 +9,8 @@ dist/static
 /src/generated/prisma
 .next*
 .next.backup
+.next.backup2
+.next.backup*
 .next.lock
 
 

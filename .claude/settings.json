@@ -1,4 +1,5 @@
 {
+  "defaultMode": "acceptEdits",
   "permissions": {
     "allow": ["Bash(pnpm test)", "Bash(gh pr view:*)", "Bash(mkdir:*)", "Bash(chmod:*)", "Bash(grep:*)", "Bash(unzip:*)", "Bash(ls:*)", "Bash(find:*)", "Bash(npm install:*)", "Bash(npm run build:*)", "Bash(pnpm test)", "Bash(pnpm dev)", "Bash(pnpm build)", "Bash(pnpm start)", "Bash(pnpm stop)", "Bash(pnpm restart)", "Bash(npm run:*)"],
     "deny": ["Bash(git commit:*)", "Bash(git push:*)", "Bash(rm:*)", "Read(.env.*)"]

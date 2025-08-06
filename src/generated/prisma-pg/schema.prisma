@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma-pg"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRESQL_URL")
+}
+
+model Law {
+  id               String    @id
+  title            String
+  lawType          String?
+  lawNumber        String?
+  promulgationDate DateTime?
+  effectiveDate    DateTime?
+  xmlContent       String
+  status           String    @default("現行")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  articles Article[]
+
+  @@index([title])
+  @@index([lawNumber])
+  @@index([status])
+}
+
+model Article {
+  id            String  @id @default(uuid())
+  lawId         String
+  articleNumber String
+  articleTitle  String?
+  content       String
+
+  chapter   String?
+  section   String?
+  sortOrder Int     @default(0)
+  isDeleted Boolean @default(false)
+
+  law        Law         @relation(fields: [lawId], references: [id], onDelete: Cascade)
+  paragraphs Paragraph[]
+
+  @@unique([lawId, articleNumber])
+  @@index([lawId, sortOrder])
+}
+
+model Paragraph {
+  id              String @id @default(uuid())
+  articleId       String
+  paragraphNumber Int
+  content         String
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  items   Item[]
+
+  @@unique([articleId, paragraphNumber])
+}
+
+model Item {
+  id          String @id @default(uuid())
+  paragraphId String
+  itemNumber  String
+  content     String
+
+  paragraph Paragraph @relation(fields: [paragraphId], references: [id], onDelete: Cascade)
+
+  @@unique([paragraphId, itemNumber])
+}

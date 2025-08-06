@@ -1,10 +1,7 @@
 import { NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
-import { LawXMLParser } from '../../../../src/lib/xml-parser';
-import { ReferenceDetector } from '../../../../src/utils/reference-detector';
+import { PrismaClient } from '../../../../src/generated/prisma';
 
-const XML_DATA_PATH = path.join(process.cwd(), 'laws_data/sample');
+const prisma = new PrismaClient();
 
 export async function GET(
   _request: Request,
@@ -13,58 +10,73 @@ export async function GET(
   try {
     const params = await context.params;
     const lawId = params.id;
-    const xmlPath = path.join(XML_DATA_PATH, `${lawId}.xml`);
     
-    // XMLファイルの読み込み
-    const xmlContent = await fs.readFile(xmlPath, 'utf-8');
+    // データベースから法令を取得
+    const law = await prisma.law.findUnique({
+      where: { id: lawId },
+      include: {
+        articles: {
+          include: {
+            paragraphs: {
+              include: {
+                items: true
+              }
+            },
+            referencesFrom: true
+          },
+          orderBy: { articleNumber: 'asc' }
+        }
+      }
+    });
     
-    // XMLパース
-    const parser = new LawXMLParser();
-    const lawData = parser.parseLawXML(xmlContent, `${lawId}.xml`);
-    
-    // 参照検出
-    const detector = new ReferenceDetector();
-    const references = [];
-    
-    for (const article of lawData.articles) {
-      const articleText = getArticleText(article);
-      const detectedRefs = detector.detectReferences(
-        articleText,
-        article.articleNum,
-        { paragraphNumber: 1 }
+    if (!law) {
+      return NextResponse.json(
+        { error: 'Law not found' },
+        { status: 404 }
       );
-      references.push(...detectedRefs);
     }
     
-    return NextResponse.json({
-      ...lawData,
-      references
-    });
+    // 構造情報を復元
+    const structure = law.metadata as any || { parts: [], chapters: [], sections: [] };
+    
+    // レスポンス形式を整形
+    const response = {
+      lawId: law.id,
+      lawTitle: law.title,
+      lawNum: law.lawNumber || '',
+      lawType: law.lawType || 'Act',
+      promulgateDate: law.promulgationDate,
+      structure,
+      articles: law.articles.map(article => ({
+        articleNum: article.articleNumber,
+        articleTitle: article.articleTitle,
+        paragraphs: article.paragraphs.map(para => ({
+          content: para.content,
+          items: para.items.map(item => ({
+            title: item.itemNumber,
+            content: item.content
+          }))
+        }))
+      })),
+      references: law.articles.flatMap(article => 
+        article.referencesFrom.map(ref => ({
+          sourceArticleNumber: article.articleNumber,
+          sourceText: ref.referenceText,
+          type: ref.referenceType,
+          subType: ref.referenceSubType,
+          targetArticleNumber: ref.targetArticleNumber,
+          targetLawName: ref.targetLawName,
+          confidence: ref.confidence
+        }))
+      )
+    };
+    
+    return NextResponse.json(response);
   } catch (error) {
     console.error('Error loading law:', error);
     return NextResponse.json(
-      { error: 'Law not found' },
-      { status: 404 }
+      { error: 'Failed to load law' },
+      { status: 500 }
     );
   }
-}
-
-function getArticleText(article: any): string {
-  let text = '';
-  if (article.articleTitle) {
-    text += article.articleTitle + ' ';
-  }
-  for (const para of article.paragraphs) {
-    if (para.content) {
-      text += para.content + ' ';
-    }
-    if (para.items) {
-      for (const item of para.items) {
-        if (item.content) {
-          text += item.content + ' ';
-        }
-      }
-    }
-  }
-  return text;
 }

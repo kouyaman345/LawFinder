@@ -1,0 +1,156 @@
+// PostgreSQL用最適化スキーマ
+// 法令本体データと全文検索に特化
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma-pg"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRESQL_URL")
+}
+
+model Law {
+  id                String    @id // 法令ID (例: "129AC0000000089")
+  title             String    // 法令名
+  lawType           String?   // 法令種別
+  lawNumber         String?   // 法令番号
+  promulgationDate  DateTime? // 公布日
+  effectiveDate     DateTime? // 施行日
+  lastAmendmentDate DateTime? // 最終改正日
+  xmlContent        String    @db.Text // 元のXML全体
+  status            String    @default("現行") // 現行/廃止/改正予定
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  articles          Article[]
+  metadata          Json?     // 追加メタデータ
+  enactStatements   Json?     // 制定文
+  amendmentHistory  Json?     // 改正履歴
+  
+  // 全文検索用インデックス（pg_bigm使用）
+  @@index([title])
+  @@index([lawNumber])
+  @@index([status])
+  @@index([effectiveDate])
+}
+
+model Article {
+  id                String    @id @default(uuid())
+  lawId             String
+  articleNumber     String    // 条番号
+  articleTitle      String?   // 条見出し
+  content           String    @db.Text // 条文本文
+  
+  // 階層情報（検索・フィルタリング用）
+  part              String?   // 編
+  chapter           String?   // 章
+  section           String?   // 節
+  subsection        String?   // 款
+  division          String?   // 目
+  
+  // 構造情報
+  sortOrder         Int       // ソート順
+  depth             Int       // 階層の深さ
+  path              String    // 階層パス（例: "第二編/第一章/第三節"）
+  
+  // 削除条文フラグ
+  isDeleted         Boolean   @default(false)
+  deletionDate      DateTime?
+  
+  law               Law       @relation(fields: [lawId], references: [id], onDelete: Cascade)
+  paragraphs        Paragraph[]
+  
+  // 複合インデックス（高速検索用）
+  @@unique([lawId, articleNumber])
+  @@index([lawId, sortOrder])
+  @@index([lawId, chapter])
+  @@index([lawId, section])
+  @@index([path])
+}
+
+model Paragraph {
+  id                String    @id @default(uuid())
+  articleId         String
+  paragraphNumber   Int       // 項番号
+  content           String    @db.Text // 項の内容
+  sentenceCount     Int       @default(1) // 文の数
+  
+  article           Article   @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  items             Item[]
+  
+  @@unique([articleId, paragraphNumber])
+  @@index([articleId])
+}
+
+model Item {
+  id                String    @id @default(uuid())
+  paragraphId       String
+  itemNumber        String    // 号番号（例: "一", "二の三"）
+  itemType          String    @default("号") // 号/イロハ/いろは
+  content           String    @db.Text // 号の内容
+  sortOrder         Int       // ソート順
+  
+  paragraph         Paragraph @relation(fields: [paragraphId], references: [id], onDelete: Cascade)
+  subItems          SubItem[]
+  
+  @@unique([paragraphId, itemNumber])
+  @@index([paragraphId, sortOrder])
+}
+
+model SubItem {
+  id                String    @id @default(uuid())
+  itemId            String
+  subItemNumber     String    // イ、ロ、ハ等
+  content           String    @db.Text
+  sortOrder         Int
+  
+  item              Item      @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  
+  @@unique([itemId, subItemNumber])
+  @@index([itemId, sortOrder])
+}
+
+// 全文検索用ビュー（マテリアライズドビュー）
+model SearchIndex {
+  id                String    @id @default(uuid())
+  lawId             String
+  articleId         String?
+  searchableText    String    @db.Text // 検索対象テキスト
+  documentType      String    // law/article/paragraph/item
+  documentPath      String    // 文書パス
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // GINインデックス（pg_bigm）
+  @@index([searchableText(ops: raw("gin_bigm_ops"))], type: Gin)
+  @@index([lawId])
+  @@index([documentType])
+}
+
+// インポート履歴
+model ImportHistory {
+  id                String    @id @default(uuid())
+  lawId             String
+  fileName          String
+  importedAt        DateTime  @default(now())
+  status            String    // success/failed/partial
+  recordsImported   Int       @default(0)
+  errorMessage      String?
+  
+  @@index([lawId])
+  @@index([importedAt])
+}
+
+// キャッシュ管理
+model CacheEntry {
+  key               String    @id
+  value             Json
+  expiresAt         DateTime
+  createdAt         DateTime  @default(now())
+  
+  @@index([expiresAt])
+}

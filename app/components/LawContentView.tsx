@@ -26,6 +26,7 @@ export function LawContentView({
   onShowFirstParagraphNumberChange 
 }: LawContentViewProps) {
   const [hiddenArticles, setHiddenArticles] = useState<Set<string>>(new Set());
+  const [hiddenStructureArticles, setHiddenStructureArticles] = useState<Set<string>>(new Set());
 
   const onArticleVisibilityChange = (articleId: string, isHidden: boolean) => {
     const newHidden = new Set(hiddenArticles);
@@ -36,6 +37,18 @@ export function LawContentView({
     }
     setHiddenArticles(newHidden);
   };
+  
+  const onStructureVisibilityChange = (nodeId: string, isHidden: boolean, affectedArticles: string[]) => {
+    const newHiddenStructure = new Set(hiddenStructureArticles);
+    affectedArticles.forEach(articleNum => {
+      if (isHidden) {
+        newHiddenStructure.add(articleNum);
+      } else {
+        newHiddenStructure.delete(articleNum);
+      }
+    });
+    setHiddenStructureArticles(newHiddenStructure);
+  };
 
   return (
     <>
@@ -44,6 +57,7 @@ export function LawContentView({
         structure={lawData.structure} 
         articles={lawData.articles}
         onArticleVisibilityChange={onArticleVisibilityChange}
+        onStructureVisibilityChange={onStructureVisibilityChange}
       />
 
       {/* 条文表示エリア */}
@@ -69,10 +83,16 @@ export function LawContentView({
         {/* 条文セクション */}
         <div className="articles-section">
           {lawData.articles.map((article, index) => {
-            // すべての可能なコンテキストでの非表示状態をチェック
-            const isHidden = Array.from(hiddenArticles).some(hiddenId => 
+            // 個別の条文非表示状態をチェック
+            const isArticleHidden = Array.from(hiddenArticles).some(hiddenId => 
               hiddenId.endsWith(`-${article.articleNum}`)
             );
+            
+            // 編・章・節による非表示状態をチェック
+            const isStructureHidden = hiddenStructureArticles.has(article.articleNum);
+            
+            // どちらかで非表示の場合は非表示にする
+            const isHidden = isArticleHidden || isStructureHidden;
             
             return (
               <div 

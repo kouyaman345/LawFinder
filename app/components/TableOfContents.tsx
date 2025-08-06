@@ -27,9 +27,10 @@ interface TOCProps {
     articleTitle: string | null;
   }>;
   onArticleVisibilityChange?: (articleId: string, isHidden: boolean) => void;
+  onStructureVisibilityChange?: (nodeId: string, isHidden: boolean, affectedArticles: string[]) => void;
 }
 
-export function TableOfContents({ structure, articles, onArticleVisibilityChange }: TOCProps) {
+export function TableOfContents({ structure, articles, onArticleVisibilityChange, onStructureVisibilityChange }: TOCProps) {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
   const [hiddenNodes, setHiddenNodes] = useState<Set<string>>(new Set());
   const [activeArticle, setActiveArticle] = useState<string>('');
@@ -99,6 +100,60 @@ export function TableOfContents({ structure, articles, onArticleVisibilityChange
     if (onArticleVisibilityChange && nodeId.startsWith('article-')) {
       onArticleVisibilityChange(nodeId, !isHidden);
     }
+    
+    // 編・章・節の表示非表示をコールバックで通知
+    if (onStructureVisibilityChange && (nodeId.startsWith('part-') || nodeId.startsWith('chapter-') || nodeId.startsWith('section-'))) {
+      const affectedArticles = getAffectedArticles(nodeId);
+      onStructureVisibilityChange(nodeId, !isHidden, affectedArticles);
+    }
+  };
+  
+  // 編・章・節に含まれる条文を取得
+  const getAffectedArticles = (nodeId: string): string[] => {
+    const affectedArticles: string[] = [];
+    
+    if (nodeId.startsWith('part-')) {
+      const partNum = nodeId.replace('part-', '');
+      const part = structure.parts.find(p => p.num === partNum);
+      if (part) {
+        part.chapters.forEach(chapterNum => {
+          const chapter = structure.chapters.find(c => c.num === chapterNum);
+          if (chapter) {
+            // 章直下の条文
+            affectedArticles.push(...chapter.articles);
+            // 節に含まれる条文
+            chapter.sections.forEach(sectionNum => {
+              const section = structure.sections.find(s => s.num === sectionNum);
+              if (section) {
+                affectedArticles.push(...section.articles);
+              }
+            });
+          }
+        });
+      }
+    } else if (nodeId.startsWith('chapter-')) {
+      const chapterNum = nodeId.replace('chapter-', '');
+      const chapter = structure.chapters.find(c => c.num === chapterNum);
+      if (chapter) {
+        // 章直下の条文
+        affectedArticles.push(...chapter.articles);
+        // 節に含まれる条文
+        chapter.sections.forEach(sectionNum => {
+          const section = structure.sections.find(s => s.num === sectionNum);
+          if (section) {
+            affectedArticles.push(...section.articles);
+          }
+        });
+      }
+    } else if (nodeId.startsWith('section-')) {
+      const sectionNum = nodeId.replace('section-', '');
+      const section = structure.sections.find(s => s.num === sectionNum);
+      if (section) {
+        affectedArticles.push(...section.articles);
+      }
+    }
+    
+    return affectedArticles;
   };
 
   const expandAll = () => {

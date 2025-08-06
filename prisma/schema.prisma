@@ -1,17 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("POSTGRESQL_URL")
 }
 
 model Law {
@@ -21,16 +14,17 @@ model Law {
   lawNumber         String?
   promulgationDate  DateTime?
   effectiveDate     DateTime?
+  xmlContent        String
+  status            String    @default("現行")
+  
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
   
   articles          Article[]
-  metadata          Json?
-  enactStatements   Json?
-  amendmentHistory  Json?
   
   @@index([title])
   @@index([lawNumber])
+  @@index([status])
 }
 
 model Article {
@@ -39,19 +33,17 @@ model Article {
   articleNumber     String
   articleTitle      String?
   content           String
-  part              String?   // 編
-  chapter           String?   // 章
-  section           String?   // 節
-  subsection        String?   // 款
-  division          String?   // 目
+  
+  chapter           String?
+  section           String?
+  sortOrder         Int       @default(0)
+  isDeleted         Boolean   @default(false)
   
   law               Law       @relation(fields: [lawId], references: [id], onDelete: Cascade)
   paragraphs        Paragraph[]
-  referencesFrom    Reference[] @relation("FromArticle")
-  referencesTo      Reference[] @relation("ToArticle")
   
   @@unique([lawId, articleNumber])
-  @@index([lawId])
+  @@index([lawId, sortOrder])
 }
 
 model Paragraph {
@@ -64,7 +56,6 @@ model Paragraph {
   items             Item[]
   
   @@unique([articleId, paragraphNumber])
-  @@index([articleId])
 }
 
 model Item {
@@ -76,44 +67,4 @@ model Item {
   paragraph         Paragraph @relation(fields: [paragraphId], references: [id], onDelete: Cascade)
   
   @@unique([paragraphId, itemNumber])
-  @@index([paragraphId])
-}
-
-model Reference {
-  id                String    @id @default(uuid())
-  fromArticleId     String
-  toArticleId       String?
-  toLawId           String?
-  referenceText     String
-  referenceType     String    // internal, external, relative, complex, structural, application
-  referenceSubType  String?   // range, multiple, with_paragraph, with_item, chapter, part, section, item_list
-  
-  // 詳細な参照情報
-  targetArticleNumber     String?
-  targetArticleNumberEnd  String?  // 範囲参照の終点
-  targetParagraphNumber   Int?
-  targetItemNumber        String?
-  targetLawName           String?
-  
-  // 相対参照情報
-  relativeDirection       String?  // previous, next, same
-  relativeCount           Int?
-  structureType           String?  // 章, 編, 節, 款, 目
-  
-  // コンテキスト情報
-  sourceParagraphNumber   Int?
-  sourceItemNumber        String?
-  
-  confidence        Float?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  
-  fromArticle       Article   @relation("FromArticle", fields: [fromArticleId], references: [id], onDelete: Cascade)
-  toArticle         Article?  @relation("ToArticle", fields: [toArticleId], references: [id], onDelete: Cascade)
-  
-  @@index([fromArticleId])
-  @@index([toArticleId])
-  @@index([toLawId])
-  @@index([referenceType])
-  @@index([referenceSubType])
 }

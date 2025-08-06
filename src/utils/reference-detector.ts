@@ -66,6 +66,14 @@ export class ReferenceDetector {
   ]);
 
   private patterns = [
+    // === 最も長い/具体的なパターンから順に配置 ===
+    
+    // 外部法令参照（最も長いパターンなので最初に）
+    { 
+      regex: /(民法|商法|刑法|民事訴訟法|独占禁止法|労働基準法|消費税法|会社法)(?:（[^）]+）)?第([０-９0-9一二三四五六七八九十百千万]+)条/g, 
+      type: ReferenceType.EXTERNAL,
+      subType: null
+    },
     // 条文範囲参照（例：第七十七条から第七十九条まで）
     { 
       regex: /第([０-９0-9一二三四五六七八九十百千万]+)条から第([０-９0-9一二三四五六七八九十百千万]+)条まで/g, 
@@ -150,12 +158,6 @@ export class ReferenceDetector {
       type: ReferenceType.INTERNAL,
       subType: ReferenceSubType.WITH_ITEM
     },
-    // 条文のみ（前のパターンに一致しないもの）
-    { 
-      regex: /第([０-９0-9一二三四五六七八九十百千万]+)条(?!第|の|から)/g, 
-      type: ReferenceType.INTERNAL,
-      subType: null
-    },
     // 章の参照
     { 
       regex: /第([０-９0-9一二三四五六七八九十百千万]+)章/g, 
@@ -174,23 +176,11 @@ export class ReferenceDetector {
       type: ReferenceType.STRUCTURAL,
       subType: ReferenceSubType.SECTION
     },
-    // 相対参照（条）
-    { 
-      regex: /前条|次条/g, 
-      type: ReferenceType.RELATIVE,
-      subType: null
-    },
     // 相対参照（項・条）
     { 
       regex: /前項|次項|同項|同条/g, 
       type: ReferenceType.RELATIVE,
       subType: null
-    },
-    // 相対参照（章）
-    { 
-      regex: /前章|次章/g, 
-      type: ReferenceType.RELATIVE,
-      subType: ReferenceSubType.CHAPTER
     },
     // 複合参照
     { 
@@ -208,11 +198,25 @@ export class ReferenceDetector {
       type: ReferenceType.COMPLEX,
       subType: ReferenceSubType.WITH_PARAGRAPH
     },
-    // 外部法令参照
+    // === 最後に単純なパターンを配置 ===
+    
+    // 単純な条文参照（第X条）- 他のパターンに一致しない場合の最終キャッチ
     { 
-      regex: /(民法|商法|刑法|民事訴訟法|独占禁止法|労働基準法|消費税法|会社法)(?:（[^）]+）)?第([０-９0-9一二三四五六七八九十百千万]+)条/g, 
-      type: ReferenceType.EXTERNAL,
+      regex: /第([０-９0-9一二三四五六七八九十百千万]+)条(?!の|第|から)/g, 
+      type: ReferenceType.INTERNAL,
       subType: null
+    },
+    // 相対参照（条）- 前条、次条
+    { 
+      regex: /前条|次条/g, 
+      type: ReferenceType.RELATIVE,
+      subType: null
+    },
+    // 相対参照（章）- 前章、次章  
+    { 
+      regex: /前章|次章/g, 
+      type: ReferenceType.RELATIVE,
+      subType: ReferenceSubType.CHAPTER
     }
   ];
 
@@ -225,11 +229,17 @@ export class ReferenceDetector {
     context?: { paragraphNumber?: number; itemNumber?: string }
   ): DetectedReference[] {
     const references: DetectedReference[] = [];
+    const detectedTexts = new Set<string>(); // 重複検出を防ぐ
 
     for (const pattern of this.patterns) {
       const matches = text.matchAll(pattern.regex);
       
       for (const match of matches) {
+        // 既に検出されたテキストはスキップ
+        if (detectedTexts.has(match[0])) {
+          continue;
+        }
+        
         const reference = this.createReference(
           match, 
           pattern, 
@@ -239,6 +249,12 @@ export class ReferenceDetector {
         
         if (reference) {
           references.push(reference);
+          detectedTexts.add(match[0]);
+          
+          // デバッグ用（本番では削除）
+          if (sourceArticleNumber === '七' && match[0].includes('五')) {
+            console.log(`Detected in article ${sourceArticleNumber}: "${match[0]}" (type: ${pattern.type}, subType: ${pattern.subType})`);
+          }
         }
       }
     }
@@ -451,6 +467,16 @@ export class ReferenceDetector {
    * アラビア数字を漢数字に変換
    */
   private convertToKanji(arabicNum: string): string {
+    // 引数チェック
+    if (!arabicNum) {
+      return '';
+    }
+    
+    // 全角数字を半角に変換
+    const halfWidth = arabicNum.replace(/[０-９]/g, (char) => {
+      return String.fromCharCode(char.charCodeAt(0) - 0xFEE0);
+    });
+
     const arabicToKanjiMap: { [key: string]: string } = {
       '1': '一', '2': '二', '3': '三', '4': '四', '5': '五',
       '6': '六', '7': '七', '8': '八', '9': '九', '10': '十',
@@ -465,15 +491,15 @@ export class ReferenceDetector {
     };
 
     // 既に漢数字の場合はそのまま返す
-    if (!/^\d+$/.test(arabicNum)) {
+    if (!/^\d+$/.test(halfWidth)) {
       return arabicNum;
     }
 
-    const num = parseInt(arabicNum);
+    const num = parseInt(halfWidth);
     
     // 1-50の範囲
-    if (arabicToKanjiMap[arabicNum]) {
-      return arabicToKanjiMap[arabicNum];
+    if (arabicToKanjiMap[halfWidth]) {
+      return arabicToKanjiMap[halfWidth];
     }
 
     // 51-99の範囲

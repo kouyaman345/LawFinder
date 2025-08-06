@@ -1,34 +1,30 @@
 import Link from 'next/link';
 import { LawDetailClient } from '../../components/LawDetailClient';
-import { LawXMLParser } from '../../../src/lib/xml-parser';
-import { ReferenceDetector } from '../../../src/utils/reference-detector';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { PrismaClient } from '../../../src/generated/prisma';
 
-const XML_DATA_PATH = path.join(process.cwd(), 'laws_data/sample');
+const prisma = new PrismaClient();
 
-// 静的パラメータの生成
-export async function generateStaticParams() {
-  const files = await fs.readdir(XML_DATA_PATH);
-  const xmlFiles = files.filter(f => f.endsWith('.xml'));
-  
-  return xmlFiles.map(file => ({
-    id: file.replace('.xml', '')
-  }));
-}
+// 動的レンダリングを使用（データベースから取得するため）
+export const dynamic = 'force-dynamic';
 
 // メタデータの生成
 export async function generateMetadata(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   try {
-    const xmlPath = path.join(XML_DATA_PATH, `${params.id}.xml`);
-    const xmlContent = await fs.readFile(xmlPath, 'utf-8');
-    const parser = new LawXMLParser();
-    const lawData = parser.parseLawXML(xmlContent, `${params.id}.xml`);
+    const law = await prisma.law.findUnique({
+      where: { id: params.id },
+      select: { title: true }
+    });
+    
+    if (!law) {
+      return {
+        title: '法令が見つかりません | LawFinder'
+      };
+    }
     
     return {
-      title: `${lawData.lawTitle} | LawFinder`,
-      description: `${lawData.lawTitle}の条文と参照関係を表示`
+      title: `${law.title} | LawFinder`,
+      description: `${law.title}の条文と参照関係を表示`
     };
   } catch {
     return {
@@ -42,26 +38,62 @@ export default async function LawDetailPage(props: { params: Promise<{ id: strin
   const lawId = params.id;
   
   try {
-    // XMLファイルの読み込み
-    const xmlPath = path.join(XML_DATA_PATH, `${lawId}.xml`);
-    const xmlContent = await fs.readFile(xmlPath, 'utf-8');
+    // データベースから法令を取得
+    const law = await prisma.law.findUnique({
+      where: { id: lawId },
+      include: {
+        articles: {
+          include: {
+            paragraphs: {
+              include: {
+                items: true
+              }
+            },
+            referencesFrom: true
+          },
+          orderBy: { articleNumber: 'asc' }
+        }
+      }
+    });
     
-    // XMLパース
-    const parser = new LawXMLParser();
-    const lawData = parser.parseLawXML(xmlContent, `${lawId}.xml`);
-    
-    // 参照検出
-    const detector = new ReferenceDetector();
-    const allReferences: any[] = [];
-    
-    for (const article of lawData.articles) {
-      const articleText = getArticleText(article);
-      const detectedRefs = detector.detectReferences(
-        articleText,
-        article.articleNum
-      );
-      allReferences.push(...detectedRefs);
+    if (!law) {
+      throw new Error('Law not found');
     }
+    
+    // データ形式を変換
+    const structure = law.metadata as any || { parts: [], chapters: [], sections: [] };
+    
+    const lawData = {
+      lawId: law.id,
+      lawTitle: law.title,
+      lawNum: law.lawNumber || '',
+      lawType: law.lawType || 'Act',
+      promulgateDate: law.promulgationDate || new Date(),
+      structure,
+      articles: law.articles.map(article => ({
+        articleNum: article.articleNumber,
+        articleTitle: article.articleTitle,
+        paragraphs: article.paragraphs.map(para => ({
+          content: para.content,
+          items: para.items.map(item => ({
+            title: item.itemNumber,
+            content: item.content
+          }))
+        }))
+      }))
+    };
+    
+    const allReferences = law.articles.flatMap(article => 
+      article.referencesFrom.map(ref => ({
+        sourceArticleNumber: article.articleNumber,
+        sourceText: ref.referenceText,
+        type: ref.referenceType,
+        subType: ref.referenceSubType,
+        targetArticleNumber: ref.targetArticleNumber,
+        targetLawName: ref.targetLawName,
+        confidence: ref.confidence || 0.8
+      }))
+    );
     
     return (
       <LawDetailClient
@@ -71,6 +103,7 @@ export default async function LawDetailPage(props: { params: Promise<{ id: strin
       />
     );
   } catch (error) {
+    console.error(`Error loading law ${lawId}:`, error);
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -80,6 +113,11 @@ export default async function LawDetailPage(props: { params: Promise<{ id: strin
           <p className="text-gray-600 mb-4">
             指定された法令ID: {lawId} は存在しません。
           </p>
+          {process.env.NODE_ENV === 'development' && (
+            <p className="text-red-600 text-sm mb-4">
+              Error: {error instanceof Error ? error.message : String(error)}
+            </p>
+          )}
           <Link
             href="/laws"
             className="text-blue-600 hover:text-blue-800 underline"
@@ -90,24 +128,4 @@ export default async function LawDetailPage(props: { params: Promise<{ id: strin
       </div>
     );
   }
-}
-
-function getArticleText(article: any): string {
-  let text = '';
-  if (article.articleTitle) {
-    text += article.articleTitle + ' ';
-  }
-  for (const para of article.paragraphs) {
-    if (para.content) {
-      text += para.content + ' ';
-    }
-    if (para.items) {
-      for (const item of para.items) {
-        if (item.content) {
-          text += item.content + ' ';
-        }
-      }
-    }
-  }
-  return text;
 }
