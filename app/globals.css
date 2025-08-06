@@ -358,6 +358,30 @@
     position: relative;
   }
 
+  /* 制定文セクション */
+  .enact-statements-section {
+    margin: 20px 40px;
+    padding: 20px;
+    background: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+  }
+
+  .enact-statements-section .section-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #003f8e;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #003f8e;
+  }
+
+  .enact-statement {
+    margin: 10px 0;
+    line-height: 1.8;
+    color: #333;
+  }
+
   /* 法令ヘッダー */
   .law-header {
     padding: 20px 30px;

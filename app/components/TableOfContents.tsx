@@ -5,10 +5,18 @@ import { ChevronRightIcon, ChevronDownIcon, PlusIcon, MinusIcon, EyeIcon, EyeSla
 
 interface TOCProps {
   structure: {
+    divisions?: Array<{
+      num: string;
+      title: string;
+      parts: string[];
+      chapters: string[];
+      articles: string[];
+    }>;
     parts: Array<{
       num: string;
       title: string;
       chapters: string[];
+      articles: string[];
     }>;
     chapters: Array<{
       num: string;
@@ -26,27 +34,39 @@ interface TOCProps {
     articleNum: string;
     articleTitle: string | null;
   }>;
+  enactStatements?: string[]; // 制定文を追加
   onArticleVisibilityChange?: (articleId: string, isHidden: boolean) => void;
   onStructureVisibilityChange?: (nodeId: string, isHidden: boolean, affectedArticles: string[]) => void;
 }
 
-export function TableOfContents({ structure, articles, onArticleVisibilityChange, onStructureVisibilityChange }: TOCProps) {
+export function TableOfContents({ structure, articles, enactStatements, onArticleVisibilityChange, onStructureVisibilityChange }: TOCProps) {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
   const [hiddenNodes, setHiddenNodes] = useState<Set<string>>(new Set());
   const [activeArticle, setActiveArticle] = useState<string>('');
 
-  // 初期状態で第1レベルのみ展開
+  // 初期状態で区分（本則・附則）と編を展開
   useEffect(() => {
     const initialExpanded = new Set<string>();
+    
+    // 区分（本則・附則）を展開
+    if (structure.divisions) {
+      structure.divisions.forEach(division => {
+        initialExpanded.add(`division-${division.num}`);
+      });
+    }
+    
+    // 編を展開
     structure.parts.forEach(part => {
       initialExpanded.add(`part-${part.num}`);
     });
+    
     // 編に属さない章も展開
     structure.chapters.filter(chapter => 
       !structure.parts.some(part => part.chapters.includes(chapter.num))
     ).forEach(chapter => {
       initialExpanded.add(`chapter-${chapter.num}`);
     });
+    
     setExpandedNodes(initialExpanded);
   }, [structure]);
 
@@ -191,7 +211,7 @@ export function TableOfContents({ structure, articles, onArticleVisibilityChange
   };
 
   const renderTreeNode = (
-    nodeType: 'part' | 'chapter' | 'section' | 'article',
+    nodeType: 'division' | 'part' | 'chapter' | 'section' | 'article',
     nodeData: any,
     level: number = 0,
     key: string,
@@ -204,7 +224,8 @@ export function TableOfContents({ structure, articles, onArticleVisibilityChange
     const isExpanded = expandedNodes.has(nodeId);
     const isHidden = hiddenNodes.has(nodeId);
     const hasChildren = nodeType !== 'article' && (
-      (nodeType === 'part' && nodeData.chapters?.length > 0) ||
+      (nodeType === 'division' && (nodeData.parts?.length > 0 || nodeData.chapters?.length > 0 || nodeData.articles?.length > 0)) ||
+      (nodeType === 'part' && (nodeData.chapters?.length > 0 || nodeData.articles?.length > 0)) ||
       (nodeType === 'chapter' && (nodeData.sections?.length > 0 || nodeData.articles?.length > 0)) ||
       (nodeType === 'section' && nodeData.articles?.length > 0)
     );
@@ -258,12 +279,45 @@ export function TableOfContents({ structure, articles, onArticleVisibilityChange
         {/* 子ノードの表示 - 自身が非表示でない場合のみ */}
         {hasChildren && isExpanded && !isHidden && (
           <div className="toc-children">
-            {nodeType === 'part' && nodeData.chapters.map((chapterNum: string, idx: number) => {
-              const chapter = structure.chapters.find(c => c.num === chapterNum);
-              if (!chapter) return null;
-              const newContext = context ? `${context}-part${nodeData.num}` : `part${nodeData.num}`;
-              return renderTreeNode('chapter', chapter, level + 1, `part-${nodeData.num}-chapter-${chapterNum}-${idx}`, newContext);
-            })}
+            {nodeType === 'division' && (
+              <>
+                {nodeData.parts?.map((partTitle: string, idx: number) => {
+                  const part = structure.parts.find(p => p.title === partTitle);
+                  if (!part) return null;
+                  const newContext = context ? `${context}-div${nodeData.num}` : `div${nodeData.num}`;
+                  return renderTreeNode('part', part, level + 1, `div-${nodeData.num}-part-${part.num}-${idx}`, newContext);
+                })}
+                {nodeData.chapters?.map((chapterTitle: string, idx: number) => {
+                  const chapter = structure.chapters.find(c => c.title === chapterTitle);
+                  if (!chapter) return null;
+                  const newContext = context ? `${context}-div${nodeData.num}` : `div${nodeData.num}`;
+                  return renderTreeNode('chapter', chapter, level + 1, `div-${nodeData.num}-chapter-${chapter.num}-${idx}`, newContext);
+                })}
+                {nodeData.articles?.map((articleNum: string, idx: number) => {
+                  const article = articles.find(a => a.articleNum === articleNum);
+                  if (!article) return null;
+                  const newContext = context ? `${context}-div${nodeData.num}` : `div${nodeData.num}`;
+                  return renderTreeNode('article', article, level + 1, `div-${nodeData.num}-article-${articleNum}-${idx}`, newContext);
+                })}
+              </>
+            )}
+            
+            {nodeType === 'part' && (
+              <>
+                {nodeData.chapters?.map((chapterTitle: string, idx: number) => {
+                  const chapter = structure.chapters.find(c => c.title === chapterTitle);
+                  if (!chapter) return null;
+                  const newContext = context ? `${context}-part${nodeData.num}` : `part${nodeData.num}`;
+                  return renderTreeNode('chapter', chapter, level + 1, `part-${nodeData.num}-chapter-${chapter.num}-${idx}`, newContext);
+                })}
+                {nodeData.articles?.map((articleNum: string, idx: number) => {
+                  const article = articles.find(a => a.articleNum === articleNum);
+                  if (!article) return null;
+                  const newContext = context ? `${context}-part${nodeData.num}` : `part${nodeData.num}`;
+                  return renderTreeNode('article', article, level + 1, `part-${nodeData.num}-article-${articleNum}-${idx}`, newContext);
+                })}
+              </>
+            )}
             
             {nodeType === 'chapter' && (
               <>
@@ -318,66 +372,122 @@ export function TableOfContents({ structure, articles, onArticleVisibilityChange
       
       <div className="toc-content">
         <div className="toc-tree">
-          {/* 編の表示 */}
-          {structure.parts.map((part) => 
-            renderTreeNode('part', part, 0, `part-${part.num}`, '')
+          {/* 制定文 */}
+          {enactStatements && enactStatements.length > 0 && (
+            <div className="toc-node">
+              <div 
+                className="toc-node-content toc-node-level-0"
+                onClick={() => {
+                  const element = document.getElementById('enact-statements');
+                  if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+                  <span className="toc-toggle-icon"></span>
+                  <span className="toc-node-part">制定文</span>
+                </div>
+              </div>
+            </div>
           )}
           
-          {/* 編に属さない章 */}
-          {structure.chapters.filter(chapter => 
-            !structure.parts.some(part => part.chapters.includes(chapter.num))
-          ).map((chapter, idx) => 
-            renderTreeNode('chapter', chapter, 0, `root-chapter-${chapter.num}-${idx}`, '')
+          {/* 区分（本則・附則）の表示 */}
+          {structure.divisions && structure.divisions.length > 0 ? (
+            structure.divisions.map((division) => 
+              renderTreeNode('division', division, 0, `division-${division.num}`, '')
+            )
+          ) : (
+            <>
+              {/* 区分がない場合は従来通り編から表示 */}
+              {structure.parts.map((part) => 
+                renderTreeNode('part', part, 0, `part-${part.num}`, '')
+              )}
+              
+              {/* 編に属さない章 */}
+              {structure.chapters.filter(chapter => 
+                !structure.parts.some(part => part.chapters.includes(chapter.title))
+              ).map((chapter, idx) => 
+                renderTreeNode('chapter', chapter, 0, `root-chapter-${chapter.num}-${idx}`, '')
+              )}
+            </>
           )}
           
-          {/* どこにも属さない条文 */}
+          {/* どこにも属さない条文（通常は存在しないはず） */}
           {(() => {
             const orphanArticles = articles.filter(article => {
-              const inSection = structure.sections.some(s => s.articles.includes(article.articleNum));
-              const inChapter = structure.chapters.some(c => c.articles.includes(article.articleNum));
-              return !inSection && !inChapter;
+              // divisionに属しているかチェック
+              const inDivision = structure.divisions?.some(d => 
+                d.articles.includes(article.articleNum) ||
+                d.parts.some((partTitle: string) => {
+                  const part = structure.parts.find(p => p.title === partTitle);
+                  return part && (
+                    part.articles.includes(article.articleNum) ||
+                    part.chapters.some((chapterTitle: string) => {
+                      const chapter = structure.chapters.find(c => c.title === chapterTitle);
+                      return chapter && (
+                        chapter.articles.includes(article.articleNum) ||
+                        chapter.sections.some((sectionNum: string) => {
+                          const section = structure.sections.find(s => s.num === sectionNum);
+                          return section && section.articles.includes(article.articleNum);
+                        })
+                      );
+                    })
+                  );
+                }) ||
+                d.chapters.some((chapterTitle: string) => {
+                  const chapter = structure.chapters.find(c => c.title === chapterTitle);
+                  return chapter && (
+                    chapter.articles.includes(article.articleNum) ||
+                    chapter.sections.some((sectionNum: string) => {
+                      const section = structure.sections.find(s => s.num === sectionNum);
+                      return section && section.articles.includes(article.articleNum);
+                    })
+                  );
+                })
+              );
+              
+              // 編・章・節に属しているかチェック（divisionがない場合）
+              if (!structure.divisions || structure.divisions.length === 0) {
+                const inPart = structure.parts.some(p => 
+                  p.articles.includes(article.articleNum) ||
+                  p.chapters.some((chapterTitle: string) => {
+                    const chapter = structure.chapters.find(c => c.title === chapterTitle);
+                    return chapter && (
+                      chapter.articles.includes(article.articleNum) ||
+                      chapter.sections.some((sectionNum: string) => {
+                        const section = structure.sections.find(s => s.num === sectionNum);
+                        return section && section.articles.includes(article.articleNum);
+                      })
+                    );
+                  })
+                );
+                
+                const inChapter = structure.chapters.some(c => 
+                  c.articles.includes(article.articleNum) ||
+                  c.sections.some((sectionNum: string) => {
+                    const section = structure.sections.find(s => s.num === sectionNum);
+                    return section && section.articles.includes(article.articleNum);
+                  })
+                );
+                
+                const inSection = structure.sections.some(s => 
+                  s.articles.includes(article.articleNum)
+                );
+                
+                return !inPart && !inChapter && !inSection;
+              }
+              
+              return !inDivision;
             });
             
+            // デバッグ用：orphanArticlesが存在する場合は警告
             if (orphanArticles.length > 0) {
-              const orphanNodesExpanded = expandedNodes.has('orphan-articles');
-              const orphanNodesHidden = hiddenNodes.has('orphan-articles');
-              
-              return (
-                <div key="orphan-articles-section" className="toc-node">
-                  <div 
-                    className="toc-node-content toc-node-level-0"
-                    onClick={() => toggleNode('orphan-articles')}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-                      <span className="toc-toggle-icon">
-                        {orphanNodesExpanded ? 
-                          <ChevronDownIcon className="w-4 h-4" /> : 
-                          <ChevronRightIcon className="w-4 h-4" />
-                        }
-                      </span>
-                      <span className="toc-node-part">その他の条文</span>
-                    </div>
-                    <button
-                      className="toc-visibility-toggle"
-                      onClick={(e) => toggleVisibility('orphan-articles', e)}
-                      title={orphanNodesHidden ? "表示" : "非表示"}
-                    >
-                      {orphanNodesHidden ? 
-                        <EyeSlashIcon className="w-4 h-4" /> : 
-                        <EyeIcon className="w-4 h-4" />
-                      }
-                    </button>
-                  </div>
-                  {orphanNodesExpanded && !orphanNodesHidden && (
-                    <div className="toc-children">
-                      {orphanArticles.map((article, idx) => 
-                        renderTreeNode('article', article, 1, `orphan-article-${article.articleNum}-${idx}`, 'orphan')
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
+              console.warn(`警告: ${orphanArticles.length}個の条文がどこにも属していません`);
+              console.warn('orphan articles:', orphanArticles.slice(0, 5).map(a => a.articleNum));
             }
+            
+            // orphanArticlesは通常存在しないので、この部分は表示しない
             return null;
           })()}
         </div>

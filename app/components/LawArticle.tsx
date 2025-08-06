@@ -129,8 +129,8 @@ export function LawArticle({ article, references, showFirstParagraphNumber = fal
     <article className="law-article" id={`art${article.articleNum}`}>
       <div className="article-number">
         第{article.articleNum}条
-        {article.articleTitle && (
-          <span className="article-title">{article.articleTitle}</span>
+        {article.articleTitle && !article.articleTitle.startsWith('第') && (
+          <span className="article-title">　{article.articleTitle}</span>
         )}
       </div>
       

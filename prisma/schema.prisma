@@ -34,8 +34,11 @@ model Article {
   articleTitle      String?
   content           String
   
+  part              String?
   chapter           String?
   section           String?
+  subsection        String?
+  division          String?   // 本則/附則の区分
   sortOrder         Int       @default(0)
   isDeleted         Boolean   @default(false)
   

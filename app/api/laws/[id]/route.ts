@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '../../../../src/generated/prisma';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -21,10 +21,9 @@ export async function GET(
               include: {
                 items: true
               }
-            },
-            referencesFrom: true
+            }
           },
-          orderBy: { articleNumber: 'asc' }
+          orderBy: { sortOrder: 'asc' }
         }
       }
     });
@@ -37,7 +36,7 @@ export async function GET(
     }
     
     // 構造情報を復元
-    const structure = law.metadata as any || { parts: [], chapters: [], sections: [] };
+    const structure = { parts: [], chapters: [], sections: [] };
     
     // レスポンス形式を整形
     const response = {
@@ -58,17 +57,7 @@ export async function GET(
           }))
         }))
       })),
-      references: law.articles.flatMap(article => 
-        article.referencesFrom.map(ref => ({
-          sourceArticleNumber: article.articleNumber,
-          sourceText: ref.referenceText,
-          type: ref.referenceType,
-          subType: ref.referenceSubType,
-          targetArticleNumber: ref.targetArticleNumber,
-          targetLawName: ref.targetLawName,
-          confidence: ref.confidence
-        }))
-      )
+      references: []
     };
     
     return NextResponse.json(response);

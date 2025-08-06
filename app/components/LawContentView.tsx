@@ -9,6 +9,7 @@ interface LawContentViewProps {
   lawData: {
     lawTitle: string;
     lawNum: string;
+    enactStatements?: string[]; // 制定文を追加
     structure: any;
     articles: any[];
   };
@@ -56,18 +57,13 @@ export function LawContentView({
       <TableOfContents 
         structure={lawData.structure} 
         articles={lawData.articles}
+        enactStatements={lawData.enactStatements}
         onArticleVisibilityChange={onArticleVisibilityChange}
         onStructureVisibilityChange={onStructureVisibilityChange}
       />
 
       {/* 条文表示エリア */}
       <div className="articles-container">
-        {/* 法令ヘッダー */}
-        <div className="law-header">
-          <h1 className="law-title">{lawData.lawTitle}</h1>
-          <p className="law-number">{lawData.lawNum}</p>
-        </div>
-
         {/* ツールバー */}
         <div className="law-toolbar">
           <div className="toolbar-left">
@@ -79,6 +75,22 @@ export function LawContentView({
             <span className="llm-badge">実LLM解析済み</span>
           </div>
         </div>
+
+        {/* 法令ヘッダー */}
+        <div className="law-header">
+          <h1 className="law-title">{lawData.lawTitle}</h1>
+          <p className="law-number">{lawData.lawNum}</p>
+        </div>
+        
+        {/* 制定文 */}
+        {lawData.enactStatements && lawData.enactStatements.length > 0 && (
+          <div id="enact-statements" className="enact-statements-section">
+            <h2 className="section-title">制定文</h2>
+            {lawData.enactStatements.map((statement, index) => (
+              <p key={index} className="enact-statement">{statement}</p>
+            ))}
+          </div>
+        )}
 
         {/* 条文セクション */}
         <div className="articles-section">

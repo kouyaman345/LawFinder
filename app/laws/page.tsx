@@ -1,4 +1,4 @@
-import { PrismaClient } from '../../src/generated/prisma';
+import { PrismaClient } from '@prisma/client';
 import LawsListClient from '../components/LawsListClient';
 
 const prisma = new PrismaClient();

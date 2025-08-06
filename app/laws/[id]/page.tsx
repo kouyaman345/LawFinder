@@ -1,8 +1,160 @@
 import Link from 'next/link';
 import { LawDetailClient } from '../../components/LawDetailClient';
-import { PrismaClient } from '../../../src/generated/prisma';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
+
+// XMLから制定文を抽出
+function extractEnactStatements(xmlContent: string): string[] {
+  const enactStatements: string[] = [];
+  const matches = xmlContent.matchAll(/<EnactStatement>([^<]+)<\/EnactStatement>/g);
+  for (const match of matches) {
+    enactStatements.push(match[1]);
+  }
+  return enactStatements;
+}
+
+// 階層構造を構築する関数（編・本則・附則対応）
+function buildStructure(articles: any[]) {
+  const structure = {
+    divisions: [] as any[], // 本則・附則
+    parts: [] as any[],     // 編
+    chapters: [] as any[],  // 章
+    sections: [] as any[]   // 節
+  };
+  
+  // 区分・編・章・節の情報を収集
+  const divisionsMap = new Map<string, { parts: Set<string>; chapters: Set<string>; articles: Set<string> }>();
+  const partsMap = new Map<string, { chapters: Set<string>; articles: Set<string> }>();
+  const chaptersMap = new Map<string, { sections: Set<string>; articles: Set<string> }>();
+  const sectionsMap = new Map<string, Set<string>>();
+  
+  articles.forEach(article => {
+    const division = article.division || '本則';
+    const part = article.part;
+    const chapter = article.chapter;
+    const section = article.section;
+    
+    // 区分（本則/附則）レベル
+    if (!divisionsMap.has(division)) {
+      divisionsMap.set(division, { parts: new Set(), chapters: new Set(), articles: new Set() });
+    }
+    
+    // 編レベル
+    if (part) {
+      divisionsMap.get(division)!.parts.add(part);
+      if (!partsMap.has(part)) {
+        partsMap.set(part, { chapters: new Set(), articles: new Set() });
+      }
+      
+      if (chapter) {
+        partsMap.get(part)!.chapters.add(chapter);
+      } else {
+        partsMap.get(part)!.articles.add(article.articleNumber);
+      }
+    } else if (chapter) {
+      divisionsMap.get(division)!.chapters.add(chapter);
+    } else {
+      divisionsMap.get(division)!.articles.add(article.articleNumber);
+    }
+    
+    // 章レベル
+    if (chapter) {
+      if (!chaptersMap.has(chapter)) {
+        chaptersMap.set(chapter, { sections: new Set(), articles: new Set() });
+      }
+      
+      if (section) {
+        chaptersMap.get(chapter)!.sections.add(section);
+        if (!sectionsMap.has(section)) {
+          sectionsMap.set(section, new Set());
+        }
+        sectionsMap.get(section)!.add(article.articleNumber);
+      } else {
+        chaptersMap.get(chapter)!.articles.add(article.articleNumber);
+      }
+    }
+  });
+  
+  // 区分データを構築（本則を先、附則を後に）
+  let divNum = 1;
+  
+  // まず本則を追加
+  if (divisionsMap.has('本則')) {
+    const data = divisionsMap.get('本則')!;
+    structure.divisions.push({
+      num: String(divNum),
+      title: '本則',
+      parts: Array.from(data.parts),
+      chapters: Array.from(data.chapters),
+      articles: Array.from(data.articles)
+    });
+    divNum++;
+  }
+  
+  // 次に附則を追加（複数の附則がある可能性）
+  divisionsMap.forEach((data, divisionTitle) => {
+    if (divisionTitle !== '本則') {
+      structure.divisions.push({
+        num: String(divNum),
+        title: divisionTitle,
+        parts: Array.from(data.parts),
+        chapters: Array.from(data.chapters),
+        articles: Array.from(data.articles)
+      });
+      divNum++;
+    }
+  });
+  
+  // 編データを構築
+  let partNum = 1;
+  partsMap.forEach((data, partTitle) => {
+    structure.parts.push({
+      num: String(partNum),
+      title: partTitle,
+      chapters: Array.from(data.chapters),
+      articles: Array.from(data.articles)
+    });
+    partNum++;
+  });
+  
+  // 章データを構築
+  let chapterNum = 1;
+  chaptersMap.forEach((data, chapterTitle) => {
+    const sectionNums: string[] = [];
+    data.sections.forEach(sectionTitle => {
+      let sNum = 1;
+      for (const [title, _] of sectionsMap) {
+        if (title === sectionTitle) {
+          sectionNums.push(String(sNum));
+          break;
+        }
+        sNum++;
+      }
+    });
+    
+    structure.chapters.push({
+      num: String(chapterNum),
+      title: chapterTitle,
+      sections: sectionNums,
+      articles: Array.from(data.articles)
+    });
+    chapterNum++;
+  });
+  
+  // 節データを構築
+  let sectionNum = 1;
+  sectionsMap.forEach((articleNums, sectionTitle) => {
+    structure.sections.push({
+      num: String(sectionNum),
+      title: sectionTitle,
+      articles: Array.from(articleNums)
+    });
+    sectionNum++;
+  });
+  
+  return structure;
+}
 
 // 動的レンダリングを使用（データベースから取得するため）
 export const dynamic = 'force-dynamic';
@@ -38,7 +190,7 @@ export default async function LawDetailPage(props: { params: Promise<{ id: strin
   const lawId = params.id;
   
   try {
-    // データベースから法令を取得
+    // データベースから法令を取得（XMLも含む）
     const law = await prisma.law.findUnique({
       where: { id: lawId },
       include: {
@@ -48,10 +200,9 @@ export default async function LawDetailPage(props: { params: Promise<{ id: strin
               include: {
                 items: true
               }
-            },
-            referencesFrom: true
+            }
           },
-          orderBy: { articleNumber: 'asc' }
+          orderBy: { sortOrder: 'asc' }
         }
       }
     });
@@ -60,8 +211,11 @@ export default async function LawDetailPage(props: { params: Promise<{ id: strin
       throw new Error('Law not found');
     }
     
-    // データ形式を変換
-    const structure = law.metadata as any || { parts: [], chapters: [], sections: [] };
+    // データ形式を変換 - 章節構造を構築
+    const structure = buildStructure(law.articles);
+    
+    // 制定文を抽出
+    const enactStatements = extractEnactStatements(law.xmlContent);
     
     const lawData = {
       lawId: law.id,
@@ -69,6 +223,7 @@ export default async function LawDetailPage(props: { params: Promise<{ id: strin
       lawNum: law.lawNumber || '',
       lawType: law.lawType || 'Act',
       promulgateDate: law.promulgationDate || new Date(),
+      enactStatements, // 制定文を追加
       structure,
       articles: law.articles.map(article => ({
         articleNum: article.articleNumber,
@@ -83,17 +238,8 @@ export default async function LawDetailPage(props: { params: Promise<{ id: strin
       }))
     };
     
-    const allReferences = law.articles.flatMap(article => 
-      article.referencesFrom.map(ref => ({
-        sourceArticleNumber: article.articleNumber,
-        sourceText: ref.referenceText,
-        type: ref.referenceType,
-        subType: ref.referenceSubType,
-        targetArticleNumber: ref.targetArticleNumber,
-        targetLawName: ref.targetLawName,
-        confidence: ref.confidence || 0.8
-      }))
-    );
+    // 参照情報は別途取得する必要があるため、一旦空配列
+    const allReferences: any[] = [];
     
     return (
       <LawDetailClient
