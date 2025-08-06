@@ -7,7 +7,7 @@ node_modules
 dist
 dist/static
 /src/generated/prisma
-.next
+.next*
 .next.backup
 .next.lock
 

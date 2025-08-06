@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ChevronRightIcon, PlusIcon, MinusIcon } from '@heroicons/react/24/outline';
+import { ChevronRightIcon, ChevronDownIcon, PlusIcon, MinusIcon } from '@heroicons/react/24/outline';
 
 interface TOCProps {
   structure: {
@@ -145,7 +145,9 @@ export function TableOfContents({ structure, articles }: TOCProps) {
         >
           <span className="toc-toggle-icon">
             {hasChildren && (
-              <ChevronRightIcon className={isExpanded ? '' : 'collapsed'} />
+              isExpanded ? 
+                <ChevronDownIcon className="w-4 h-4" /> : 
+                <ChevronRightIcon className="w-4 h-4" />
             )}
           </span>
           <span className={`toc-node-${nodeType}`}>
@@ -163,31 +165,31 @@ export function TableOfContents({ structure, articles }: TOCProps) {
         {/* 子ノードの表示 */}
         {hasChildren && isExpanded && (
           <div className="toc-children">
-            {nodeType === 'part' && nodeData.chapters.map((chapterNum: string) => {
+            {nodeType === 'part' && nodeData.chapters.map((chapterNum: string, idx: number) => {
               const chapter = structure.chapters.find(c => c.num === chapterNum);
               if (!chapter) return null;
-              return renderTreeNode('chapter', chapter, level + 1, `chapter-${chapterNum}`);
+              return renderTreeNode('chapter', chapter, level + 1, `part-${nodeData.num}-chapter-${chapterNum}-${idx}`);
             })}
             
             {nodeType === 'chapter' && (
               <>
-                {nodeData.sections.map((sectionNum: string) => {
+                {nodeData.sections.map((sectionNum: string, idx: number) => {
                   const section = structure.sections.find(s => s.num === sectionNum);
                   if (!section) return null;
-                  return renderTreeNode('section', section, level + 1, `section-${sectionNum}`);
+                  return renderTreeNode('section', section, level + 1, `chapter-${nodeData.num}-section-${sectionNum}-${idx}`);
                 })}
-                {nodeData.articles.map((articleNum: string) => {
+                {nodeData.articles.map((articleNum: string, idx: number) => {
                   const article = articles.find(a => a.articleNum === articleNum);
                   if (!article) return null;
-                  return renderTreeNode('article', article, level + 1, `article-${articleNum}`);
+                  return renderTreeNode('article', article, level + 1, `chapter-${nodeData.num}-article-${articleNum}-${idx}`);
                 })}
               </>
             )}
             
-            {nodeType === 'section' && nodeData.articles.map((articleNum: string) => {
+            {nodeType === 'section' && nodeData.articles.map((articleNum: string, idx: number) => {
               const article = articles.find(a => a.articleNum === articleNum);
               if (!article) return null;
-              return renderTreeNode('article', article, level + 1, `article-${articleNum}`);
+              return renderTreeNode('article', article, level + 1, `section-${nodeData.num}-article-${articleNum}-${idx}`);
             })}
           </div>
         )}
@@ -227,8 +229,8 @@ export function TableOfContents({ structure, articles }: TOCProps) {
           {/* 編に属さない章 */}
           {structure.chapters.filter(chapter => 
             !structure.parts.some(part => part.chapters.includes(chapter.num))
-          ).map((chapter) => 
-            renderTreeNode('chapter', chapter, 0, `chapter-${chapter.num}`)
+          ).map((chapter, idx) => 
+            renderTreeNode('chapter', chapter, 0, `root-chapter-${chapter.num}-${idx}`)
           )}
           
           {/* どこにも属さない条文 */}
@@ -241,14 +243,14 @@ export function TableOfContents({ structure, articles }: TOCProps) {
             
             if (orphanArticles.length > 0) {
               return (
-                <div className="toc-node">
+                <div key="orphan-articles-section" className="toc-node">
                   <div className="toc-node-content toc-node-level-0">
                     <span className="toc-toggle-icon"></span>
                     <span className="toc-node-chapter">その他の条文</span>
                   </div>
                   <div className="toc-children">
-                    {orphanArticles.map(article => 
-                      renderTreeNode('article', article, 1, `article-${article.articleNum}`)
+                    {orphanArticles.map((article, idx) => 
+                      renderTreeNode('article', article, 1, `orphan-article-${article.articleNum}-${idx}`)
                     )}
                   </div>
                 </div>

@@ -160,18 +160,56 @@
     background-color: #e8e8e8;
   }
 
-  /* インデントレベル */
-  .toc-node-level-0 { padding-left: 10px; }
-  .toc-node-level-1 { padding-left: 25px; }
-  .toc-node-level-2 { padding-left: 40px; }
-  .toc-node-level-3 { padding-left: 55px; }
-  .toc-node-level-4 { padding-left: 70px; }
+  /* インデントレベル - 階層構造を明確に */
+  .toc-node-level-0 { 
+    /* 編（Parts）または編に属さない章 */
+    padding-left: 10px;
+    border-left: 3px solid transparent;
+  }
+  .toc-node-level-1 { 
+    /* 編内の章、または章内の節がない条文 */
+    padding-left: 35px;
+    border-left: 3px solid transparent;
+  }
+  .toc-node-level-2 { 
+    /* 章内の節、または節内の条文 */
+    padding-left: 60px;
+    border-left: 3px solid transparent;
+  }
+  .toc-node-level-3 { 
+    /* 節内の条文 */
+    padding-left: 85px;
+    border-left: 3px solid transparent;
+  }
+  .toc-node-level-4 { 
+    /* さらに深い階層（まれ） */
+    padding-left: 110px;
+    border-left: 3px solid transparent;
+  }
+
+  /* 階層レベルごとの背景色（微妙な違い） */
+  .toc-node-level-0:hover { 
+    background-color: #f0f0f0;
+    border-left-color: #003f8e;
+  }
+  .toc-node-level-1:hover { 
+    background-color: #f3f3f3;
+    border-left-color: #1976d2;
+  }
+  .toc-node-level-2:hover { 
+    background-color: #f6f6f6;
+    border-left-color: #42a5f5;
+  }
+  .toc-node-level-3:hover { 
+    background-color: #f9f9f9;
+    border-left-color: #64b5f6;
+  }
 
   /* ツリーアイコン */
   .toc-toggle-icon {
-    width: 12px;
-    height: 12px;
-    margin-right: 5px;
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -179,49 +217,71 @@
   }
 
   .toc-toggle-icon svg {
-    width: 8px;
-    height: 8px;
     transition: transform 0.2s;
   }
 
-  .toc-toggle-icon.collapsed svg {
-    transform: rotate(-90deg);
+  /* ツリー構造の整形 */
+  .toc-node {
+    position: relative;
   }
 
-  /* ツリーライン */
-  .toc-tree-line {
+  /* 子要素を持つノード - 階層を示す縦線付き */
+  .toc-children {
+    position: relative;
+    margin-left: 12px;
+  }
+  
+  .toc-children::before {
+    content: '';
     position: absolute;
-    left: 16px;
+    left: -6px;
     top: 0;
     bottom: 0;
     width: 1px;
-    background-color: #ccc;
+    background-color: #ddd;
   }
+
 
   /* ノードタイプ別スタイル */
   .toc-node-part {
     font-weight: bold;
     color: #003f8e;
+    font-size: 14px;
   }
 
   .toc-node-chapter {
     font-weight: bold;
     color: #333;
+    font-size: 13px;
   }
 
   .toc-node-section {
     font-weight: normal;
     color: #555;
+    font-size: 13px;
   }
 
   .toc-node-article {
     font-weight: normal;
     color: #333;
+    font-size: 12px;
   }
 
-  .toc-node-article.active {
+  /* 条文はアイコンがない分、左側に詰める */
+  span.toc-node-article {
+    margin-left: -16px; /* アイコンの幅分左に */
+  }
+
+  /* アクティブな条文 */
+  .toc-node-content.active {
     background-color: #e3f2fd;
+    border-left: 3px solid #1976d2;
+    padding-left: 2px;
+  }
+
+  .toc-node-content.active .toc-node-article {
     font-weight: bold;
+    color: #1976d2;
   }
 
   /* 条文表示エリア */

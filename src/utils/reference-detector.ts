@@ -72,6 +72,12 @@ export class ReferenceDetector {
       type: ReferenceType.INTERNAL,
       subType: ReferenceSubType.RANGE
     },
+    // 条文範囲参照（枝番号付き）（例：第三十二条の二から第三十二条の五まで）
+    { 
+      regex: /第([０-９0-9一二三四五六七八九十百千万]+)条の([０-９0-9一二三四五六七八九十]+)から第([０-９0-9一二三四五六七八九十百千万]+)条の([０-９0-9一二三四五六七八九十]+)まで/g, 
+      type: ReferenceType.INTERNAL,
+      subType: ReferenceSubType.RANGE
+    },
     // 複数条文参照（例：前二条、前三条）
     { 
       regex: /前([二三四五六七八九十])条/g, 
@@ -90,10 +96,40 @@ export class ReferenceDetector {
       type: ReferenceType.COMPLEX,
       subType: ReferenceSubType.ITEM_LIST
     },
+    // 各号の一に該当
+    { 
+      regex: /各号の一/g, 
+      type: ReferenceType.COMPLEX,
+      subType: ReferenceSubType.ITEM_LIST
+    },
     // 準用規定
     { 
       regex: /(準用する|準用される)/g, 
       type: ReferenceType.APPLICATION,
+      subType: null
+    },
+    // 附則の参照
+    { 
+      regex: /附則第([０-９0-9一二三四五六七八九十百千万]+)条/g, 
+      type: ReferenceType.INTERNAL,
+      subType: null
+    },
+    // 別表の参照
+    { 
+      regex: /別表第([０-９0-9一二三四五六七八九十百千万]+)/g, 
+      type: ReferenceType.INTERNAL,
+      subType: null
+    },
+    // 号のみの参照（第一号、第二号など）
+    { 
+      regex: /第([０-９0-9一二三四五六七八九十]+)号/g, 
+      type: ReferenceType.INTERNAL,
+      subType: ReferenceSubType.WITH_ITEM
+    },
+    // ただし書・本文への参照
+    { 
+      regex: /ただし書|本文/g, 
+      type: ReferenceType.COMPLEX,
       subType: null
     },
     // 「の」付き条文参照（例：第二十七条の七）
@@ -231,6 +267,15 @@ export class ReferenceDetector {
     // パターンごとの処理
     switch (pattern.subType) {
       case ReferenceSubType.RANGE:
+        // 枝番号付き範囲の場合
+        if (match.length > 4) {
+          return {
+            ...baseReference,
+            targetArticleNumber: `${this.convertToKanji(match[1])}の${this.convertToKanji(match[2])}`,
+            targetArticleNumberEnd: `${this.convertToKanji(match[3])}の${this.convertToKanji(match[4])}`
+          };
+        }
+        // 通常の範囲
         return {
           ...baseReference,
           targetArticleNumber: this.convertToKanji(match[1]),
@@ -310,8 +355,30 @@ export class ReferenceDetector {
           };
         }
 
-        // 内部参照（条文のみ、「の」付き）
+        // 内部参照（条文のみ、「の」付き、附則、別表、号のみ）
         if (pattern.type === ReferenceType.INTERNAL) {
+          // 附則の参照
+          if (match[0].startsWith('附則')) {
+            return {
+              ...baseReference,
+              targetArticleNumber: `附則第${this.convertToKanji(match[1])}条`
+            };
+          }
+          // 別表の参照
+          if (match[0].startsWith('別表')) {
+            return {
+              ...baseReference,
+              targetArticleNumber: `別表第${this.convertToKanji(match[1])}`
+            };
+          }
+          // 号のみの参照（第X号）
+          if (match[0].includes('号') && !match[0].includes('条')) {
+            return {
+              ...baseReference,
+              targetItemNumber: this.convertToKanji(match[1])
+            };
+          }
+          // 「の」付き条文
           if (match[0].includes('の')) {
             const mainArticle = match[1];
             const subArticle = match[2];
@@ -327,6 +394,14 @@ export class ReferenceDetector {
           }
         }
 
+        // ただし書・本文への参照
+        if (pattern.type === ReferenceType.COMPLEX && (match[0] === 'ただし書' || match[0] === '本文')) {
+          return {
+            ...baseReference,
+            relativeDirection: 'same'
+          };
+        }
+
         return baseReference;
     }
   }
@@ -335,6 +410,8 @@ export class ReferenceDetector {
    * 漢数字をアラビア数字に変換
    */
   private convertToArabic(kanjiNum: string): string {
+    if (!kanjiNum) return '';
+    
     const kanjiToArabicMap: { [key: string]: string } = {
       '一': '1', '二': '2', '三': '3', '四': '4', '五': '5',
       '六': '6', '七': '7', '八': '8', '九': '9', '十': '10',

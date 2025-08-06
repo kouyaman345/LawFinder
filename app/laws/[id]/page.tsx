@@ -117,9 +117,9 @@ export default async function LawDetailPage(props: { params: Promise<{ id: strin
 
             {/* 条文セクション */}
             <div className="articles-section">
-              {lawData.articles.map((article) => (
+              {lawData.articles.map((article, index) => (
                 <LawArticle
-                  key={article.articleNum}
+                  key={`article-${article.articleNum}-${index}`}
                   article={article}
                   references={allReferences}
                   currentLawId={lawId}
