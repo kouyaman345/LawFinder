@@ -15,7 +15,7 @@
   }
 
   body {
-    font-family: "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ Pro", "Yu Gothic", "游ゴシック", "Meiryo", "メイリオ", sans-serif;
+    font-family: "UD デジタル 教科書体 N-R", "UD Digi Kyokasho N-R", "BIZ UDゴシック", "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ Pro", "Yu Gothic", "游ゴシック", "Meiryo", "メイリオ", sans-serif;
     line-height: 1.8;
     color: #333;
     background-color: #f5f5f5;
@@ -308,15 +308,21 @@
   }
 
 
-  /* ノードタイプ別スタイル */
+  /* ノードタイプ別スタイル - 統一されたスタイル */
+  .toc-node-division {
+    font-weight: normal;
+    color: #333;
+    font-size: 13px;
+  }
+
   .toc-node-part {
-    font-weight: bold;
-    color: #003f8e;
-    font-size: 14px;
+    font-weight: normal;
+    color: #333;
+    font-size: 13px;
   }
 
   .toc-node-chapter {
-    font-weight: bold;
+    font-weight: normal;
     color: #333;
     font-size: 13px;
   }

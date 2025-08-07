@@ -1,4 +1,4 @@
-import { PrismaClient } from '../src/generated/prisma';
+import { PrismaClient } from '@prisma/client';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { ReferenceDetector, ReferenceType } from '../src/utils/reference-detector';
@@ -107,9 +107,8 @@ class ImprovedLawImporter {
       data: {
         id: lawId,
         title: parsedLaw.lawTitle,
-        metadata: parsedLaw.metadata,
-        enactStatements: parsedLaw.enactStatements,
-        amendmentHistory: parsedLaw.amendmentHistory,
+        xmlContent: xmlContent,  // XMLコンテンツを追加
+        lawNumber: parsedLaw.metadata?.lawNumber || null,
       },
     });
 
