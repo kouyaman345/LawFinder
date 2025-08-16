@@ -10,16 +10,10 @@
     "start": "next start",
     "lint": "eslint src/**/*.{ts,tsx}",
     "typecheck": "tsc --noEmit",
-    "build:static:llm": "node scripts/build-static-llm.js",
-    "build:static:egov": "node scripts/build-static-egov-mainprovision-fixed.js",
-    "build:static:egov:full": "node scripts/build-static-egov-full.js",
-    "parse:xml": "node scripts/parse-xml.js",
-    "serve": "node scripts/serve.js",
-    "dev:static": "npm run build:static:egov && npm run serve",
-    "dev:static:llm": "npm run build:static:llm && npm run serve",
     "validation:run": "npx tsx scripts/reference-validation-workflow.ts validate",
     "validation:feedback": "npx tsx scripts/reference-validation-workflow.ts feedback",
-    "sync:neo4j": "npx tsx scripts/sync-to-neo4j.ts"
+    "sync:neo4j": "npx tsx scripts/sync-to-neo4j.ts",
+    "db:import": "npx tsx scripts/import-laws-to-db-v3.ts"
   },
   "scripts-phase2": {
     "_comment": "Phase 2で使用予定のスクリプト",
