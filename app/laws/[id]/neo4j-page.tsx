@@ -1,10 +1,6 @@
 import Link from 'next/link';
 import { LawDetailClient } from '../../components/LawDetailClient';
-import { PrismaClient } from '@prisma/client';
 import HybridDBClient from '../../../src/lib/hybrid-db';
-
-const prisma = new PrismaClient();
-const hybridDB = HybridDBClient.getInstance();
 
 // XMLから制定文を抽出
 function extractEnactStatements(xmlContent: string): string[] {
@@ -164,11 +160,10 @@ export const dynamic = 'force-dynamic';
 // メタデータの生成
 export async function generateMetadata(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
+  const client = HybridDBClient.getInstance();
+  
   try {
-    const law = await prisma.law.findUnique({
-      where: { id: params.id },
-      select: { title: true }
-    });
+    const law = await client.getLaw(params.id);
     
     if (!law) {
       return {
@@ -187,68 +182,27 @@ export async function generateMetadata(props: { params: Promise<{ id: string }> 
   }
 }
 
-export default async function LawDetailPage(props: { params: Promise<{ id: string }> }) {
+export default async function LawDetailPageWithNeo4j(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   const lawId = params.id;
+  const client = HybridDBClient.getInstance();
   
   try {
-    // データベースから法令を取得（XMLも含む）
-    const law = await prisma.law.findUnique({
-      where: { id: lawId },
-      include: {
-        articles: {
-          include: {
-            paragraphs: {
-              include: {
-                items: true
-              }
-            }
-          },
-          orderBy: { sortOrder: 'asc' }
-        }
-      }
-    });
+    // PostgreSQLから法令データを取得
+    const law = await client.getLaw(lawId);
     
     if (!law) {
       throw new Error('Law not found');
     }
     
-    // データ形式を変換 - 章節構造を構築
-    const structure = buildStructure(law.articles);
-    
-    // 制定文を抽出
-    const enactStatements = extractEnactStatements(law.xmlContent);
-    
-    const lawData = {
-      lawId: law.id,
-      lawTitle: law.title,
-      lawNum: law.lawNumber || '',
-      lawType: law.lawType || 'Act',
-      promulgateDate: law.promulgationDate || new Date(),
-      enactStatements, // 制定文を追加
-      structure,
-      articles: law.articles.map(article => ({
-        articleNum: article.articleNumber,
-        articleTitle: article.articleTitle,
-        isDeleted: article.isDeleted,  // 削除フラグを追加
-        paragraphs: article.paragraphs.map(para => ({
-          content: para.content,
-          items: para.items.map(item => ({
-            title: item.itemNumber,
-            content: item.content
-          }))
-        }))
-      }))
-    };
-    
-    // Neo4jから参照情報を取得（ハイブリッドDB経由）
+    // Neo4jから参照データを取得
     console.log(`🔍 Neo4jから${lawId}の参照データを取得中...`);
     const allReferences: any[] = [];
     
     // 各条文の参照を取得
     for (const article of law.articles) {
       try {
-        const refs = await hybridDB.getArticleReferences(lawId, article.articleNumber);
+        const refs = await client.getArticleReferences(lawId, article.articleNumber);
         
         // 参照データを変換
         for (const ref of refs) {
@@ -267,7 +221,35 @@ export default async function LawDetailPage(props: { params: Promise<{ id: strin
       }
     }
     
-    console.log(`✅ Neo4jから${allReferences.length}件の参照を取得しました`);
+    console.log(`✅ ${allReferences.length}件の参照を取得しました`);
+    
+    // データ形式を変換 - 章節構造を構築
+    const structure = buildStructure(law.articles);
+    
+    // 制定文を抽出
+    const enactStatements = extractEnactStatements(law.xmlContent);
+    
+    const lawData = {
+      lawId: law.id,
+      lawTitle: law.title,
+      lawNum: law.lawNumber || '',
+      lawType: law.lawType || 'Act',
+      promulgateDate: law.promulgationDate || new Date(),
+      enactStatements,
+      structure,
+      articles: law.articles.map(article => ({
+        articleNum: article.articleNumber,
+        articleTitle: article.articleTitle,
+        isDeleted: article.isDeleted,
+        paragraphs: article.paragraphs.map(para => ({
+          content: para.content,
+          items: para.items.map(item => ({
+            title: item.itemNumber,
+            content: item.content
+          }))
+        }))
+      }))
+    };
     
     return (
       <LawDetailClient

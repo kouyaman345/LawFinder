@@ -144,7 +144,13 @@ export class HybridDBClient {
         `
         MATCH (source:Article {lawId: $lawId, number: $articleNumber})
         OPTIONAL MATCH (source)-[r:REFERS_TO|REFERS_TO_LAW|RELATIVE_REF|APPLIES]->(target)
-        RETURN source, r, target
+        RETURN 
+          type(r) as relType,
+          r.text as text,
+          r.confidence as confidence,
+          r.metadata as metadata,
+          target.lawId as targetLawId,
+          target.number as targetArticle
         ORDER BY CASE 
           WHEN type(r) = 'REFERS_TO' THEN 1
           WHEN type(r) = 'RELATIVE_REF' THEN 2
@@ -155,10 +161,32 @@ export class HybridDBClient {
         { lawId, articleNumber }
       );
 
-      return this.parseNeo4jResult(result);
+      return result.records
+        .filter(record => record.get('relType') !== null)
+        .map(record => ({
+          type: this.mapRelationType(record.get('relType')),
+          text: record.get('text'),
+          confidence: record.get('confidence') || 1.0,
+          metadata: record.get('metadata'),
+          targetLawId: record.get('targetLawId'),
+          targetArticle: record.get('targetArticle')
+        }));
     } finally {
       await session.close();
     }
+  }
+  
+  /**
+   * Neo4jのリレーションタイプをアプリケーションの参照タイプにマッピング
+   */
+  private mapRelationType(relType: string): string {
+    const mapping: { [key: string]: string } = {
+      'REFERS_TO': 'internal',
+      'REFERS_TO_LAW': 'external',
+      'RELATIVE_REF': 'relative',
+      'APPLIES': 'application'
+    };
+    return mapping[relType] || relType.toLowerCase();
   }
 
   /**

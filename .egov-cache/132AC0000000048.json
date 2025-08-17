@@ -1,0 +1,22 @@
+{
+  "lawId": "132AC0000000048",
+  "url": "https://laws.e-gov.go.jp/law/132AC0000000048",
+  "title": "商法",
+  "references": [
+    {
+      "sourceArticle": "第五百五十一条",
+      "targetUrl": "https://laws.e-gov.go.jp/law/129AC0000000089#Mp-At_566",
+      "targetLawId": "129AC0000000089",
+      "targetArticle": "第五百六十六条",
+      "anchorText": "民法第五百六十六条"
+    },
+    {
+      "sourceArticle": "第五百五十二条",
+      "targetUrl": "https://laws.e-gov.go.jp/law/129AC0000000089#Mp-At_567",
+      "targetLawId": "129AC0000000089",
+      "targetArticle": "第五百六十七条",
+      "anchorText": "民法第五百六十七条"
+    }
+  ],
+  "extractedAt": "2025-08-17T22:35:18.992Z"
+}

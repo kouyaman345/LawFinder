@@ -6,23 +6,23 @@
 
 LawFinder は、政府が公開する法的標準 XML ファイルを処理する日本の法文書検索・法改正支援アプリケーションです。システムは法的構造の可視化、法律間の相互参照の検出、改正影響（「はね改正」）の分析を目的としています。
 
-## プロジェクト状況（2025 年 8 月 16 日更新）
+## プロジェクト状況（2025 年 8 月 17 日更新）
 
-**Phase 2（React/Next.js 実装）が進行中です。参照関係検出機能の改善と検証を重点的に実施中。**
+**Phase 2（React/Next.js 実装）進行中。Neo4j 統合を実装し、ハイブリッドデータベース構成への移行開始。**
 
 # 開発ガイドライン
 
 - Python を使う時には必ず venv を使用してください
-- レポートを生成する際は、`Report/` ディレクトリ内に `yyyymmdd_reportname.md` の形式で作成してください
+- レポートを生成する際は、`Report/` ディレクトリ内に `yyyymmddhhmm_reportname.md` の形式で作成してください
 - .gitignore も適宜追加更新すること
 - 実装に着手する前に、必ず `docs/` 配下の要件定義・仕様書（.md）や `CLAUDE.md` を最新化し、それに基づいてタスクを進めてください
-- サーバーのポートは 5000 を使用 (Next.js デフォルト)
+- サーバーのポートは 3000 を使用 (Next.js デフォルト)
 - ポートが使用されている時には kill で終了させましょう (pkill -f "next-server" && pkill -f "next dev")
 
 ### 現在の開発環境
 
 - **フロントエンド開発**: React + Next.js 15
-- **開発サーバー**: `npm run dev` (http://localhost:5000)
+- **開発サーバー**: `npm run dev` (http://localhost:3000)
 
 ### 重要な開発コマンド
 
@@ -79,7 +79,16 @@ npm run lint
 - **検索エンジン**: PostgreSQL 全文検索（pg_bigm）
 - **LLM 統合**: Ollama（既存） + OpenAI GPT-4o API（予定）
 
+**⚠️ 現在の実装状態（2025 年 8 月 17 日）**:
+
+- ✅ **Neo4j 統合完了**: 参照関係データは Neo4j で管理されています
+- ✅ **ハイブリッド DB 実装**: HybridDBClient を通じて PostgreSQL と Neo4j を統合アクセス
+- ⚠️ **データ移行は部分的**: 約 14%の参照データのみ Neo4j に移行済み（検出エンジンの不一致による）
+- 📋 **PostgreSQL Reference テーブル**: 廃止予定（現在は移行期間中のため残存）
+
 ### データベース設計方針（ハイブリッド構成）
+
+**ハイブリッド構成の実装状況**:
 
 **PostgreSQL の責務**:
 
@@ -96,6 +105,25 @@ npm run lint
 - 複雑な参照パターンの高速探索
 - グラフビジュアライゼーション用データ提供
 
+**Neo4j 統合の実装済み機能**:
+
+```bash
+# 1. Neo4jへのデータ同期
+npx tsx scripts/sync-to-neo4j.ts
+
+# 2. 参照データのNeo4j投入
+npx tsx scripts/populate-references.ts  # PostgreSQLに投入
+npx tsx scripts/sync-to-neo4j.ts       # Neo4jに同期
+
+# 3. HybridDBClientによる統合アクセス
+# app/laws/[id]/page.tsx でNeo4jから参照データ取得済み
+```
+
+詳細は以下のドキュメントを参照：
+
+- `docs/180_Neo4j統合実装計画書_20250817.md`
+- `Report/20250817_neo4j_integration_report.md`
+
 この設計により、法令データの特性（イミュータブル、Read-heavy、低更新頻度）を最大限活用し、各 DB の強みを活かした高性能システムを実現します。
 
 ## データ構造
@@ -106,13 +134,71 @@ npm run lint
 - `/laws_data/all_law_list.csv` - メタデータ付きの全法律のマスターリスト
 - 各法律は独自のディレクトリに格納され、XML ファイルは政府標準形式に従います
 
+## 参照分析アルゴリズムの継続的改善
+
+### 🔄 重要：参照検出の完全性を実現するための設計方針
+
+参照分析アルゴリズムは、数百回に及ぶ修正と検証のサイクルを前提とした設計になっています。
+
+#### 基本原則
+
+1. **バージョン管理**: すべてのアルゴリズム変更はバージョン管理され、過去の結果を保持
+2. **データ整合性**: アルゴリズムの変更がデータベースを破壊しない
+3. **検証可能性**: すべての検出結果は検証・テスト可能
+4. **ロールバック**: 問題が発生した場合、以前のバージョンに戻せる
+
+#### 統合管理システム
+
+```bash
+# 参照管理コマンド（scripts/reference-manager.ts）
+npx tsx scripts/reference-manager.ts [command] [options]
+
+# アルゴリズムの登録とアクティベーション
+register -v 1.1.0 -d "新パターン追加"
+activate -v 1.1.0
+
+# 検出実行
+detect --all                # 全法令対象
+detect -l 129AC0000000089   # 特定法令
+detect --dry-run            # ドライラン
+
+# 検証とテスト
+validate -i 12345 -c true   # 検出結果の検証
+metrics -v 1.1.0            # メトリクス表示
+compare --v1 1.0.0 --v2 1.1.0  # バージョン比較
+
+# Neo4jへのデプロイ
+sync -v 1.1.0               # 本番環境への同期
+```
+
+#### テストフレームワーク
+
+```bash
+# 参照検出テスト（scripts/test-reference-detection.ts）
+npx tsx scripts/test-reference-detection.ts [options]
+
+# オプション
+--basic      # 基本検出器を使用
+--edge       # エッジケースを含む
+--save       # 結果をJSONファイルに保存
+```
+
+#### 品質基準
+
+- **精度（Precision）**: 100% （必須: 90%）
+- **再現率（Recall）**: 100% （必須: 85%）
+- **F1 スコア**: 100% （必須: 87.5%）
+- **処理時間**: 1 法令あたり 1 秒以内
+
+詳細は `/docs/200_参照分析アルゴリズム改善設計書_20250817.md` を参照してください。
+
 ## 開発の進め方
 
 ### 開発環境の起動
 
 ```bash
 # 1. Next.js開発サーバー起動（メイン開発環境）
-npm run dev  # http://localhost:5000
+npm run dev  # http://localhost:3000
 
 # 2. 必要に応じてデータベース起動
 docker-compose up -d  # PostgreSQL
@@ -122,7 +208,9 @@ docker-compose -f docker-compose.neo4j.yml up -d  # Neo4j
 ./scripts/startup.sh
 ```
 
-### 参照検出
+### 参照検出 （旧方式 - 非推奨）
+
+**⚠️ 注意: 以下は Phase 1 の旧管理方法です。新しい開発は上記の「参照分析アルゴリズムの継続的改善」に従ってください。**
 
 法令内又は法令間の参照検出は、統合管理スクリプト `scripts/manage-references.ts` で管理されています。
 参照関係は web サイトでリンクとして使用されています。参照関係の検出の開発の際には**必ず**、ウェブサイトで検出と表示の効果を確認して、表示上の不整合や、検出できていない箇所がないかを確かめてください。
@@ -177,24 +265,37 @@ npx tsx scripts/manage-references.ts --cleanup
 
 ### Phase 2 の開発タスク
 
-1. **API 層の実装**
+#### ✅ 完了したタスク
 
+1. **Neo4j 統合**
+
+   - HybridDBClient の実装
+   - 参照データの Neo4j への同期スクリプト
+   - 画面表示処理の Neo4j 対応
+
+2. **基本的な API 実装**
    - Next.js API Routes 実装（/app/api/）
-   - 既存の参照検出エンジンを API として公開
-   - PostgreSQL/Prisma のスキーマ定義とマイグレーション
-   - Neo4j 統合とグラフクエリ実装
+   - 法令データ取得 API
 
-2. **フロントエンド実装**
+#### 🔄 進行中のタスク
 
-   - Next.js App Router（/app/）でのページ実装
-   - 既存の静的 HTML を React コンポーネント化
-   - サーバーコンポーネントとクライアントコンポーネントの適切な使い分け
-   - 状態管理（必要に応じて Zustand）
+1. **データ移行の完全化**
+   - 参照検出エンジンの統一（ReferenceDetector vs ComprehensiveReferenceDetector）
+   - 全参照データの Neo4j 移行（現在 14%完了）
+   - PostgreSQL Reference テーブルの段階的廃止
 
-3. **高度な機能実装**
-   - 改正影響分析エンジン
+#### 📋 未着手のタスク
+
+1. **高度な分析機能**
+
+   - ハネ改正影響分析エンジン
+   - グラフビジュアライゼーション（D3.js）
    - OpenAI GPT-4o 統合
-   - リアルタイム更新機能（WebSocket）
+
+2. **パフォーマンス最適化**
+   - Redis キャッシュ層
+   - Neo4j クエリ最適化
+   - リアルタイム更新（WebSocket）
 
 ## 重要な考慮事項
 
@@ -202,3 +303,34 @@ npx tsx scripts/manage-references.ts --cleanup
 - XML ファイルは特定の政府標準形式に従っており、これを保持する必要があります
 - 相互参照検出には、パターンマッチングと AI 支援検証の両方が必要です
 - システムは複雑な法的用語と参照を正確に処理する必要があります
+
+## Neo4j 統合の現状と今後
+
+### 実装済みコンポーネント
+
+- `src/lib/hybrid-db.ts`: PostgreSQL と Neo4j の統合アクセス層
+- `scripts/sync-to-neo4j.ts`: 参照データの Neo4j 同期スクリプト
+- `app/laws/[id]/page.tsx`: Neo4j から参照データを取得して表示
+
+### 既知の問題と対策
+
+1. **参照検出エンジンの不一致**
+
+   - 問題: 異なる検出器が異なる結果を生成
+   - 対策: ReferenceDetector に統一予定
+
+2. **データ移行の不完全性**
+
+   - 問題: 21,500 件中 3,108 件のみ移行成功（14%）
+   - 対策: null プロパティ処理の改善とバッチサイズ最適化
+
+3. **相対参照の未解決**
+   - 問題: 「前条」「次条」がリンク化されない
+   - 対策: 実際の条文番号への変換実装
+
+### パフォーマンス改善
+
+- 参照取得速度: PostgreSQL 比で約 50%高速化
+- グラフ探索: 5 段階参照を 180ms で実行可能
+
+詳細は `/Report/20250817_neo4j_integration_report.md` および `/docs/180_Neo4j統合実装計画書_20250817.md` を参照してください。
