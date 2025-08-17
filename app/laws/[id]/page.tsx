@@ -228,6 +228,7 @@ export default async function LawDetailPage(props: { params: Promise<{ id: strin
       articles: law.articles.map(article => ({
         articleNum: article.articleNumber,
         articleTitle: article.articleTitle,
+        isDeleted: article.isDeleted,  // 削除フラグを追加
         paragraphs: article.paragraphs.map(para => ({
           content: para.content,
           items: para.items.map(item => ({

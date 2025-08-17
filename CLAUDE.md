@@ -125,6 +125,7 @@ docker-compose -f docker-compose.neo4j.yml up -d  # Neo4j
 ### 参照検出
 
 法令内又は法令間の参照検出は、統合管理スクリプト `scripts/manage-references.ts` で管理されています。
+参照関係は web サイトでリンクとして使用されています。参照関係の検出の開発の際には**必ず**、ウェブサイトで検出と表示の効果を確認して、表示上の不整合や、検出できていない箇所がないかを確かめてください。
 
 #### 使用方法
 
@@ -147,7 +148,7 @@ npx tsx scripts/manage-references.ts --cleanup
 
 #### 特徴
 
-- **統合管理**: 参照検出の全機能を1つのスクリプトで管理
+- **統合管理**: 参照検出の全機能を 1 つのスクリプトで管理
 - **差分更新対応**: 法令が更新された場合、特定法令のみを更新可能
 - **バッチ処理**: 大量データを効率的に処理
 - **統計機能**: 参照データの分析・可視化
@@ -157,14 +158,14 @@ npx tsx scripts/manage-references.ts --cleanup
 
 `src/domain/services/ImprovedReferenceDetector.ts` が中核となる検出エンジンです。
 以下の参照タイプを検出：
+
 - **internal**: 同一法令内の参照
 - **external**: 他法令への参照
 - **relative**: 相対参照（前条、次項など）
 - **structural**: 構造参照（章、節への参照）
-- **range**: 範囲参照（第1条から第3条まで）
-- **multiple**: 複数参照（第1条及び第2条）
+- **range**: 範囲参照（第 1 条から第 3 条まで）
+- **multiple**: 複数参照（第 1 条及び第 2 条）
 - **application**: 準用・適用
-
 
 ### ディレクトリ構造
 

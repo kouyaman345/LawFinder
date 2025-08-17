@@ -16,6 +16,7 @@ interface LawArticleProps {
   article: {
     articleNum: string;
     articleTitle: string | null;
+    isDeleted?: boolean;
     paragraphs: Array<{
       content: string;
       items: Array<{
@@ -159,6 +160,17 @@ export function LawArticle({ article, references, currentLawId, showFirstParagra
   const articleRefs = references.filter(r => 
     String(r.sourceArticle) === String(article.articleNum)
   );
+  
+  // 削除条文の場合は簡略表示
+  if (article.isDeleted) {
+    return (
+      <article className="law-article deleted-article" id={`art${article.articleNum}`}>
+        <div className="article-number" style={{ color: '#666', fontStyle: 'italic' }}>
+          第{article.articleNum}条　削除
+        </div>
+      </article>
+    );
+  }
   
   return (
     <article className="law-article" id={`art${article.articleNum}`}>
