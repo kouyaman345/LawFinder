@@ -238,8 +238,20 @@ export default async function LawDetailPage(props: { params: Promise<{ id: strin
       }))
     };
     
-    // 参照情報は別途取得する必要があるため、一旦空配列
-    const allReferences: any[] = [];
+    // 参照情報を取得
+    const references = await prisma.reference.findMany({
+      where: { sourceLawId: lawId }
+    });
+    
+    const allReferences = references.map(ref => ({
+      sourceArticle: ref.sourceArticle,
+      targetLawId: ref.targetLawId,
+      targetArticle: ref.targetArticle,
+      type: ref.referenceType,
+      text: ref.referenceText,
+      confidence: ref.confidence,
+      metadata: ref.metadata
+    }));
     
     return (
       <LawDetailClient

@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRESQL_URL")
+  url      = env("DATABASE_URL")
 }
 
 model Law {
@@ -70,4 +70,23 @@ model Item {
   paragraph         Paragraph @relation(fields: [paragraphId], references: [id], onDelete: Cascade)
   
   @@unique([paragraphId, itemNumber])
+}
+
+model Reference {
+  id                String    @id @default(uuid())
+  sourceLawId       String
+  sourceArticle     String
+  targetLawId       String?
+  targetArticle     String?
+  referenceType     String    // internal, external, relative, range, multiple, structural, application
+  referenceText     String    // 元のテキスト（例：「第123条」）
+  confidence        Float     @default(1.0)
+  metadata          Json?     // 追加情報（相対参照の方向、距離など）
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@index([sourceLawId, sourceArticle])
+  @@index([targetLawId, targetArticle])
+  @@index([referenceType])
 }

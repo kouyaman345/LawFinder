@@ -2,7 +2,15 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { DetectedReference } from '../../src/utils/reference-detector';
+interface Reference {
+  sourceArticle: string;
+  targetLawId?: string | null;
+  targetArticle?: string | null;
+  type: string;
+  text: string;
+  confidence: number;
+  metadata?: any;
+}
 
 interface LawArticleProps {
   article: {
@@ -24,97 +32,124 @@ interface LawArticleProps {
       }>;
     }>;
   };
-  references: DetectedReference[];
+  references: Reference[];
   currentLawId: string;
   showFirstParagraphNumber?: boolean;
 }
 
-export function LawArticle({ article, references, showFirstParagraphNumber = false }: LawArticleProps) {
-  const applyReferenceLinks = (text: string, refs: DetectedReference[]) => {
-    let processed = text;
+export function LawArticle({ article, references, currentLawId, showFirstParagraphNumber = false }: LawArticleProps) {
+  const applyReferenceLinks = (text: string, refs: Reference[]) => {
+    if (!refs || refs.length === 0) {
+      return text;
+    }
     
-    // 参照でソート（長いものを優先）
-    const sortedRefs = refs.sort((a, b) => {
-      if (a.sourceText.length !== b.sourceText.length) {
-        return b.sourceText.length - a.sourceText.length;
+    // 参照を位置情報付きで準備
+    const refsWithPos = refs.map(ref => {
+      const index = text.indexOf(ref.text);
+      return {
+        ...ref,
+        startPos: index,
+        endPos: index >= 0 ? index + ref.text.length : -1
+      };
+    }).filter(r => r.startPos >= 0);
+    
+    // 重複を除去（より長い参照を優先）
+    const nonOverlappingRefs: typeof refsWithPos = [];
+    for (const ref of refsWithPos) {
+      let isOverlapped = false;
+      for (const existing of nonOverlappingRefs) {
+        // 重複チェック
+        if ((ref.startPos >= existing.startPos && ref.startPos < existing.endPos) ||
+            (existing.startPos >= ref.startPos && existing.startPos < ref.endPos)) {
+          // より長い方を残す
+          if (ref.text.length > existing.text.length) {
+            const idx = nonOverlappingRefs.indexOf(existing);
+            nonOverlappingRefs[idx] = ref;
+          }
+          isOverlapped = true;
+          break;
+        }
       }
-      return b.confidence - a.confidence;
-    });
+      if (!isOverlapped) {
+        nonOverlappingRefs.push(ref);
+      }
+    }
+    
+    // 位置でソート
+    nonOverlappingRefs.sort((a, b) => a.startPos - b.startPos);
     
     // React要素として返すため、分割して処理
     const elements: React.ReactNode[] = [];
     let lastIndex = 0;
     
-    for (const ref of sortedRefs) {
-      const index = processed.indexOf(ref.sourceText, lastIndex);
-      if (index === -1) continue;
-      
+    for (const ref of nonOverlappingRefs) {
       // 参照前のテキスト
-      if (index > lastIndex) {
-        elements.push(processed.substring(lastIndex, index));
+      if (ref.startPos > lastIndex) {
+        elements.push(text.substring(lastIndex, ref.startPos));
       }
       
       // 参照リンク
-      if (ref.type === 'external' && ref.targetLawId && ref.targetArticleNumber) {
+      if (ref.type === 'external' && ref.targetLawId && ref.targetArticle) {
         elements.push(
           <Link
-            key={`${index}-${ref.sourceText}`}
-            href={`/laws/${ref.targetLawId}#art${ref.targetArticleNumber}`}
+            key={`${ref.startPos}-${ref.text}`}
+            href={`/laws/${ref.targetLawId}#art${ref.targetArticle}`}
             className={`ref-link external-ref`}
             title={`他法令への参照（信頼度: ${(ref.confidence * 100).toFixed(0)}%）`}
           >
-            {ref.sourceText}
+            {ref.text}
           </Link>
         );
-      } else if (ref.type === 'internal' && ref.targetArticleNumber) {
+      } else if (ref.type === 'internal' && ref.targetArticle) {
         elements.push(
           <a
-            key={`${index}-${ref.sourceText}`}
-            href={`#art${ref.targetArticleNumber}`}
+            key={`${ref.startPos}-${ref.text}`}
+            href={`#art${ref.targetArticle}`}
             className={`ref-link internal-ref`}
             title={`同一法令内の参照（信頼度: ${(ref.confidence * 100).toFixed(0)}%）`}
           >
-            {ref.sourceText}
+            {ref.text}
           </a>
         );
-      } else if (ref.type === 'relative') {
+      } else if (ref.type === 'relative' && ref.targetArticle) {
         elements.push(
-          <span
-            key={`${index}-${ref.sourceText}`}
+          <a
+            key={`${ref.startPos}-${ref.text}`}
+            href={`#art${ref.targetArticle}`}
             className={`ref-link relative-ref`}
             title={`相対参照（信頼度: ${(ref.confidence * 100).toFixed(0)}%）`}
           >
-            {ref.sourceText}
-          </span>
+            {ref.text}
+          </a>
         );
-      } else if (ref.type === 'complex') {
+      } else if (ref.type === 'range' || ref.type === 'multiple') {
         elements.push(
           <span
-            key={`${index}-${ref.sourceText}`}
-            className={`ref-link complex-ref`}
-            title={`複合参照（信頼度: ${(ref.confidence * 100).toFixed(0)}%）`}
+            key={`${ref.startPos}-${ref.text}`}
+            className={`ref-link ${ref.type}-ref`}
+            title={`${ref.type === 'range' ? '範囲参照' : '複数参照'}（信頼度: ${(ref.confidence * 100).toFixed(0)}%）`}
           >
-            {ref.sourceText}
+            {ref.text}
           </span>
         );
       } else {
         elements.push(
           <span
-            key={`${index}-${ref.sourceText}`}
+            key={`${ref.startPos}-${ref.text}`}
             className="ref-link"
             title={`${ref.type}（信頼度: ${(ref.confidence * 100).toFixed(0)}%）`}
           >
-            {ref.sourceText}
+            {ref.text}
           </span>
         );
       }
       
-      lastIndex = index + ref.sourceText.length;
+      lastIndex = ref.endPos;
     }
     
     // 残りのテキスト
-    if (lastIndex < processed.length) {
-      elements.push(processed.substring(lastIndex));
+    if (lastIndex < text.length) {
+      elements.push(text.substring(lastIndex));
     }
     
     return elements;
@@ -122,7 +157,7 @@ export function LawArticle({ article, references, showFirstParagraphNumber = fal
   
   // この条文に関連する参照を抽出
   const articleRefs = references.filter(r => 
-    String(r.sourceArticleNumber) === String(article.articleNum)
+    String(r.sourceArticle) === String(article.articleNum)
   );
   
   return (
@@ -153,7 +188,7 @@ export function LawArticle({ article, references, showFirstParagraphNumber = fal
           }
           
           const paragraphRefs = articleRefs.filter(r => 
-            para.content && para.content.includes(r.sourceText)
+            para.content && para.content.includes(r.text)
           );
           
           return (
@@ -169,7 +204,7 @@ export function LawArticle({ article, references, showFirstParagraphNumber = fal
                 <div className="article-items">
                   {para.items.map((item, itemIdx) => {
                     const itemRefs = articleRefs.filter(r => 
-                      item.content && item.content.includes(r.sourceText)
+                      item.content && item.content.includes(r.text)
                     );
                     
                     return (
@@ -181,7 +216,7 @@ export function LawArticle({ article, references, showFirstParagraphNumber = fal
                           <div className="subitems">
                             {item.subitems.map((subitem, subIdx) => {
                               const subitemRefs = articleRefs.filter(r => 
-                                subitem.content && subitem.content.includes(r.sourceText)
+                                subitem.content && subitem.content.includes(r.text)
                               );
                               
                               return (

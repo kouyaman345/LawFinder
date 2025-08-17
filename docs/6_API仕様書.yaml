@@ -3,13 +3,13 @@ info:
   title: LawFinder API
   description: |
     法令検索・法改正支援システムのREST API仕様書
-    
+
     ## 概要
     本APIは、日本の法令データの検索、参照関係の取得、改正影響分析などの機能を提供します。
-    
+
     ## 認証
     Phase 2では、JWT (JSON Web Token) による認証が必要です。
-    
+
     ## レート制限
     - 認証なし: 100リクエスト/分
     - 認証あり: 1000リクエスト/分
@@ -26,7 +26,7 @@ servers:
     description: Production server
   - url: https://staging-api.lawfinder.jp/v1
     description: Staging server
-  - url: http://localhost:3000/api/v1
+  - url: http://localhost:5000/api/v1
     description: Development server
 
 tags:
@@ -113,13 +113,13 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/LawSummary'
+                      $ref: "#/components/schemas/LawSummary"
                   pagination:
-                    $ref: '#/components/schemas/Pagination'
+                    $ref: "#/components/schemas/Pagination"
         400:
-          $ref: '#/components/responses/BadRequest'
+          $ref: "#/components/responses/BadRequest"
         500:
-          $ref: '#/components/responses/InternalServerError'
+          $ref: "#/components/responses/InternalServerError"
 
   /laws/{law_id}:
     get:
@@ -153,9 +153,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LawDetail'
+                $ref: "#/components/schemas/LawDetail"
         404:
-          $ref: '#/components/responses/NotFound'
+          $ref: "#/components/responses/NotFound"
 
   /laws/{law_id}/articles:
     get:
@@ -198,7 +198,7 @@ paths:
                   articles:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Article'
+                      $ref: "#/components/schemas/Article"
 
   # 条文関連エンドポイント
   /articles/{article_id}:
@@ -221,7 +221,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ArticleDetail'
+                $ref: "#/components/schemas/ArticleDetail"
 
   /articles/{article_id}/references:
     get:
@@ -265,11 +265,11 @@ paths:
                   outgoing_references:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Reference'
+                      $ref: "#/components/schemas/Reference"
                   incoming_references:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Reference'
+                      $ref: "#/components/schemas/Reference"
 
   # 参照関係エンドポイント
   /references:
@@ -311,7 +311,7 @@ paths:
                   references:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ExtractedReference'
+                      $ref: "#/components/schemas/ExtractedReference"
 
   /references/{reference_id}:
     get:
@@ -332,7 +332,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReferenceDetail'
+                $ref: "#/components/schemas/ReferenceDetail"
 
   # 分析エンドポイント
   /analysis/impact:
@@ -382,7 +382,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ImpactAnalysisResult'
+                $ref: "#/components/schemas/ImpactAnalysisResult"
         202:
           description: 分析開始（非同期処理）
           content:
@@ -441,7 +441,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GraphData'
+                $ref: "#/components/schemas/GraphData"
 
   # 検索エンドポイント
   /search:
@@ -503,20 +503,20 @@ paths:
                   results:
                     type: array
                     items:
-                      $ref: '#/components/schemas/SearchResult'
+                      $ref: "#/components/schemas/SearchResult"
                   facets:
                     type: object
                     properties:
                       law_type:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Facet'
+                          $ref: "#/components/schemas/Facet"
                       year:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Facet'
+                          $ref: "#/components/schemas/Facet"
                   pagination:
-                    $ref: '#/components/schemas/Pagination'
+                    $ref: "#/components/schemas/Pagination"
 
   /search/suggest:
     get:
@@ -609,9 +609,9 @@ paths:
                     type: integer
                     description: トークンの有効期限（秒）
                   user:
-                    $ref: '#/components/schemas/User'
+                    $ref: "#/components/schemas/User"
         401:
-          $ref: '#/components/responses/Unauthorized'
+          $ref: "#/components/responses/Unauthorized"
 
   /auth/refresh:
     post:
@@ -690,7 +690,7 @@ components:
 
     LawDetail:
       allOf:
-        - $ref: '#/components/schemas/LawSummary'
+        - $ref: "#/components/schemas/LawSummary"
         - type: object
           properties:
             enact_statement:
@@ -700,11 +700,11 @@ components:
             articles:
               type: array
               items:
-                $ref: '#/components/schemas/Article'
+                $ref: "#/components/schemas/Article"
             amendments:
               type: array
               items:
-                $ref: '#/components/schemas/Amendment'
+                $ref: "#/components/schemas/Amendment"
             references_summary:
               type: object
               properties:
@@ -731,11 +731,11 @@ components:
         paragraphs:
           type: array
           items:
-            $ref: '#/components/schemas/Paragraph'
+            $ref: "#/components/schemas/Paragraph"
 
     ArticleDetail:
       allOf:
-        - $ref: '#/components/schemas/Article'
+        - $ref: "#/components/schemas/Article"
         - type: object
           properties:
             law_id:
@@ -750,11 +750,11 @@ components:
                 outgoing:
                   type: array
                   items:
-                    $ref: '#/components/schemas/Reference'
+                    $ref: "#/components/schemas/Reference"
                 incoming:
                   type: array
                   items:
-                    $ref: '#/components/schemas/Reference'
+                    $ref: "#/components/schemas/Reference"
 
     Paragraph:
       type: object
@@ -768,7 +768,7 @@ components:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/Item'
+            $ref: "#/components/schemas/Item"
 
     Item:
       type: object
@@ -829,7 +829,7 @@ components:
 
     ReferenceDetail:
       allOf:
-        - $ref: '#/components/schemas/Reference'
+        - $ref: "#/components/schemas/Reference"
         - type: object
           properties:
             source_text:
@@ -1076,7 +1076,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
           example:
             code: "INVALID_REQUEST"
             message: "Invalid query parameters"
@@ -1089,7 +1089,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
           example:
             code: "UNAUTHORIZED"
             message: "Authentication required"
@@ -1099,14 +1099,14 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
 
     NotFound:
       description: リソースが見つかりません
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
           example:
             code: "NOT_FOUND"
             message: "Law not found"
@@ -1118,7 +1118,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
 
   securitySchemes:
     BearerAuth:

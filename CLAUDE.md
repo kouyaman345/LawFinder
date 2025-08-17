@@ -6,9 +6,9 @@
 
 LawFinder は、政府が公開する法的標準 XML ファイルを処理する日本の法文書検索・法改正支援アプリケーションです。システムは法的構造の可視化、法律間の相互参照の検出、改正影響（「はね改正」）の分析を目的としています。
 
-## プロジェクト状況（2025 年 8 月 6 日更新）
+## プロジェクト状況（2025 年 8 月 16 日更新）
 
-**Phase 1（静的サイト生成）が完了し、Phase 2（React/Next.js 実装）が進行中です。**
+**Phase 2（React/Next.js 実装）が進行中です。参照関係検出機能の改善と検証を重点的に実施中。**
 
 # 開発ガイドライン
 
@@ -16,13 +16,13 @@ LawFinder は、政府が公開する法的標準 XML ファイルを処理す�
 - レポートを生成する際は、`Report/` ディレクトリ内に `yyyymmdd_reportname.md` の形式で作成してください
 - .gitignore も適宜追加更新すること
 - 実装に着手する前に、必ず `docs/` 配下の要件定義・仕様書（.md）や `CLAUDE.md` を最新化し、それに基づいてタスクを進めてください
-- サーバーのポートは 3000 を使用 (Next.js デフォルト)
+- サーバーのポートは 5000 を使用 (Next.js デフォルト)
 - ポートが使用されている時には kill で終了させましょう (pkill -f "next-server" && pkill -f "next dev")
 
 ### 現在の開発環境
 
 - **フロントエンド開発**: React + Next.js 15
-- **開発サーバー**: `npm run dev` (http://localhost:3000)
+- **開発サーバー**: `npm run dev` (http://localhost:5000)
 
 ### 重要な開発コマンド
 
@@ -46,11 +46,19 @@ npm run lint
 ### 実装済み機能
 
 - ✅ 政府標準 XML 形式の完全な解析
-- ✅ 複雑な参照パターンの検出（同項第二号、前項第一号など）
-- ✅ e-Gov 風の洗練された UI
+- ✅ 包括的参照検出エンジン（ComprehensiveReferenceDetector）
+- ✅ e-Gov 風の洗練された UI（React/Next.js）
 - ✅ インタラクティブな参照ナビゲーション
 - ✅ ローカル LLM 統合（Ollama/Mistral）
 - ✅ 階層目次の完全再現（編・章・節・条・項・号）
+- ✅ PostgreSQL + Prisma によるデータ管理
+- ✅ 参照検出検証ワークフロー
+
+### 改善中の機能
+
+- 🔧 参照検出精度の向上（大規模漢数字、複数項目参照など）
+- 🔧 Neo4j 統合によるグラフベース参照分析
+- 🔧 LLM による文脈依存参照の解析（「同項」など）
 
 ### 技術スタック（実装済み）
 
@@ -104,7 +112,7 @@ npm run lint
 
 ```bash
 # 1. Next.js開発サーバー起動（メイン開発環境）
-npm run dev  # http://localhost:3000
+npm run dev  # http://localhost:5000
 
 # 2. 必要に応じてデータベース起動
 docker-compose up -d  # PostgreSQL
@@ -113,6 +121,50 @@ docker-compose -f docker-compose.neo4j.yml up -d  # Neo4j
 # 3. LLM APIの確認（Ollama）
 ./scripts/startup.sh
 ```
+
+### 参照検出
+
+法令内又は法令間の参照検出は、統合管理スクリプト `scripts/manage-references.ts` で管理されています。
+
+#### 使用方法
+
+```bash
+# 初期登録（データベースが空の場合）
+npx tsx scripts/manage-references.ts --init
+
+# 特定法令の更新（差分更新）
+npx tsx scripts/manage-references.ts --update 129AC0000000089
+
+# 全法令の再登録（既存データを削除して再構築）
+npx tsx scripts/manage-references.ts --rebuild
+
+# 統計情報の表示
+npx tsx scripts/manage-references.ts --stats
+
+# 不要データのクリーンアップ
+npx tsx scripts/manage-references.ts --cleanup
+```
+
+#### 特徴
+
+- **統合管理**: 参照検出の全機能を1つのスクリプトで管理
+- **差分更新対応**: 法令が更新された場合、特定法令のみを更新可能
+- **バッチ処理**: 大量データを効率的に処理
+- **統計機能**: 参照データの分析・可視化
+- **自動クリーンアップ**: 重複データや異常データの自動削除
+
+#### 参照検出エンジン
+
+`src/domain/services/ImprovedReferenceDetector.ts` が中核となる検出エンジンです。
+以下の参照タイプを検出：
+- **internal**: 同一法令内の参照
+- **external**: 他法令への参照
+- **relative**: 相対参照（前条、次項など）
+- **structural**: 構造参照（章、節への参照）
+- **range**: 範囲参照（第1条から第3条まで）
+- **multiple**: 複数参照（第1条及び第2条）
+- **application**: 準用・適用
+
 
 ### ディレクトリ構造
 

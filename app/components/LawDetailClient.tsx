@@ -3,7 +3,15 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { LawContentView } from './LawContentView';
-import { DetectedReference } from '../../src/utils/reference-detector';
+interface Reference {
+  sourceArticle: string;
+  targetLawId?: string | null;
+  targetArticle?: string | null;
+  type: string;
+  text: string;
+  confidence: number;
+  metadata?: any;
+}
 
 interface LawDetailClientProps {
   lawData: {
@@ -12,7 +20,7 @@ interface LawDetailClientProps {
     structure: any;
     articles: any[];
   };
-  allReferences: DetectedReference[];
+  allReferences: Reference[];
   lawId: string;
 }
 

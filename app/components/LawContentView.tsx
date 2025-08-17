@@ -3,7 +3,15 @@
 import React, { useState } from 'react';
 import { TableOfContents } from './TableOfContents';
 import { LawArticle } from './LawArticle';
-import { DetectedReference } from '../../src/utils/reference-detector';
+interface Reference {
+  sourceArticle: string;
+  targetLawId?: string | null;
+  targetArticle?: string | null;
+  type: string;
+  text: string;
+  confidence: number;
+  metadata?: any;
+}
 
 interface LawContentViewProps {
   lawData: {
@@ -13,7 +21,7 @@ interface LawContentViewProps {
     structure: any;
     articles: any[];
   };
-  allReferences: DetectedReference[];
+  allReferences: Reference[];
   lawId: string;
   showFirstParagraphNumber?: boolean;
   onShowFirstParagraphNumberChange?: (show: boolean) => void;

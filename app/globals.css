@@ -23,6 +23,58 @@
 }
 
 @layer components {
+  /* 参照リンクのスタイル */
+  .ref-link {
+    color: #0066cc;
+    text-decoration: underline;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .ref-link:hover {
+    color: #0052a3;
+    background-color: #e8f4fd;
+    text-decoration: none;
+  }
+
+  .ref-link.internal-ref {
+    color: #0066cc;
+    border-bottom: 1px dotted #0066cc;
+    text-decoration: none;
+  }
+
+  .ref-link.external-ref {
+    color: #00994d;
+    border-bottom: 1px solid #00994d;
+    text-decoration: none;
+  }
+
+  .ref-link.relative-ref {
+    color: #6633cc;
+    border-bottom: 1px dashed #6633cc;
+    text-decoration: none;
+  }
+
+  .ref-link.range-ref,
+  .ref-link.multiple-ref {
+    color: #cc6600;
+    border-bottom: 1px dotted #cc6600;
+    text-decoration: none;
+  }
+
+  .ref-link.structural-ref {
+    color: #cc0066;
+    border-bottom: 1px dashed #cc0066;
+    text-decoration: none;
+  }
+
+  .ref-link.application-ref {
+    color: #9933cc;
+    border-bottom: 2px solid #9933cc;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
   /* 全体レイアウト */
   .law-page-layout {
     display: flex;

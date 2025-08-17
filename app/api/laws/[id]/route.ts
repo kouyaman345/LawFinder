@@ -28,6 +28,11 @@ export async function GET(
       }
     });
     
+    // 参照データを取得
+    const references = await prisma.reference.findMany({
+      where: { sourceLawId: lawId }
+    });
+    
     if (!law) {
       return NextResponse.json(
         { error: 'Law not found' },
@@ -57,7 +62,15 @@ export async function GET(
           }))
         }))
       })),
-      references: []
+      references: references.map(ref => ({
+        sourceArticle: ref.sourceArticle,
+        targetLawId: ref.targetLawId,
+        targetArticle: ref.targetArticle,
+        type: ref.referenceType,
+        text: ref.referenceText,
+        confidence: ref.confidence,
+        metadata: ref.metadata
+      }))
     };
     
     return NextResponse.json(response);

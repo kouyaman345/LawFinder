@@ -85,7 +85,6 @@ class ImprovedLawImporter {
   private async clearDatabase() {
     console.log('既存データをクリアしています...');
     // 正しい順序で削除（外部キー制約を考慮）
-    await prisma.reference.deleteMany({});
     await prisma.item.deleteMany({});
     await prisma.paragraph.deleteMany({});
     await prisma.article.deleteMany({});
