@@ -10,6 +10,7 @@ import { ComprehensiveReferenceDetector } from '../src/domain/services/Comprehen
 import { EnhancedReferenceDetector } from '../src/domain/services/EnhancedReferenceDetector';
 import { EnhancedReferenceDetectorV31 } from '../src/domain/services/EnhancedReferenceDetectorV31';
 import { EnhancedReferenceDetectorV32 } from '../src/domain/services/EnhancedReferenceDetectorV32';
+import { EnhancedReferenceDetectorV33 } from '../src/domain/services/EnhancedReferenceDetectorV33';
 import chalk from 'chalk';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -238,7 +239,7 @@ class ReferenceDetectionTester {
   private detector: any;
   private results: TestResult[] = [];
   
-  constructor(detectorType: 'basic' | 'comprehensive' | 'enhanced' | 'v31' | 'v32' = 'comprehensive') {
+  constructor(detectorType: 'basic' | 'comprehensive' | 'enhanced' | 'v31' | 'v32' | 'v33' = 'comprehensive') {
     if (detectorType === 'basic') {
       this.detector = new ReferenceDetector();
     } else if (detectorType === 'comprehensive') {
@@ -247,8 +248,10 @@ class ReferenceDetectionTester {
       this.detector = new EnhancedReferenceDetector();
     } else if (detectorType === 'v31') {
       this.detector = new EnhancedReferenceDetectorV31();
-    } else {
+    } else if (detectorType === 'v32') {
       this.detector = new EnhancedReferenceDetectorV32();
+    } else {
+      this.detector = new EnhancedReferenceDetectorV33();
     }
   }
   
@@ -408,7 +411,8 @@ if (require.main === module) {
   const detectorType = args.includes('--basic') ? 'basic' : 
                        args.includes('--enhanced') ? 'enhanced' :
                        args.includes('--v31') ? 'v31' :
-                       args.includes('--v32') ? 'v32' : 'comprehensive';
+                       args.includes('--v32') ? 'v32' :
+                       args.includes('--v33') ? 'v33' : 'comprehensive';
   const includeEdgeCases = args.includes('--edge');
   const saveToFile = args.includes('--save');
   
