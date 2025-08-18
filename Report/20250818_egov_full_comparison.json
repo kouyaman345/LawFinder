@@ -1,0 +1,100 @@
+{
+  "timestamp": "2025-08-18T09:39:40.295Z",
+  "totalLaws": 10575,
+  "processedLaws": 10574,
+  "totalArticles": 1011333,
+  "estimatedReferences": 3741974,
+  "egovComparison": {
+    "sampleSize": 76,
+    "precision": 94.9,
+    "recall": 97.4,
+    "f1Score": 96.1,
+    "averageReferencesPerArticle": {
+      "ourSystem": 3.7000414304685005,
+      "egovEstimate": 3.5,
+      "difference": 5.715469441957159
+    }
+  },
+  "categoryAnalysis": [
+    {
+      "category": "省令",
+      "lawCount": 4534,
+      "totalArticles": 205875,
+      "totalReferences": 1022361,
+      "examples": [
+        "122M10000001012_18931111_126M10000001002",
+        "122M10000001019_18890610_000000000000000",
+        "125M10000001004_18920527_000000000000000"
+      ],
+      "avgReferencesPerArticle": 4.965930783242259,
+      "avgReferencesPerLaw": 225.4876488751654
+    },
+    {
+      "category": "法律",
+      "lawCount": 3245,
+      "totalArticles": 670158,
+      "totalReferences": 2122232,
+      "examples": [
+        "122AC0000000034_20250601_504AC0000000068",
+        "123AC0000000001_19670531_342AC0000000023",
+        "128AC0000000028_20250601_504AC0000000068"
+      ],
+      "avgReferencesPerArticle": 3.166763658719287,
+      "avgReferencesPerLaw": 654.0006163328197
+    },
+    {
+      "category": "政令",
+      "lawCount": 2538,
+      "totalArticles": 130302,
+      "totalReferences": 575399,
+      "examples": [
+        "321CONSTITUTION_19470503_000000000000000",
+        "322CO0000000001_19520731_327CO0000000305",
+        "322CO0000000005_20010106_412CO0000000303"
+      ],
+      "avgReferencesPerArticle": 4.4158877070190785,
+      "avgReferencesPerLaw": 226.71355397951143
+    },
+    {
+      "category": "その他",
+      "lawCount": 188,
+      "totalArticles": 3751,
+      "totalReferences": 16320,
+      "examples": [
+        "105DF0000000337_18721109_000000000000000",
+        "106DF0000000065_18730220_000000000000000",
+        "108DF0000000054_20030501_414CO0000000277"
+      ],
+      "avgReferencesPerArticle": 4.3508397760597175,
+      "avgReferencesPerLaw": 86.80851063829788
+    },
+    {
+      "category": "勅令",
+      "lawCount": 69,
+      "totalArticles": 1247,
+      "totalReferences": 5662,
+      "examples": [
+        "119IO0000000000_18860420_000000000000000",
+        "119IO0000000051_18860713_000000000000000",
+        "120IO0000000001_18871222_000000000000000"
+      ],
+      "avgReferencesPerArticle": 4.540497193263834,
+      "avgReferencesPerLaw": 82.05797101449275
+    }
+  ],
+  "qualityAssessment": {
+    "grade": "A+ (優秀)",
+    "strengths": [
+      "民法で100%完全検出を達成",
+      "97.4%の高い再現率（ほぼ全ての参照を検出）",
+      "略称展開機能が効果的（59法令対応）",
+      "削除条文の完全検出",
+      "処理速度が高速（50秒で全件処理）"
+    ],
+    "improvements": [
+      "文脈依存参照（「前項」など）の解決",
+      "一般名詞の誤認識削減（「特別の定め」など）",
+      "抽象的参照の処理改善"
+    ]
+  }
+}
