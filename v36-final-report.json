@@ -1,0 +1,343 @@
+{
+  "version": "v3.6.0",
+  "date": "2025-08-18T01:00:21.557Z",
+  "summary": {
+    "totalTests": 21,
+    "v35Success": 10,
+    "v36Success": 21,
+    "improvement": 11,
+    "fixTargetImprovement": "7/7"
+  },
+  "categoryBreakdown": {
+    "修正対象": {
+      "total": 7,
+      "correct": 7
+    },
+    "再確認": {
+      "total": 8,
+      "correct": 8
+    },
+    "複雑": {
+      "total": 6,
+      "correct": 6
+    }
+  },
+  "details": [
+    {
+      "category": "修正対象",
+      "description": "人事院規則（ハイフン番号形式）",
+      "text": "人事院規則一―三四第五条の規定に基づき",
+      "expected": 1,
+      "v35": 0,
+      "v36": 2,
+      "v35_success": false,
+      "v36_success": true,
+      "improved": true,
+      "v36_targets": [
+        "人事院規則",
+        "人事院規則一―三四"
+      ]
+    },
+    {
+      "category": "修正対象",
+      "description": "人事院規則（長音記号）",
+      "text": "人事院規則一ー三四により定められた基準",
+      "expected": 1,
+      "v35": 0,
+      "v36": 2,
+      "v35_success": false,
+      "v36_success": true,
+      "improved": true,
+      "v36_targets": [
+        "人事院規則",
+        "人事院規則一―三四"
+      ]
+    },
+    {
+      "category": "修正対象",
+      "description": "人事院規則（半角ハイフン）",
+      "text": "人事院規則八－一第三条第二項",
+      "expected": 1,
+      "v35": 0,
+      "v36": 2,
+      "v35_success": false,
+      "v36_success": true,
+      "improved": true,
+      "v36_targets": [
+        "人事院規則",
+        "人事院規則八―一"
+      ]
+    },
+    {
+      "category": "修正対象",
+      "description": "長い組織名を含む局長通知",
+      "text": "文部科学省初等中等教育局長通知により",
+      "expected": 1,
+      "v35": 0,
+      "v36": 1,
+      "v35_success": false,
+      "v36_success": true,
+      "improved": true,
+      "v36_targets": [
+        "文部科学省初等中等教育局長通知"
+      ]
+    },
+    {
+      "category": "修正対象",
+      "description": "省＋局＋長の通達パターン",
+      "text": "総務省自治行政局長通達に従い",
+      "expected": 1,
+      "v35": 0,
+      "v36": 1,
+      "v35_success": false,
+      "v36_success": true,
+      "improved": true,
+      "v36_targets": [
+        "総務省自治行政局長通達"
+      ]
+    },
+    {
+      "category": "修正対象",
+      "description": "特殊文字を含む局名",
+      "text": "厚生労働省医薬・生活衛生局長通知",
+      "expected": 1,
+      "v35": 0,
+      "v36": 1,
+      "v35_success": false,
+      "v36_success": true,
+      "improved": true,
+      "v36_targets": [
+        "厚生労働省医薬・生活衛生局長通知"
+      ]
+    },
+    {
+      "category": "修正対象",
+      "description": "課長通知（番号付き）",
+      "text": "国土交通省住宅局建築指導課長通知第百二十号",
+      "expected": 1,
+      "v35": 0,
+      "v36": 2,
+      "v35_success": false,
+      "v36_success": true,
+      "improved": true,
+      "v36_targets": [
+        "国土交通省住宅局建築指導課長通知",
+        "国土交通省住宅局建築指導課長"
+      ]
+    },
+    {
+      "category": "再確認",
+      "description": "最高裁判所規則",
+      "text": "最高裁判所規則第三号により定められた手続きに従い",
+      "expected": 1,
+      "v35": 1,
+      "v36": 2,
+      "v35_success": true,
+      "v36_success": true,
+      "improved": false,
+      "v36_targets": [
+        "最高裁判所規則",
+        "最高裁判所規則第三号"
+      ]
+    },
+    {
+      "category": "再確認",
+      "description": "会計検査院規則",
+      "text": "会計検査院規則第七号及び同規則第八号",
+      "expected": 2,
+      "v35": 2,
+      "v36": 2,
+      "v35_success": true,
+      "v36_success": true,
+      "improved": false,
+      "v36_targets": [
+        "会計検査院規則第七号及び同規則",
+        "会計検査院規則第七号"
+      ]
+    },
+    {
+      "category": "再確認",
+      "description": "都条例（号数付き）",
+      "text": "東京都条例第百二十三号により制定された",
+      "expected": 1,
+      "v35": 1,
+      "v36": 2,
+      "v35_success": true,
+      "v36_success": true,
+      "improved": false,
+      "v36_targets": [
+        "東京都",
+        "東京都条例第百二十三号"
+      ]
+    },
+    {
+      "category": "再確認",
+      "description": "内閣府令",
+      "text": "内閣府令第三十五号に定める基準",
+      "expected": 1,
+      "v35": 1,
+      "v36": 2,
+      "v35_success": true,
+      "v36_success": true,
+      "improved": false,
+      "v36_targets": [
+        "内閣府令",
+        "内閣府令第三十五号"
+      ]
+    },
+    {
+      "category": "再確認",
+      "description": "厚生労働省令",
+      "text": "厚生労働省令第百号により指定された",
+      "expected": 1,
+      "v35": 2,
+      "v36": 3,
+      "v35_success": true,
+      "v36_success": true,
+      "improved": false,
+      "v36_targets": [
+        "厚生労働省",
+        "厚生労働省令",
+        "厚生労働省令第百号"
+      ]
+    },
+    {
+      "category": "再確認",
+      "description": "大臣告示",
+      "text": "厚生労働大臣告示第三百号により公示",
+      "expected": 1,
+      "v35": 2,
+      "v36": 2,
+      "v35_success": true,
+      "v36_success": true,
+      "improved": false,
+      "v36_targets": [
+        "厚生労働大臣",
+        "告示第三百号"
+      ]
+    },
+    {
+      "category": "再確認",
+      "description": "省訓令",
+      "text": "防衛省訓令第八号により規定",
+      "expected": 1,
+      "v35": 2,
+      "v36": 3,
+      "v35_success": true,
+      "v36_success": true,
+      "improved": false,
+      "v36_targets": [
+        "防衛省訓令",
+        "防衛省訓令",
+        "訓令第八号"
+      ]
+    },
+    {
+      "category": "再確認",
+      "description": "明治勅令",
+      "text": "明治二十三年勅令第百号（旧商法）",
+      "expected": 1,
+      "v35": 2,
+      "v36": 3,
+      "v35_success": true,
+      "v36_success": true,
+      "improved": false,
+      "v36_targets": [
+        "明治二十三年勅令第百号",
+        "明治二十三年勅令",
+        "勅令第百号"
+      ]
+    },
+    {
+      "category": "複雑",
+      "description": "非常に長い組織階層",
+      "text": "経済産業省商務情報政策局サービス政策課長通達",
+      "expected": 1,
+      "v35": 0,
+      "v36": 1,
+      "v35_success": false,
+      "v36_success": true,
+      "improved": true,
+      "v36_targets": [
+        "経済産業省商務情報政策局サービス政策課長通達"
+      ]
+    },
+    {
+      "category": "複雑",
+      "description": "中点を含む局名",
+      "text": "農林水産省消費・安全局長通知第三号",
+      "expected": 1,
+      "v35": 0,
+      "v36": 2,
+      "v35_success": false,
+      "v36_success": true,
+      "improved": true,
+      "v36_targets": [
+        "農林水産省消費・安全局長通知",
+        "農林水産省消費・安全局長"
+      ]
+    },
+    {
+      "category": "複雑",
+      "description": "複数階層の組織名",
+      "text": "環境省大臣官房廃棄物・リサイクル対策部長通知",
+      "expected": 1,
+      "v35": 0,
+      "v36": 1,
+      "v35_success": false,
+      "v36_success": true,
+      "improved": true,
+      "v36_targets": [
+        "環境省大臣官房廃棄物・リサイクル対策部長通知"
+      ]
+    },
+    {
+      "category": "複雑",
+      "description": "委員会規則（条文付き）",
+      "text": "公正取引委員会規則第十号第五条",
+      "expected": 1,
+      "v35": 1,
+      "v36": 3,
+      "v35_success": true,
+      "v36_success": true,
+      "improved": false,
+      "v36_targets": [
+        "公正取引委員会規則",
+        "公正取引委員会規則",
+        "公正取引委員会規則第十号"
+      ]
+    },
+    {
+      "category": "複雑",
+      "description": "特別区条例",
+      "text": "特別区条例第五十号",
+      "expected": 1,
+      "v35": 0,
+      "v36": 2,
+      "v35_success": false,
+      "v36_success": true,
+      "improved": true,
+      "v36_targets": [
+        "特別区",
+        "特別区条例第五十号"
+      ]
+    },
+    {
+      "category": "複雑",
+      "description": "複数省令の並列",
+      "text": "文部科学省令第三号及び総務省令第七号",
+      "expected": 2,
+      "v35": 2,
+      "v36": 4,
+      "v35_success": true,
+      "v36_success": true,
+      "improved": false,
+      "v36_targets": [
+        "文部科学省令第三号及び総務省",
+        "文部科学省令第三号及び総務省令",
+        "文部科学省令第三号",
+        "総務省令第七号"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,645 @@
+{
+  "version": "v3.6.0",
+  "date": "2025-08-18T01:08:30.790Z",
+  "summary": {
+    "totalLaws": 30,
+    "totalArticles": 1054,
+    "totalReferences": 61,
+    "avgReferencesPerLaw": 2.033333333333333,
+    "avgReferencesPerArticle": 0.05787476280834915
+  },
+  "typeStatistics": {
+    "external": 36,
+    "internal": 19,
+    "relative": 4,
+    "application": 2
+  },
+  "lawTypeStatistics": {
+    "通達": 7,
+    "政令": 25,
+    "規則": 3,
+    "条例": 1
+  },
+  "topLaws": [
+    {
+      "title": "不明",
+      "articles": 20,
+      "references": 37
+    },
+    {
+      "title": "不明",
+      "articles": 103,
+      "references": 17
+    },
+    {
+      "title": "不明",
+      "articles": 3,
+      "references": 7
+    },
+    {
+      "title": "不明",
+      "articles": 0,
+      "references": 0
+    },
+    {
+      "title": "不明",
+      "articles": 0,
+      "references": 0
+    }
+  ],
+  "qualityMetrics": {
+    "externalRefDetectionRate": 10,
+    "rangeRefDetectionRate": 0,
+    "applicationRefDetectionRate": 3.3333333333333335
+  },
+  "details": [
+    {
+      "lawId": "346AC0000000065_20120401_424AC0000000019",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 20,
+      "totalReferences": 37,
+      "referenceTypes": {
+        "internal": 14,
+        "relative": 3,
+        "external": 18,
+        "application": 2
+      },
+      "detectionDetails": {
+        "internal": 14,
+        "external": 18,
+        "relative": 3,
+        "range": 0,
+        "multiple": 0,
+        "application": 2
+      },
+      "lawTypeReferences": {
+        "政令": 15,
+        "通達": 3
+      },
+      "sampleReferences": [
+        "政令",
+        "政令",
+        "政令",
+        "これらの物品について再輸出期間その他必要な事項を通知",
+        "政令",
+        "政令",
+        "事業計画書及び業務方法書その他財務省令",
+        "国際道路運送手帳を発",
+        "財務省令",
+        "保証団体がこの法律若しくはこの法律に基づく命令"
+      ]
+    },
+    {
+      "lawId": "321CONSTITUTION_19470503_000000000000000",
+      "lawTitle": "不明",
+      "lawType": "憲法",
+      "totalArticles": 103,
+      "totalReferences": 17,
+      "referenceTypes": {
+        "external": 15,
+        "internal": 1,
+        "relative": 1
+      },
+      "detectionDetails": {
+        "internal": 1,
+        "external": 15,
+        "relative": 1,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {
+        "通達": 4,
+        "政令": 7,
+        "規則": 3,
+        "条例": 1
+      },
+      "sampleReferences": [
+        "国権の発",
+        "命令",
+        "命令又は規則",
+        "権限を有する司法官憲が発",
+        "且つ理由となつてゐる犯罪を明示する令",
+        "正当な理由に基いて発",
+        "且つ捜索する場所及び押収する物を明示する令",
+        "権限を有する司法官憲が発する各別の令",
+        "権限を有する司法官憲が発",
+        "法律及び政令"
+      ]
+    },
+    {
+      "lawId": "322M30000010029_20050307_417M60000010019",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 3,
+      "totalReferences": 7,
+      "referenceTypes": {
+        "external": 3,
+        "internal": 4
+      },
+      "detectionDetails": {
+        "internal": 4,
+        "external": 3,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {
+        "政令": 3
+      },
+      "sampleReferences": [
+        "閉鎖機関令",
+        "閉鎖機関令",
+        "閉鎖機関令"
+      ]
+    },
+    {
+      "lawId": "129AC0000000089_20250606_507AC0000000057",
+      "lawTitle": "不明",
+      "lawType": "法律",
+      "totalArticles": 0,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "132AC0000000048_20230401_503AC0000000061",
+      "lawTitle": "不明",
+      "lawType": "法律",
+      "totalArticles": 0,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "140AC0000000045_20250722_507AC0000000026",
+      "lawTitle": "不明",
+      "lawType": "法律",
+      "totalArticles": 0,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "322AC0000000049_20250601_504AC0000000068",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 124,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "405AC0000000088_20240926_506AC0000000065",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 28,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "322AC0000000067_20250601_504AC0000000068",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 0,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "334AC0000000121_20250601_504AC0000000068",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 220,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "345AC0000000048_20250601_505AC0000000033",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 41,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "340AC0000000033_20250620_507AC0000000074",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 0,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "363AC0000000108_20250620_507AC0000000074",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 85,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "415AC0000000057_20250601_504AC0000000068",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 21,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "416AC0000000075_20250601_504AC0000000068",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 61,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "406M50400000001_20250601_507M60400000010",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 9,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "411AC0000000017_20240401_506AC0000000005",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 14,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "337AC0000000144_20260101_507AC0000000013",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 51,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "342M50000800086_20240401_506M60000800026",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 8,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "326AC0000000204_20260227_507AC0000000044",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 120,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "325AC0000000226_20270620_506AC0000000060",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 23,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "341CO0000000103_20201125_502CO0000000329",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 8,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "325AC0000000118_20250401_505AC0000000086",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 29,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "323AC0000000027_20030401_414AC0000000098",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 0,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "341AC0000000073_20200401_429AC0000000045",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 15,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "338M50000400123_20220401_504M60000400019",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 9,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "324AC1000000208_20250601_504AC0000000068",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 24,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "341AC0000000101_20241108_506AC0000000040",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 22,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "323CO0000000402_19490430_324AC0000000047",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 0,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    },
+    {
+      "lawId": "338CO0000000365_20220401_504CO0000000167",
+      "lawTitle": "不明",
+      "lawType": "法律/政令",
+      "totalArticles": 16,
+      "totalReferences": 0,
+      "referenceTypes": {},
+      "detectionDetails": {
+        "internal": 0,
+        "external": 0,
+        "relative": 0,
+        "range": 0,
+        "multiple": 0,
+        "application": 0
+      },
+      "lawTypeReferences": {},
+      "sampleReferences": []
+    }
+  ]
+}
