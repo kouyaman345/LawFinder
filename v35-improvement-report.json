@@ -1,0 +1,345 @@
+{
+  "version": "v3.5.0",
+  "date": "2025-08-18T00:50:54.560Z",
+  "summary": {
+    "totalTests": 26,
+    "v34Success": 4,
+    "v35Success": 23,
+    "improvement": 19
+  },
+  "categoryBreakdown": {
+    "規則": 3,
+    "条例": 3,
+    "府令": 2,
+    "省令": 4,
+    "告示": 4,
+    "通達": 1,
+    "訓令": 2,
+    "勅令": 3,
+    "その他": 1
+  },
+  "details": [
+    {
+      "description": "最高裁判所規則",
+      "text": "最高裁判所規則第三号により定められた手続きに従い...",
+      "expected": 1,
+      "v34": 0,
+      "v35": 1,
+      "v34_success": false,
+      "v35_success": true,
+      "v35_targets": [
+        "最高裁判所規則第三号"
+      ]
+    },
+    {
+      "description": "人事院規則（番号付き）",
+      "text": "人事院規則一―三四第五条の規定に基づき...",
+      "expected": 1,
+      "v34": 0,
+      "v35": 0,
+      "v34_success": false,
+      "v35_success": false,
+      "v35_targets": []
+    },
+    {
+      "description": "会計検査院規則",
+      "text": "会計検査院規則第七号及び同規則第八号...",
+      "expected": 2,
+      "v34": 0,
+      "v35": 2,
+      "v34_success": false,
+      "v35_success": true,
+      "v35_targets": [
+        "会計検査院規則第七号及び同規則",
+        "会計検査院規則第七号"
+      ]
+    },
+    {
+      "description": "委員会規則",
+      "text": "国家公安委員会規則第十二号第三条...",
+      "expected": 1,
+      "v34": 0,
+      "v35": 1,
+      "v34_success": false,
+      "v35_success": true,
+      "v35_targets": [
+        "国家公安委員会規則"
+      ]
+    },
+    {
+      "description": "都条例（号数付き）",
+      "text": "東京都条例第百二十三号により制定された...",
+      "expected": 1,
+      "v34": 0,
+      "v35": 1,
+      "v34_success": false,
+      "v35_success": true,
+      "v35_targets": [
+        "東京都条例第百二十三号"
+      ]
+    },
+    {
+      "description": "市条例（条文付き）",
+      "text": "横浜市条例第五条の規定に基づき...",
+      "expected": 1,
+      "v34": 1,
+      "v35": 1,
+      "v34_success": true,
+      "v35_success": true,
+      "v35_targets": [
+        "横浜市"
+      ]
+    },
+    {
+      "description": "府条例（具体名付き）",
+      "text": "京都府環境保全条例第十二条第三項...",
+      "expected": 1,
+      "v34": 1,
+      "v35": 1,
+      "v34_success": true,
+      "v35_success": true,
+      "v35_targets": [
+        "京都府環境保全条例"
+      ]
+    },
+    {
+      "description": "内閣府令",
+      "text": "内閣府令第三十五号に定める基準...",
+      "expected": 1,
+      "v34": 0,
+      "v35": 1,
+      "v34_success": false,
+      "v35_success": true,
+      "v35_targets": [
+        "内閣府令第三十五号"
+      ]
+    },
+    {
+      "description": "府令",
+      "text": "総理府令第十号（現内閣府令）...",
+      "expected": 1,
+      "v34": 0,
+      "v35": 1,
+      "v34_success": false,
+      "v35_success": true,
+      "v35_targets": [
+        "総理府令第十号（現内閣府令"
+      ]
+    },
+    {
+      "description": "厚生労働省令",
+      "text": "厚生労働省令第百号により指定された...",
+      "expected": 1,
+      "v34": 0,
+      "v35": 2,
+      "v34_success": false,
+      "v35_success": true,
+      "v35_targets": [
+        "厚生労働省",
+        "厚生労働省令第百号"
+      ]
+    },
+    {
+      "description": "経済産業省令（条文付き）",
+      "text": "経済産業省令第二十三号第七条...",
+      "expected": 1,
+      "v34": 0,
+      "v35": 2,
+      "v34_success": false,
+      "v35_success": true,
+      "v35_targets": [
+        "経済産業省",
+        "経済産業省令第二十三号"
+      ]
+    },
+    {
+      "description": "国土交通省令",
+      "text": "国土交通省令第五号の基準...",
+      "expected": 1,
+      "v34": 0,
+      "v35": 2,
+      "v34_success": false,
+      "v35_success": true,
+      "v35_targets": [
+        "国土交通省",
+        "国土交通省令第五号"
+      ]
+    },
+    {
+      "description": "大臣告示",
+      "text": "厚生労働大臣告示第三百号により公示...",
+      "expected": 1,
+      "v34": 0,
+      "v35": 2,
+      "v34_success": false,
+      "v35_success": true,
+      "v35_targets": [
+        "厚生労働大臣",
+        "告示第三百号"
+      ]
+    },
+    {
+      "description": "省告示",
+      "text": "文部科学省告示第百二十号...",
+      "expected": 1,
+      "v34": 0,
+      "v35": 2,
+      "v34_success": false,
+      "v35_success": true,
+      "v35_targets": [
+        "文部科学省",
+        "告示第百二十号"
+      ]
+    },
+    {
+      "description": "年号付き告示",
+      "text": "令和五年法務省告示第七号...",
+      "expected": 1,
+      "v34": 0,
+      "v35": 2,
+      "v34_success": false,
+      "v35_success": true,
+      "v35_targets": [
+        "令和五年法務省",
+        "告示第七号"
+      ]
+    },
+    {
+      "description": "庁告示",
+      "text": "金融庁告示第十五号に基づく...",
+      "expected": 1,
+      "v34": 0,
+      "v35": 2,
+      "v34_success": false,
+      "v35_success": true,
+      "v35_targets": [
+        "金融庁",
+        "告示第十五号"
+      ]
+    },
+    {
+      "description": "省発通達",
+      "text": "厚生労働省発基第〇三二一号通達...",
+      "expected": 1,
+      "v34": 0,
+      "v35": 1,
+      "v34_success": false,
+      "v35_success": true,
+      "v35_targets": [
+        "厚生労働省発基第〇三二一号通達"
+      ]
+    },
+    {
+      "description": "局長通知",
+      "text": "文部科学省初等中等教育局長通知により...",
+      "expected": 1,
+      "v34": 0,
+      "v35": 0,
+      "v34_success": false,
+      "v35_success": false,
+      "v35_targets": []
+    },
+    {
+      "description": "局長通達",
+      "text": "総務省自治行政局長通達に従い...",
+      "expected": 1,
+      "v34": 0,
+      "v35": 0,
+      "v34_success": false,
+      "v35_success": false,
+      "v35_targets": []
+    },
+    {
+      "description": "省訓令",
+      "text": "防衛省訓令第八号により規定...",
+      "expected": 1,
+      "v34": 0,
+      "v35": 2,
+      "v34_success": false,
+      "v35_success": true,
+      "v35_targets": [
+        "防衛省訓令",
+        "訓令第八号"
+      ]
+    },
+    {
+      "description": "庁訓令",
+      "text": "警察庁訓令第十二号...",
+      "expected": 1,
+      "v34": 0,
+      "v35": 2,
+      "v34_success": false,
+      "v35_success": true,
+      "v35_targets": [
+        "警察庁訓令",
+        "訓令第十二号"
+      ]
+    },
+    {
+      "description": "明治勅令",
+      "text": "明治二十三年勅令第百号（旧商法）...",
+      "expected": 1,
+      "v34": 0,
+      "v35": 2,
+      "v34_success": false,
+      "v35_success": true,
+      "v35_targets": [
+        "明治二十三年勅令第百号",
+        "勅令第百号"
+      ]
+    },
+    {
+      "description": "大正勅令",
+      "text": "大正十年勅令第三百号...",
+      "expected": 1,
+      "v34": 0,
+      "v35": 2,
+      "v34_success": false,
+      "v35_success": true,
+      "v35_targets": [
+        "大正十年勅令第三百号",
+        "勅令第三百号"
+      ]
+    },
+    {
+      "description": "昭和勅令",
+      "text": "昭和二十年勅令第五百四十二号...",
+      "expected": 1,
+      "v34": 0,
+      "v35": 2,
+      "v34_success": false,
+      "v35_success": true,
+      "v35_targets": [
+        "昭和二十年勅令第五百四十二号",
+        "勅令第五百四十二号"
+      ]
+    },
+    {
+      "description": "政令と省令の複合",
+      "text": "労働基準法施行令第五条及び同法施行規則第三条...",
+      "expected": 2,
+      "v34": 2,
+      "v35": 2,
+      "v34_success": true,
+      "v35_success": true,
+      "v35_targets": [
+        "労働基準法施行令",
+        "労働基準法施行令第五条及び同法施行規則"
+      ]
+    },
+    {
+      "description": "複数法律の参照",
+      "text": "民法第九十条、商法第十条並びに会社法第二条...",
+      "expected": 3,
+      "v34": 3,
+      "v35": 3,
+      "v34_success": true,
+      "v35_success": true,
+      "v35_targets": [
+        "民法",
+        "商法",
+        "会社法"
+      ]
+    }
+  ]
+}
