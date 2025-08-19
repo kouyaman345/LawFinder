@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Law {
+  id                String    @id
+  title             String
+  lawType           String?
+  lawNumber         String?
+  promulgationDate  DateTime?
+  effectiveDate     DateTime?
+  xmlContent        String
+  status            String    @default("現行")
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  articles          Article[]
+  
+  @@index([title])
+  @@index([lawNumber])
+  @@index([status])
+}
+
+model Article {
+  id                String    @id @default(uuid())
+  lawId             String
+  articleNumber     String
+  articleTitle      String?
+  content           String
+  
+  part              String?
+  chapter           String?
+  section           String?
+  subsection        String?
+  division          String?   // 本則/附則の区分
+  sortOrder         Int       @default(0)
+  isDeleted         Boolean   @default(false)
+  
+  law               Law       @relation(fields: [lawId], references: [id], onDelete: Cascade)
+  paragraphs        Paragraph[]
+  
+  @@unique([lawId, articleNumber])
+  @@index([lawId, sortOrder])
+}
+
+model Paragraph {
+  id                String    @id @default(uuid())
+  articleId         String
+  paragraphNumber   Int
+  content           String
+  
+  article           Article   @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  items             Item[]
+  
+  @@unique([articleId, paragraphNumber])
+}
+
+model Item {
+  id                String    @id @default(uuid())
+  paragraphId       String
+  itemNumber        String
+  content           String
+  
+  paragraph         Paragraph @relation(fields: [paragraphId], references: [id], onDelete: Cascade)
+  
+  @@unique([paragraphId, itemNumber])
+}
+
+model Reference {
+  id                String    @id @default(uuid())
+  sourceLawId       String
+  sourceArticle     String
+  targetLawId       String?
+  targetArticle     String?
+  referenceType     String    // internal, external, relative, range, multiple, structural, application
+  referenceText     String    // 元のテキスト（例：「第123条」）
+  confidence        Float     @default(1.0)
+  metadata          Json?     // 追加情報（相対参照の方向、距離など）
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@index([sourceLawId, sourceArticle])
+  @@index([targetLawId, targetArticle])
+  @@index([referenceType])
+}
