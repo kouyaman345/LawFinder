@@ -581,13 +581,44 @@ class FixedVersionedLawImporter {
     
     let text = '';
     
-    if (node.ParagraphNum) text += node.ParagraphNum + ' ';
-    if (node.ItemTitle) text += node.ItemTitle + ' ';
+    // 項番号
+    if (node.ParagraphNum) {
+      text += node.ParagraphNum + ' ';
+    }
+    
+    // 項の文章を抽出（これが主要な条文内容）
+    if (node.ParagraphSentence) {
+      const sentenceNode = node.ParagraphSentence;
+      if (sentenceNode.Sentence) {
+        const sentences = Array.isArray(sentenceNode.Sentence) ? sentenceNode.Sentence : [sentenceNode.Sentence];
+        text += sentences.map((s: any) => this.extractSentenceText(s)).join('');
+      }
+    }
+    
+    // 号のタイトル
+    if (node.ItemTitle) {
+      text += node.ItemTitle + ' ';
+    }
+    
+    // 号の文章
+    if (node.ItemSentence) {
+      const sentenceNode = node.ItemSentence;
+      if (sentenceNode.Sentence) {
+        const sentences = Array.isArray(sentenceNode.Sentence) ? sentenceNode.Sentence : [sentenceNode.Sentence];
+        text += sentences.map((s: any) => this.extractSentenceText(s)).join('');
+      }
+    }
+    
+    // 直接のSentence要素（旧形式のXML対応）
     if (node.Sentence) {
       const sentences = Array.isArray(node.Sentence) ? node.Sentence : [node.Sentence];
       text += sentences.map((s: any) => this.extractSentenceText(s)).join('');
     }
-    if (node['#text']) text += node['#text'];
+    
+    // テキストノード
+    if (node['#text']) {
+      text += node['#text'];
+    }
     
     return text.trim();
   }

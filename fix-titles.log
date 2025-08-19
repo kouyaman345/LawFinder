@@ -1,0 +1,25 @@
+================================================================================
+🔧 法令タイトル修正開始
+================================================================================
+❌ エラー: PrismaClientKnownRequestError: 
+Invalid `prisma.lawVersion.findMany()` invocation in
+/home/coffee/projects/LawFinder/scripts/fix-law-titles.ts:40:46
+
+  37 
+  38 try {
+  39   // すべての法令バージョンを取得
+→ 40   const versions = await prisma.lawVersion.findMany(
+Failed to convert rust `String` into napi `string`
+    at ri.handleRequestError (/home/coffee/projects/LawFinder/node_modules/@prisma/client/src/runtime/RequestHandler.ts:228:13)
+    at ri.handleAndLogRequestError (/home/coffee/projects/LawFinder/node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12)
+    at ri.request (/home/coffee/projects/LawFinder/node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12)
+    at l (/home/coffee/projects/LawFinder/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:862:24)
+    at fixLawTitles (/home/coffee/projects/LawFinder/scripts/fix-law-titles.ts:40:22) {
+  code: 'GenericFailure',
+  meta: { modelName: 'LawVersion' },
+  clientVersion: '6.13.0'
+}
+[Error: Failed to convert rust `String` into napi `string`] {
+  code: 'GenericFailure',
+  clientVersion: '6.13.0'
+}

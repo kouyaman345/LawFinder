@@ -1,0 +1,352 @@
+{
+  "timestamp": "2025-08-19T23:43:15.695Z",
+  "summary": {
+    "totalLaws": 10,
+    "totalArticles": 1000,
+    "totalDetected": 1508,
+    "totalMapped": 108,
+    "totalUnmapped": 22,
+    "overallAccuracy": 83.07692307692308
+  },
+  "details": [
+    {
+      "lawId": "129AC0000000089",
+      "lawTitle": "民法",
+      "totalArticles": 100,
+      "detectedReferences": 35,
+      "mappedReferences": 1,
+      "unmappedReferences": 0,
+      "externalReferences": 1,
+      "internalReferences": 0,
+      "accuracy": 100,
+      "samples": [
+        {
+          "text": "民事執行法第百八十条",
+          "targetLaw": "民事執行法",
+          "targetLawId": "354AC0000000004",
+          "status": "mapped"
+        }
+      ]
+    },
+    {
+      "lawId": "132AC0000000048",
+      "lawTitle": "商法",
+      "totalArticles": 100,
+      "detectedReferences": 57,
+      "mappedReferences": 8,
+      "unmappedReferences": 0,
+      "externalReferences": 8,
+      "internalReferences": 2,
+      "accuracy": 100,
+      "samples": [
+        {
+          "text": "保険法第二十八条",
+          "targetLaw": "保険法",
+          "targetLawId": "420AC0000000056",
+          "status": "mapped"
+        },
+        {
+          "text": "保険法（平成二十年法律第五十六号）",
+          "targetLaw": "保険法",
+          "targetLawId": "420AC0000000056",
+          "status": "mapped"
+        },
+        {
+          "text": "民法第三百四十九条",
+          "targetLaw": "民法",
+          "targetLawId": "129AC0000000089",
+          "status": "mapped"
+        }
+      ]
+    },
+    {
+      "lawId": "140AC0000000045",
+      "lawTitle": "刑法",
+      "totalArticles": 100,
+      "detectedReferences": 66,
+      "mappedReferences": 0,
+      "unmappedReferences": 0,
+      "externalReferences": 0,
+      "internalReferences": 7,
+      "accuracy": 100,
+      "samples": []
+    },
+    {
+      "lawId": "322AC0000000049",
+      "lawTitle": "労働基準法",
+      "totalArticles": 100,
+      "detectedReferences": 145,
+      "mappedReferences": 8,
+      "unmappedReferences": 0,
+      "externalReferences": 8,
+      "internalReferences": 37,
+      "accuracy": 100,
+      "samples": [
+        {
+          "text": "船員法（昭和二十二年法律第百号）",
+          "targetLaw": "船員法",
+          "targetLawId": "338CO0000000054",
+          "status": "mapped"
+        },
+        {
+          "text": "労働安全衛生法（昭和四十七年法律第五十七号）",
+          "targetLaw": "労働安全衛生法",
+          "targetLawId": "347AC0000000057",
+          "status": "mapped"
+        },
+        {
+          "text": "同法第六十一条第三項に規定する行政執行法人介護休業及び同法第六十一条",
+          "targetLaw": "同法第六十一条第三項に規定する行政執行法人介護休業及び同法",
+          "targetLawId": "420M60000002084",
+          "status": "mapped"
+        }
+      ]
+    },
+    {
+      "lawId": "417AC0000000086",
+      "lawTitle": "会社法",
+      "totalArticles": 100,
+      "detectedReferences": 175,
+      "mappedReferences": 9,
+      "unmappedReferences": 1,
+      "externalReferences": 10,
+      "internalReferences": 8,
+      "accuracy": 90,
+      "samples": [
+        {
+          "text": "非訟事件手続法第四十条",
+          "targetLaw": "非訟事件手続法",
+          "targetLawId": "423AC0000000051",
+          "status": "mapped"
+        },
+        {
+          "text": "銀行法（昭和五十六年法律第五十九号）",
+          "targetLaw": "銀行法",
+          "targetLawId": "356AC0000000059",
+          "status": "mapped"
+        },
+        {
+          "text": "信託業法（平成十六年法律第百五十四号）",
+          "targetLaw": "信託業法",
+          "targetLawId": "416M60000002107",
+          "status": "mapped"
+        },
+        {
+          "text": "同条第二号並びに同法第四百二十四条",
+          "targetLaw": "同条第二号並びに同法",
+          "targetLawId": null,
+          "status": "unmapped"
+        }
+      ]
+    },
+    {
+      "lawId": "408AC0000000109",
+      "lawTitle": "民事訴訟法",
+      "totalArticles": 100,
+      "detectedReferences": 81,
+      "mappedReferences": 1,
+      "unmappedReferences": 0,
+      "externalReferences": 1,
+      "internalReferences": 2,
+      "accuracy": 100,
+      "samples": [
+        {
+          "text": "裁判所法（昭和二十二年法律第五十九号）",
+          "targetLaw": "裁判所法",
+          "targetLawId": "322CO0000000024",
+          "status": "mapped"
+        }
+      ]
+    },
+    {
+      "lawId": "323AC0000000131",
+      "lawTitle": "刑事訴訟法",
+      "totalArticles": 100,
+      "detectedReferences": 101,
+      "mappedReferences": 9,
+      "unmappedReferences": 2,
+      "externalReferences": 11,
+      "internalReferences": 15,
+      "accuracy": 81.81818181818183,
+      "samples": [
+        {
+          "text": "を刑法第十八条",
+          "targetLaw": "を刑法",
+          "targetLawId": "141IO0000000217",
+          "status": "mapped"
+        },
+        {
+          "text": "刑事補償法（昭和二十五年法律第一号）",
+          "targetLaw": "刑事補償法",
+          "targetLawId": "325AC0000000001",
+          "status": "mapped"
+        },
+        {
+          "text": "証人が当該証人尋問においてした行為が第百六十一条又は刑法第百六十九条",
+          "targetLaw": "証人が当該証人尋問においてした行為が第百六十一条又は刑法",
+          "targetLawId": "141IO0000000217",
+          "status": "mapped"
+        },
+        {
+          "text": "組織的犯罪処罰法第十三条第三項の規定による犯罪被害財産の没収若しくは組織的犯罪処罰法第十六条",
+          "targetLaw": "組織的犯罪処罰法第十三条第三項の規定による犯罪被害財産の没収若しくは組織的犯罪処罰法",
+          "targetLawId": null,
+          "status": "unmapped"
+        },
+        {
+          "text": "の罪若しくは同法第二百四十一条",
+          "targetLaw": "の罪若しくは同法",
+          "targetLawId": null,
+          "status": "unmapped"
+        }
+      ]
+    },
+    {
+      "lawId": "345AC0000000048",
+      "lawTitle": "著作権法",
+      "totalArticles": 100,
+      "detectedReferences": 188,
+      "mappedReferences": 8,
+      "unmappedReferences": 3,
+      "externalReferences": 11,
+      "internalReferences": 12,
+      "accuracy": 72.72727272727273,
+      "samples": [
+        {
+          "text": "行政機関情報公開法第六条",
+          "targetLaw": "行政機関情報公開法",
+          "targetLawId": null,
+          "status": "unmapped"
+        },
+        {
+          "text": "独立行政法人等情報公開法第六条第二項の規定又は情報公開条例の規定で行政機関情報公開法第六条",
+          "targetLaw": "独立行政法人等情報公開法第六条第二項の規定又は情報公開条例の規定で行政機関情報公開法",
+          "targetLawId": "427M60000008028",
+          "status": "mapped"
+        },
+        {
+          "text": "公文書管理法第十六条",
+          "targetLaw": "公文書管理法",
+          "targetLawId": null,
+          "status": "unmapped"
+        },
+        {
+          "text": "その著作権又は著作隣接権が著作権等管理事業法第二条",
+          "targetLaw": "その著作権又は著作隣接権が著作権等管理事業法",
+          "targetLawId": "412AC0000000131",
+          "status": "mapped"
+        },
+        {
+          "text": "当該著作権等管理事業者が定める同法第十三条",
+          "targetLaw": "当該著作権等管理事業者が定める同法",
+          "targetLawId": null,
+          "status": "unmapped"
+        },
+        {
+          "text": "民事訴訟法第九十二条",
+          "targetLaw": "民事訴訟法",
+          "targetLawId": "408AC0000000109",
+          "status": "mapped"
+        }
+      ]
+    },
+    {
+      "lawId": "334AC0000000121",
+      "lawTitle": "特許法",
+      "totalArticles": 100,
+      "detectedReferences": 242,
+      "mappedReferences": 30,
+      "unmappedReferences": 5,
+      "externalReferences": 35,
+      "internalReferences": 24,
+      "accuracy": 85.71428571428571,
+      "samples": [
+        {
+          "text": "実用新案法第二十二条第三項又は意匠法第三十三条",
+          "targetLaw": "実用新案法第二十二条第三項又は意匠法",
+          "targetLawId": "334AC0000000125",
+          "status": "mapped"
+        },
+        {
+          "text": "実用新案法第二十二条第三項又は意匠法第三十三条",
+          "targetLaw": "実用新案法第二十二条第三項又は意匠法",
+          "targetLawId": "334AC0000000125",
+          "status": "mapped"
+        },
+        {
+          "text": "実用新案法第二十二条第三項又は意匠法第三十三条",
+          "targetLaw": "実用新案法第二十二条第三項又は意匠法",
+          "targetLawId": "334AC0000000125",
+          "status": "mapped"
+        },
+        {
+          "text": "のうち同法第六十八条",
+          "targetLaw": "のうち同法",
+          "targetLawId": null,
+          "status": "unmapped"
+        },
+        {
+          "text": "これらの規定を同法第十一条",
+          "targetLaw": "これらの規定を同法",
+          "targetLawId": null,
+          "status": "unmapped"
+        },
+        {
+          "text": "これらの規定を同法第六十八条",
+          "targetLaw": "これらの規定を同法",
+          "targetLawId": null,
+          "status": "unmapped"
+        }
+      ]
+    },
+    {
+      "lawId": "340AC0000000033",
+      "lawTitle": "所得税法",
+      "totalArticles": 100,
+      "detectedReferences": 418,
+      "mappedReferences": 34,
+      "unmappedReferences": 11,
+      "externalReferences": 45,
+      "internalReferences": 29,
+      "accuracy": 75.55555555555556,
+      "samples": [
+        {
+          "text": "に規定する有限責任事業組合契約によつて成立する同法第二条",
+          "targetLaw": "に規定する有限責任事業組合契約によつて成立する同法",
+          "targetLawId": null,
+          "status": "unmapped"
+        },
+        {
+          "text": "に規定する有限責任事業組合の業務を執行する同法第二十九条",
+          "targetLaw": "に規定する有限責任事業組合の業務を執行する同法",
+          "targetLawId": null,
+          "status": "unmapped"
+        },
+        {
+          "text": "に規定する投資事業有限責任組合契約によつて成立する同法第二条",
+          "targetLaw": "に規定する投資事業有限責任組合契約によつて成立する同法",
+          "targetLawId": null,
+          "status": "unmapped"
+        },
+        {
+          "text": "当該国外転出の日の属する年分の所得税につき国税通則法第十九条",
+          "targetLaw": "当該国外転出の日の属する年分の所得税につき国税通則法",
+          "targetLawId": "337M50000040028",
+          "status": "mapped"
+        },
+        {
+          "text": "及び同法第七十二条",
+          "targetLaw": "及び同法",
+          "targetLawId": "418CO0000000287",
+          "status": "mapped"
+        },
+        {
+          "text": "「所得税法第百五十一条",
+          "targetLaw": "「所得税法",
+          "targetLawId": "340M50000040011",
+          "status": "mapped"
+        }
+      ]
+    }
+  ]
+}
