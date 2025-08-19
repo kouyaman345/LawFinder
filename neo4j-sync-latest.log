@@ -1,0 +1,31 @@
+================================================================================
+🔄 PostgreSQL → Neo4j 参照データ同期
+================================================================================
+既存の参照関係をクリア中...
+PrismaClientValidationError: 
+Invalid `prisma.reference.findMany()` invocation in
+/home/coffee/projects/LawFinder/scripts/sync-postgres-references-to-neo4j.ts:41:49
+
+  38 await session.run('MATCH ()-[r:REFERENCES]->() DELETE r');
+  39 
+  40 // PostgreSQLから参照データを取得
+→ 41 const references = await prisma.reference.findMany({
+       include: {
+         sourceVersion: {
+         ~~~~~~~~~~~~~
+           include: {
+             lawMaster: true
+           }
+         }
+       }
+     })
+
+Unknown field `sourceVersion` for include statement on model `Reference`. Available options are marked with ?.
+    at throwValidationException (/home/coffee/projects/LawFinder/node_modules/@prisma/client/src/runtime/core/errorRendering/throwValidationException.ts:45:9)
+    at ri.handleRequestError (/home/coffee/projects/LawFinder/node_modules/@prisma/client/src/runtime/RequestHandler.ts:202:7)
+    at ri.handleAndLogRequestError (/home/coffee/projects/LawFinder/node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12)
+    at ri.request (/home/coffee/projects/LawFinder/node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12)
+    at l (/home/coffee/projects/LawFinder/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:862:24)
+    at PostgresToNeo4jSync.sync (/home/coffee/projects/LawFinder/scripts/sync-postgres-references-to-neo4j.ts:41:26) {
+  clientVersion: '6.13.0'
+}

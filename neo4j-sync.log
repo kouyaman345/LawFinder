@@ -1,0 +1,12 @@
+[dotenv@17.2.1] injecting env (0) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+🔄 参照関係グラフの構築を開始します...
+📝 Neo4jスキーマを初期化中...
+✅ スキーマ初期化完了
+❌ グラフ構築エラー: TypeError: Cannot read properties of undefined (reading 'findMany')
+    at ReferenceGraphBuilder.buildAllLaws (/home/coffee/projects/LawFinder/scripts/sync-to-neo4j.ts:119:40)
+    at ReferenceGraphBuilder.build (/home/coffee/projects/LawFinder/scripts/sync-to-neo4j.ts:69:20)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+❌ グラフ構築中にエラーが発生しました: TypeError: Cannot read properties of undefined (reading 'findMany')
+    at ReferenceGraphBuilder.buildAllLaws (/home/coffee/projects/LawFinder/scripts/sync-to-neo4j.ts:119:40)
+    at ReferenceGraphBuilder.build (/home/coffee/projects/LawFinder/scripts/sync-to-neo4j.ts:69:20)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)

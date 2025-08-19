@@ -1,0 +1,26 @@
+================================================================================
+📝 高精度参照検出 V41 開始
+================================================================================
+✅ 既存の参照データをクリアしました
+❌ エラー: PrismaClientKnownRequestError: 
+Invalid `prisma.lawVersion.findMany()` invocation in
+/home/coffee/projects/LawFinder/scripts/populate-references-v41.ts:25:49
+
+  22 console.log('✅ 既存の参照データをクリアしました');
+  23 
+  24 // 最新バージョンの法令を取得
+→ 25 const lawVersions = await prisma.lawVersion.findMany(
+Failed to convert rust `String` into napi `string`
+    at ri.handleRequestError (/home/coffee/projects/LawFinder/node_modules/@prisma/client/src/runtime/RequestHandler.ts:228:13)
+    at ri.handleAndLogRequestError (/home/coffee/projects/LawFinder/node_modules/@prisma/client/src/runtime/RequestHandler.ts:174:12)
+    at ri.request (/home/coffee/projects/LawFinder/node_modules/@prisma/client/src/runtime/RequestHandler.ts:143:12)
+    at l (/home/coffee/projects/LawFinder/node_modules/@prisma/client/src/runtime/getPrismaClient.ts:862:24)
+    at populateReferences (/home/coffee/projects/LawFinder/scripts/populate-references-v41.ts:25:25) {
+  code: 'GenericFailure',
+  meta: { modelName: 'LawVersion' },
+  clientVersion: '6.13.0'
+}
+[Error: Failed to convert rust `String` into napi `string`] {
+  code: 'GenericFailure',
+  clientVersion: '6.13.0'
+}
