@@ -93,6 +93,9 @@ export class UltimateReferenceDetector {
   private lawTitleCache: Map<string, string> = new Map();
   private contextState: ContextState;
   private llmAvailable: boolean = false;
+  
+  // 法令メタデータキャッシュ（条文数を記録）
+  private lawMetadataCache: Map<string, { maxArticle: number; title: string }> = new Map();
 
   constructor(enableLLM = true) {
     this.contextState = {
@@ -222,10 +225,27 @@ export class UltimateReferenceDetector {
     }
 
     // パターン2: 法令名＋条文
-    const pattern2 = /([^、。\s（）]*法)第([一二三四五六七八九十百千]+)条/g;
+    // 改善版: 法令名の前に区切り文字を要求し、長すぎる法令名を除外
+    const pattern2 = /(?:^|[、。\s（「『])((?:[^、。\s（）「』]{2,30})?法(?:律)?)第([一二三四五六七八九十百千]+)条/g;
 
     while ((match = pattern2.exec(text)) !== null) {
       const lawName = match[1];
+      
+      // 法令名の妥当性チェック
+      if (!lawName || lawName.length > 25) {
+        continue; // 長すぎる法令名は誤検出の可能性が高い
+      }
+      
+      // 誤検出しやすいパターンを除外
+      if (lawName.endsWith('する法') || lawName.endsWith('による法') || 
+          lawName.endsWith('に関する法') || lawName.endsWith('の法')) {
+        // これらは文脈の一部である可能性が高い
+        // ただし、正式な法令名の場合は辞書でチェック
+        const lawId = this.findLawId(lawName);
+        if (!lawId) {
+          continue; // 辞書に無い場合は誤検出として除外
+        }
+      }
       
       if (lawName !== 'この法' && lawName !== '同法') {
         // 新法/旧法の場合は定義を確認
@@ -259,17 +279,23 @@ export class UltimateReferenceDetector {
             ref.text.includes(lawName) && ref.text.includes('（')
           );
 
-          if (!alreadyDetected) {
-            references.push({
-              type: 'external',
-              text: match[0],
-              targetLaw: lawName,
-              targetLawId: lawId,
-              targetArticle: `第${match[2]}条`,
-              confidence: lawId ? 0.9 : 0.6,
-              resolutionMethod: lawId ? 'dictionary' : 'pattern',
-              position: match.index
-            });
+          if (!alreadyDetected && lawId) {
+            // 条文番号を抽出して妥当性チェック
+            const articleNumber = this.kanjiToNumber(match[2]);
+            
+            if (articleNumber && this.validateArticleNumber(lawId, articleNumber)) {
+              references.push({
+                type: 'external',
+                text: match[0],
+                targetLaw: lawName,
+                targetLawId: lawId,
+                targetArticle: `第${match[2]}条`,
+                articleNumber: articleNumber,
+                confidence: 0.9,
+                resolutionMethod: 'dictionary',
+                position: match.index
+              });
+            }
           }
         }
       }
@@ -750,6 +776,34 @@ export class UltimateReferenceDetector {
     }
 
     return null;
+  }
+
+  /**
+   * 条文番号の妥当性チェック
+   */
+  private validateArticleNumber(lawId: string, articleNumber: number): boolean {
+    // 急傾斜地法のような特定の法令の最大条文数をハードコード
+    const knownMaxArticles: Record<string, number> = {
+      '344AC0000000057': 26,  // 急傾斜地の崩壊による災害の防止に関する法律
+      '129AC0000000089': 1050, // 民法
+      '132AC0000000048': 850,  // 商法
+      '140AC0000000045': 264,  // 刑法
+      '417AC0000000086': 979,  // 会社法
+    };
+    
+    // 既知の法令の場合、最大条文数をチェック
+    if (knownMaxArticles[lawId]) {
+      return articleNumber <= knownMaxArticles[lawId];
+    }
+    
+    // メタデータキャッシュから確認
+    const metadata = this.lawMetadataCache.get(lawId);
+    if (metadata) {
+      return articleNumber <= metadata.maxArticle;
+    }
+    
+    // 不明な場合は、異常に大きい条文番号を除外（一般的に1000条を超える法令は稀）
+    return articleNumber <= 1000;
   }
 
   /**

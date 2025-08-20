@@ -103,10 +103,17 @@ model Reference {
   targetVersionId   String?   // LawVersionのID
   targetLawId       String?   // 法令番号（検索用）
   targetArticle     String?
-  referenceType     String    // internal, external, relative, range, multiple, structural, application
+  referenceType     String    // internal, external, relative, range, multiple, structural, application, delegation
   referenceText     String    // 元のテキスト（例：「第123条」）
   confidence        Float     @default(1.0)
   metadata          Json?     // 追加情報（相対参照の方向、距離など）
+  
+  // 新規追加フィールド
+  detectionMethod   String    @default("forward") // forward（通常）, reverse（逆引き）, hybrid（ハイブリッド）
+  requiresLLMCheck  Boolean   @default(false)    // LLMチェックが必須かどうか
+  llmCheckResult    Json?     // LLMチェック結果（スコア、理由など）
+  llmCheckedAt      DateTime? // LLMチェック実施日時
+  isAmbiguous       Boolean   @default(false)    // 曖昧な参照かどうか
   
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
@@ -116,6 +123,8 @@ model Reference {
   @@index([targetVersionId, targetArticle])
   @@index([targetLawId])
   @@index([referenceType])
+  @@index([requiresLLMCheck])
+  @@index([detectionMethod])
 }
 
 // バージョン間の改正関係を管理

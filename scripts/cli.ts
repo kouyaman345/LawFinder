@@ -19,6 +19,117 @@ dotenv.config();
 const prisma = new PrismaClient();
 const program = new Command();
 
+/**
+ * 無効な参照データをクリーンアップ
+ */
+async function cleanupInvalidReferences(dryRun = false) {
+  console.log(chalk.cyan('🧹 無効な参照データのクリーンアップ'));
+  console.log('='.repeat(60));
+  
+  // 急傾斜地法の無効な参照を検索
+  const invalidRefs = await prisma.reference.findMany({
+    where: {
+      targetLawId: '344AC0000000057',  // 急傾斜地法
+      OR: [
+        { referenceText: { contains: '第八十六条' } },
+        { referenceText: { contains: '第九十九条' } },
+        { referenceText: { contains: '第九十四条' } },
+        { targetArticle: { contains: '第八十六条' } },
+        { targetArticle: { contains: '第九十九条' } },
+        { targetArticle: { contains: '第九十四条' } }
+      ]
+    }
+  });
+  
+  console.log(chalk.yellow(`⚠️  ${invalidRefs.length}件の無効な参照を検出`));
+  
+  // 詳細表示
+  const bySource = new Map<string, number>();
+  for (const ref of invalidRefs) {
+    const count = bySource.get(ref.sourceLawId) || 0;
+    bySource.set(ref.sourceLawId, count + 1);
+  }
+  
+  console.log(chalk.cyan('\n参照元法令別:'));
+  for (const [lawId, count] of bySource) {
+    console.log(`  ${lawId}: ${count}件`);
+  }
+  
+  // サンプル表示
+  console.log(chalk.cyan('\n削除対象のサンプル:'));
+  for (const ref of invalidRefs.slice(0, 5)) {
+    console.log(`  - ${ref.referenceText} (ID: ${ref.id})`);
+  }
+  
+  if (!dryRun) {
+    const spinner = ora('削除中...').start();
+    
+    // バッチで削除
+    const deleteResult = await prisma.reference.deleteMany({
+      where: {
+        id: { in: invalidRefs.map(r => r.id) }
+      }
+    });
+    
+    spinner.succeed(chalk.green(`✅ ${deleteResult.count}件の無効な参照を削除`));
+    
+    // 他の長い法令名の参照もチェック
+    console.log(chalk.cyan('\n📋 他の疑わしい参照をチェック中...'));
+    
+    const suspiciousRefs = await prisma.reference.findMany({
+      where: {
+        targetLaw: {
+          contains: 'による災害の防止に関する法'
+        }
+      },
+      select: {
+        id: true,
+        targetLaw: true,
+        targetArticle: true,
+        targetLawId: true
+      }
+    });
+    
+    console.log(chalk.yellow(`📊 ${suspiciousRefs.length}件の疑わしい参照を検出`));
+    
+    // 条文番号の妥当性チェック
+    const knownMaxArticles: Record<string, number> = {
+      '344AC0000000057': 26,   // 急傾斜地法
+      '129AC0000000089': 1050,  // 民法
+      '132AC0000000048': 850,   // 商法
+      '140AC0000000045': 264,   // 刑法
+      '417AC0000000086': 979,   // 会社法
+    };
+    
+    const toDelete: string[] = [];
+    for (const ref of suspiciousRefs) {
+      if (ref.targetLawId && knownMaxArticles[ref.targetLawId]) {
+        const articleMatch = ref.targetArticle?.match(/第([0-9]+)条/);
+        if (articleMatch) {
+          const articleNum = parseInt(articleMatch[1]);
+          if (articleNum > knownMaxArticles[ref.targetLawId]) {
+            toDelete.push(ref.id);
+          }
+        }
+      }
+    }
+    
+    if (toDelete.length > 0) {
+      const deleteResult2 = await prisma.reference.deleteMany({
+        where: { id: { in: toDelete } }
+      });
+      console.log(chalk.green(`✅ 追加で${deleteResult2.count}件の無効な参照を削除`));
+    }
+  } else {
+    console.log(chalk.yellow('\n⚠️  ドライランモード: 実際の削除は行われませんでした'));
+    console.log(chalk.cyan('実際に削除するには --dry-run オプションを外して実行してください'));
+  }
+  
+  // Neo4j側のクリーンアップも必要
+  console.log(chalk.cyan('\n📋 Neo4j側のクリーンアップも必要です'));
+  console.log('実行コマンド: npx tsx scripts/manager.ts sync --clean');
+}
+
 // メインプログラム
 program
   .name('lawfinder')
@@ -274,6 +385,15 @@ utilCmd
   .description('不要データのクリーンアップ')
   .action(async () => {
     console.log(chalk.yellow('クリーンアップを実行'));
+    await prisma.$disconnect();
+  });
+
+utilCmd
+  .command('cleanup-invalid-refs')
+  .description('無効な参照データのクリーンアップ')
+  .option('-d, --dry-run', 'ドライラン（削除せずに表示のみ）')
+  .action(async (options) => {
+    await cleanupInvalidReferences(options.dryRun);
     await prisma.$disconnect();
   });
 

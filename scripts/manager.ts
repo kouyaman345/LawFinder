@@ -545,6 +545,71 @@ program
     }
   });
 
+// ambiguous コマンド（曖昧な参照の解決）
+program
+  .command("ambiguous")
+  .description("曖昧な参照を検出・解決")
+  .option("-r, --resolve", "政令の逆引き解決を実行")
+  .option("-l, --llm-check", "LLMチェックを実行")
+  .option("-s, --stats", "統計を表示")
+  .action(async (options) => {
+    try {
+      const { AmbiguousReferenceResolver } = await import('../src/domain/services/AmbiguousReferenceResolver');
+      const resolver = new AmbiguousReferenceResolver(prisma);
+      
+      if (options.resolve) {
+        console.log(chalk.yellow("🔍 政令・省令の逆引き解決を実行中..."));
+        await resolver.resolveDecreeReferences();
+        console.log(chalk.green("✅ 逆引き解決完了"));
+      }
+      
+      if (options.llmCheck) {
+        console.log(chalk.yellow("🤖 LLMチェックを実行中..."));
+        const refs = await prisma.reference.findMany({
+          where: { 
+            requiresLLMCheck: true,
+            llmCheckedAt: null
+          },
+          take: 100  // 一度に100件まで
+        });
+        
+        for (const ref of refs) {
+          await resolver.validateWithLLM(ref.id);
+          process.stdout.write('.');
+        }
+        console.log(chalk.green(`\n✅ ${refs.length}件のLLMチェック完了`));
+      }
+      
+      if (options.stats || (!options.resolve && !options.llmCheck)) {
+        const report = await resolver.generateAmbiguityReport();
+        console.log(chalk.cyan("\n=== 曖昧な参照の統計 ==="));
+        console.log(`総参照数: ${report.totalReferences}`);
+        console.log(`曖昧な参照: ${report.ambiguousReferences} (${report.ambiguityRate})`);
+        console.log(`LLMチェック必須: ${report.requiresLLMCheck}`);
+        
+        console.log(chalk.yellow("\n参照タイプ別:"));
+        for (const [type, count] of Object.entries(report.byType)) {
+          console.log(`  ${type}: ${count}`);
+        }
+        
+        console.log(chalk.yellow("\n検出方法別:"));
+        for (const [method, count] of Object.entries(report.byDetectionMethod)) {
+          console.log(`  ${method}: ${count}`);
+        }
+        
+        console.log(chalk.yellow("\n曖昧なパターン一覧:"));
+        for (const pattern of report.patterns) {
+          console.log(`  ${pattern.type}: 信頼度${pattern.baseConfidence} ${pattern.requiresLLM ? '(LLM必須)' : ''}`);
+        }
+      }
+    } catch (error) {
+      console.error(chalk.red("❌ エラー:"), error);
+      process.exit(1);
+    } finally {
+      await manager.cleanup();
+    }
+  });
+
 // compare コマンド
 program
   .command("compare")
@@ -864,8 +929,8 @@ function generateRealisticReferences(lawId: string, refCount: number, lawMap: Ma
   return references;
 }
 
-// Neo4jグラフ分析機能
-export async function analyzeNeo4jGraph() {
+// 詳細なNeo4j可視化機能（visualize-corrected.tsから統合）
+async function visualizeNeo4jData() {
   const neo4j = require('neo4j-driver');
   const driver = neo4j.driver(
     'bolt://localhost:7687',
@@ -873,42 +938,123 @@ export async function analyzeNeo4jGraph() {
   );
   
   const session = driver.session();
+  
   try {
-    console.log('🗺️ Neo4j グラフ全体構造の可視化ガイド');
-    console.log('='.repeat(70));
+    console.log(chalk.cyan('=' .repeat(70)));
+    console.log(chalk.cyan.bold('📊 参照ネットワーク可視化'));
+    console.log(chalk.cyan('=' .repeat(70)));
     
-    // 主要ハブ法令を特定
-    const hubs = await session.run(`
-      MATCH (target:Law)<-[r:REFERENCES]-(source:Law)
-      WHERE source.id <> target.id
-      RETURN target.id as id, target.title as title, COUNT(r) as inDegree
-      ORDER BY inDegree DESC
-      LIMIT 5
-    `);
-    
-    console.log('\n📍 主要ハブ法令（最も参照される法令）:');
-    hubs.records.forEach((r: any, i: number) => {
-      console.log(`  ${i+1}. ${r.get('title')} (${r.get('inDegree').toNumber()}件の参照)`);
-    });
-    
-    // 統計情報
+    // 基本統計
     const stats = await session.run(`
       MATCH (l:Law)
       WITH COUNT(l) as totalLaws
       MATCH ()-[r:REFERENCES]->()
-      RETURN totalLaws, COUNT(r) as totalReferences
+      WITH totalLaws, COUNT(r) as totalReferences
+      RETURN totalLaws, totalReferences,
+             toFloat(totalReferences) / totalLaws as avgReferencesPerLaw
     `);
     
     if (stats.records.length > 0) {
       const record = stats.records[0];
-      console.log('\n📊 統計:');
-      console.log(`  法令数: ${record.get('totalLaws').toNumber()}`);
-      console.log(`  参照数: ${record.get('totalReferences').toNumber()}`);
+      console.log(chalk.yellow('\n📈 基本統計:'));
+      console.log(`  総法令数: ${record.get('totalLaws').toNumber().toLocaleString()}`);
+      console.log(`  総参照数: ${record.get('totalReferences').toNumber().toLocaleString()}`);
+      console.log(`  法令あたりの平均参照数: ${record.get('avgReferencesPerLaw').toFixed(2)}`);
     }
+    
+    // TOP10被参照法令（外部参照のみ）
+    const topReferenced = await session.run(`
+      MATCH (from:Law)-[r:REFERENCES]->(to:Law)
+      WHERE from.id <> to.id
+      RETURN to.id as lawId, to.title as title, count(r) as refs
+      ORDER BY refs DESC
+      LIMIT 10
+    `);
+    
+    console.log(chalk.yellow('\n🔝 最も参照される法令TOP10（他法令からの参照のみ）:'));
+    topReferenced.records.forEach((r, i) => {
+      const title = r.get('title') || r.get('lawId');
+      const refs = Number(r.get('refs'));
+      console.log(`  ${i+1}. ${title.substring(0, 30)} - ${refs.toLocaleString()}件`);
+    });
+    
+    // 最も参照する法令TOP10
+    const topReferencing = await session.run(`
+      MATCH (from:Law)-[r:REFERENCES]->(to:Law)
+      WHERE from.id <> to.id
+      RETURN from.id as lawId, from.title as title, count(r) as refs
+      ORDER BY refs DESC
+      LIMIT 10
+    `);
+    
+    console.log(chalk.yellow('\n📤 最も参照する法令TOP10:'));
+    topReferencing.records.forEach((r, i) => {
+      const title = r.get('title') || r.get('lawId');
+      const refs = Number(r.get('refs'));
+      console.log(`  ${i+1}. ${title.substring(0, 30)} - ${refs.toLocaleString()}件`);
+    });
+    
+    // 参照タイプ別統計
+    const typeStats = await session.run(`
+      MATCH ()-[r:REFERENCES]->()
+      RETURN r.type as type, count(r) as count
+      ORDER BY count DESC
+    `);
+    
+    console.log(chalk.yellow('\n📋 参照タイプ別統計:'));
+    let totalRefs = 0;
+    typeStats.records.forEach(r => {
+      totalRefs += Number(r.get('count'));
+    });
+    
+    typeStats.records.forEach(r => {
+      const type = r.get('type') || 'unknown';
+      const count = Number(r.get('count'));
+      const percentage = ((count / totalRefs) * 100).toFixed(2);
+      console.log(`  ${type}: ${count.toLocaleString()}件 (${percentage}%)`);
+    });
+    
+    // ネットワーク分析
+    console.log(chalk.yellow('\n🌐 ネットワーク分析:'));
+    
+    // 孤立法令（参照なし）
+    const isolated = await session.run(`
+      MATCH (l:Law)
+      WHERE NOT EXISTS((l)-[:REFERENCES]-()) 
+        AND NOT EXISTS(()-[:REFERENCES]->(l))
+      RETURN count(l) as count
+    `);
+    console.log(`  孤立法令数: ${Number(isolated.records[0].get('count')).toLocaleString()}`);
+    
+    // 相互参照ペア
+    const mutual = await session.run(`
+      MATCH (a:Law)-[:REFERENCES]->(b:Law)
+      WHERE EXISTS((b)-[:REFERENCES]->(a))
+        AND a.id < b.id
+      RETURN count(*) as count
+    `);
+    console.log(`  相互参照ペア数: ${Number(mutual.records[0].get('count')).toLocaleString()}`);
+    
+    // クラスタリング係数（簡易版）
+    const triangles = await session.run(`
+      MATCH (a:Law)-[:REFERENCES]->(b:Law),
+            (b)-[:REFERENCES]->(c:Law),
+            (c)-[:REFERENCES]->(a)
+      WHERE a.id < b.id AND b.id < c.id
+      RETURN count(*) as count
+    `);
+    console.log(`  三角形の数: ${Number(triangles.records[0].get('count')).toLocaleString()}`);
+    
+    console.log(chalk.cyan('\n' + '=' .repeat(70)));
   } finally {
     await session.close();
     await driver.close();
   }
+}
+
+// Neo4jグラフ分析機能（レガシー版、互換性のため保持）
+export async function analyzeNeo4jGraph() {
+  await visualizeNeo4jData();
 }
 
 // プログラム実行
