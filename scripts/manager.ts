@@ -181,6 +181,11 @@ class ReferenceManager {
     };
 
     try {
+      // Prismaが初期化されているか確認
+      if (!this.prisma) {
+        this.prisma = new PrismaClient();
+      }
+      
       // 法令データの取得
       const laws = lawId ? [await this.hybridDB.getLaw(lawId)] : await this.prisma.law.findMany({ where: { status: "現行" } });
 

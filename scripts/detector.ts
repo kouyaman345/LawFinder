@@ -8,7 +8,8 @@
  */
 
 import { PrismaClient } from '@prisma/client';
-import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs';
+import path from 'path';
 import { execSync } from 'child_process';
 import chalk from 'chalk';
 // 生成された辞書ファイルがあれば読み込み
@@ -948,8 +949,9 @@ export async function buildLawDictionary(): Promise<void> {
 /**
  * ローカルのみの高速検証
  */
-async function localOnlyValidation(count: number, random: boolean): Promise<void> {
+async function localOnlyValidation(count: number, random: boolean, fullArticles: boolean = false): Promise<void> {
   console.log(chalk.cyan('\n🚀 ローカル高速検証モード'));
+  console.log(fullArticles ? chalk.yellow('📖 全条文処理モード') : chalk.blue('📄 サンプリングモード（最初の3条文）'));
   console.log('='.repeat(80));
   
   const { readFileSync, readdirSync } = require('fs');
@@ -1020,8 +1022,8 @@ async function localOnlyValidation(count: number, random: boolean): Promise<void
       const xmlContent = readFileSync(xmlFile, 'utf-8');
       const articles = xmlContent.match(/<Article[^>]*>[\s\S]*?<\/Article>/g) || [];
       
-      // 最初の3条文のみサンプリング（高速化）
-      const sampledArticles = articles.slice(0, 3);
+      // 条文のサンプリング（全条文モードまたはサンプリング）
+      const sampledArticles = fullArticles ? articles : articles.slice(0, 3);
       totalArticles += sampledArticles.length;
       
       // 検出実行
@@ -1050,19 +1052,270 @@ async function localOnlyValidation(count: number, random: boolean): Promise<void
 }
 
 /**
+ * 検証結果を保持する型
+ */
+export interface ValidationReport {
+  totalLaws: number;
+  totalArticles: number;
+  totalReferences: number;
+  processingTime: number;
+  averageSpeed: number;
+  averageReferencesPerArticle: number;
+  typeDistribution: Record<string, number>;
+  egovComparison?: {
+    sampleSize: number;
+    avgPrecision: number;
+    avgRecall: number;
+    f1Score: number;
+  };
+}
+
+/**
+ * e-Govとの詳細比較検証
+ */
+export async function egovComparisonValidation(
+  count: number,
+  random: boolean = false,
+  fullArticles: boolean = false
+): Promise<ValidationReport | void> {
+  console.log(chalk.cyan('\n🔍 e-Gov詳細比較検証'));
+  console.log('='.repeat(80));
+  
+  const { readFileSync } = require('fs');
+  const { join } = require('path');
+  const { parse } = require('csv-parse/sync');
+  
+  // 検証結果を格納
+  const results: any[] = [];
+  
+  // CSVから法令リストを読み込み
+  const csvPath = join(process.cwd(), 'laws_data', 'all_law_list.csv');
+  const csvContent = readFileSync(csvPath, 'utf-8');
+  const records = parse(csvContent, {
+    columns: true,
+    skip_empty_lines: true
+  });
+  
+  // 法令リスト準備
+  const laws: { id: string; name: string }[] = [];
+  for (const record of records) {
+    const lawId = record['法令ID'] || record['law_id'];
+    const title = record['法令名'] || record['law_title'] || record['法令名漢字'];
+    if (lawId && title) {
+      laws.push({ id: lawId, name: title });
+    }
+  }
+  
+  // サンプル法令を選択（最大100件に拡大）
+  const sampleCount = Math.min(count, 100);
+  const selectedLaws = random
+    ? laws.sort(() => Math.random() - 0.5).slice(0, sampleCount)
+    : laws.slice(0, sampleCount);
+  
+  console.log(`📌 ${sampleCount}法令をe-Gov APIと比較\n`);
+  
+  for (const law of selectedLaws) {
+    try {
+      console.log(chalk.blue(`\n比較中: ${law.name} (${law.id})`));
+      
+      // e-Gov APIから取得
+      const egovUrl = `https://laws.e-gov.go.jp/api/1/lawdata/${law.id}`;
+      const response = await fetch(egovUrl);
+      
+      if (!response.ok) {
+        console.log(chalk.red(`  ❌ e-Gov API エラー: ${response.status}`));
+        continue;
+      }
+      
+      const xmlText = await response.text();
+      const parser = new (require('fast-xml-parser').XMLParser)({
+        ignoreAttributes: false,
+        attributeNamePrefix: '@_'
+      });
+      
+      const data = parser.parse(xmlText);
+      const lawData = data?.DataRoot?.ApplData?.LawFullText?.Law;
+      
+      if (!lawData?.LawBody?.MainProvision) continue;
+      
+      // e-Govの参照を抽出
+      const egovRefs = extractEGovReferences(lawData.LawBody.MainProvision);
+      
+      // ローカル検出
+      const detector = new UltimateReferenceDetector(false);
+      const xmlPath = join(process.cwd(), 'laws_data');
+      const lawDirs = require('fs').readdirSync(xmlPath);
+      const lawDir = lawDirs.find((dir: string) => dir.startsWith(law.id));
+      
+      if (!lawDir) continue;
+      
+      const xmlFile = join(xmlPath, lawDir, `${lawDir}.xml`);
+      const xmlContent = readFileSync(xmlFile, 'utf-8');
+      const ourRefs = await detector.detectReferences(xmlContent, law.id, law.name);
+      
+      // 比較結果
+      const result = {
+        lawId: law.id,
+        lawName: law.name,
+        egovCount: egovRefs.length,
+        ourCount: ourRefs.length,
+        precision: egovRefs.length > 0 ? (Math.min(ourRefs.length, egovRefs.length) / ourRefs.length * 100).toFixed(1) : '100.0',
+        recall: egovRefs.length > 0 ? (Math.min(ourRefs.length, egovRefs.length) / egovRefs.length * 100).toFixed(1) : '100.0'
+      };
+      
+      results.push(result);
+      console.log(chalk.green(`  ✅ e-Gov: ${egovRefs.length}件, 検出: ${ourRefs.length}件`));
+      
+      // API制限対策
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+    } catch (error) {
+      console.log(chalk.red(`  ❌ エラー: ${error}`));
+    }
+  }
+  
+  // 統計表示
+  console.log('\n' + '='.repeat(80));
+  console.log(chalk.cyan('📊 e-Gov比較結果サマリー'));
+  console.log('='.repeat(80));
+  
+  if (results.length === 0) {
+    console.log(chalk.yellow('比較結果なし'));
+    return;
+  }
+  
+  const avgPrecision = results.reduce((sum, r) => sum + parseFloat(r.precision), 0) / results.length;
+  const avgRecall = results.reduce((sum, r) => sum + parseFloat(r.recall), 0) / results.length;
+  const f1Score = 2 * (avgPrecision * avgRecall) / (avgPrecision + avgRecall);
+  
+  console.log(`検証法令数: ${results.length}件`);
+  console.log(`平均精度(Precision): ${avgPrecision.toFixed(1)}%`);
+  console.log(`平均再現率(Recall): ${avgRecall.toFixed(1)}%`);
+  console.log(`F1スコア: ${f1Score.toFixed(1)}%`);
+  
+  // レポート保存
+  const reportPath = `Report/egov_comparison_${Date.now()}.json`;
+  writeFileSync(reportPath, JSON.stringify(results, null, 2));
+  console.log(chalk.green(`\n💾 詳細レポート: ${reportPath}`));
+}
+
+/**
+ * e-Govデータから参照を抽出（XMLファイルから直接）
+ */
+export function extractEGovReferencesFromXML(xmlContent: string): any[] {
+  const refs: any[] = [];
+  
+  // ReferenceToLaw タグを抽出
+  const lawRefMatches = xmlContent.matchAll(/<ReferenceToLaw[^>]*>([^<]+)<\/ReferenceToLaw>/g);
+  for (const match of lawRefMatches) {
+    refs.push({
+      type: 'external',
+      text: match[1],
+      tag: 'ReferenceToLaw'
+    });
+  }
+  
+  // ReferenceToArticle タグを抽出
+  const articleRefMatches = xmlContent.matchAll(/<ReferenceToArticle[^>]*>([^<]+)<\/ReferenceToArticle>/g);
+  for (const match of articleRefMatches) {
+    refs.push({
+      type: 'internal', 
+      text: match[1],
+      tag: 'ReferenceToArticle'
+    });
+  }
+  
+  // その他の参照タグも追加
+  const otherTags = [
+    'ReferenceToSubsection',
+    'ReferenceToItem',
+    'ReferenceToChapter',
+    'ReferenceToSection',
+    'ReferenceToParagraph'
+  ];
+  
+  for (const tag of otherTags) {
+    const regex = new RegExp(`<${tag}[^>]*>([^<]+)<\/${tag}>`, 'g');
+    const matches = xmlContent.matchAll(regex);
+    for (const match of matches) {
+      refs.push({
+        type: 'structural',
+        text: match[1],
+        tag: tag
+      });
+    }
+  }
+  
+  return refs;
+}
+
+/**
+ * e-Govデータから参照を抽出
+ */
+function extractEGovReferences(mainProvision: any): any[] {
+  const refs: any[] = [];
+  
+  // 再帰的に参照を探索
+  function traverse(obj: any) {
+    if (!obj) return;
+    
+    // ReferenceToLaw要素を探す
+    if (obj.ReferenceToLaw) {
+      const lawRefs = Array.isArray(obj.ReferenceToLaw) ? obj.ReferenceToLaw : [obj.ReferenceToLaw];
+      for (const ref of lawRefs) {
+        refs.push({
+          type: 'external',
+          lawId: ref['@_lawId'],
+          text: ref['#text']
+        });
+      }
+    }
+    
+    // ReferenceToArticle要素を探す
+    if (obj.ReferenceToArticle) {
+      const artRefs = Array.isArray(obj.ReferenceToArticle) ? obj.ReferenceToArticle : [obj.ReferenceToArticle];
+      for (const ref of artRefs) {
+        refs.push({
+          type: 'internal',
+          article: ref['@_num'],
+          text: ref['#text']
+        });
+      }
+    }
+    
+    // 子要素を再帰的に探索
+    for (const key in obj) {
+      if (typeof obj[key] === 'object') {
+        traverse(obj[key]);
+      }
+    }
+  }
+  
+  traverse(mainProvision);
+  return refs;
+}
+
+/**
  * 大規模e-Gov検証
  */
 export async function massEGovValidation(
   count: number,
   random: boolean = false,
-  statsOnly: boolean = false
+  statsOnly: boolean = false,
+  fullArticles: boolean = false
 ): Promise<void> {
   console.log(chalk.cyan('\n🚀 大規模e-Gov検証開始'));
   console.log('='.repeat(80));
   
   // 統計のみモードの場合はローカル検証のみ
   if (statsOnly) {
-    await localOnlyValidation(count, random);
+    await localOnlyValidation(count, random, fullArticles);
+    return;
+  }
+  
+  // e-Gov比較モード（10件まで）
+  if (!statsOnly && count <= 10) {
+    await egovComparisonValidation(count, random, fullArticles);
     return;
   }
   
@@ -1336,5 +1589,397 @@ export async function massEGovValidation(
   }
 }
 
+/**
+ * 全法令でe-GovタグとLawFinder検出を比較
+ */
+export async function compareAllLawsWithEGov(): Promise<void> {
+  console.log(chalk.cyan('\n🔍 全法令e-Gov精度検証開始'));
+  console.log('='.repeat(80));
+  
+  const { readFileSync, readdirSync } = require('fs');
+  const { join } = require('path');
+  const { parse } = require('csv-parse/sync');
+  
+  // CSVから法令リストを読み込み
+  const csvPath = join(process.cwd(), 'laws_data', 'all_law_list.csv');
+  const csvContent = readFileSync(csvPath, 'utf-8');
+  const records = parse(csvContent, {
+    columns: true,
+    skip_empty_lines: true
+  });
+  
+  // 統計情報
+  let totalLaws = 0;
+  let totalEGovRefs = 0;
+  let totalOurRefs = 0;
+  let totalMatched = 0;
+  let totalMissed = 0;
+  let totalExtra = 0;
+  
+  const detector = new UltimateReferenceDetector(false);
+  const startTime = Date.now();
+  
+  // 全法令を処理
+  for (const record of records) {
+    const lawId = record['法令ID'] || record['law_id'];
+    const title = record['法令名'] || record['law_title'] || record['法令名漢字'];
+    
+    if (!lawId || !title) continue;
+    
+    totalLaws++;
+    
+    // 進捗表示
+    if (totalLaws % 100 === 0) {
+      const elapsed = (Date.now() - startTime) / 1000;
+      const rate = totalLaws / elapsed;
+      process.stdout.write(`\r進捗: ${totalLaws}/${records.length} (${Math.round(totalLaws/records.length*100)}%) | 速度: ${rate.toFixed(1)}法令/秒`);
+    }
+    
+    try {
+      // XMLファイル読み込み
+      const xmlPath = join(process.cwd(), 'laws_data');
+      const lawDirs = readdirSync(xmlPath);
+      const lawDir = lawDirs.find((dir: string) => dir.startsWith(lawId));
+      
+      if (!lawDir) continue;
+      
+      const xmlFile = join(xmlPath, lawDir, `${lawDir}.xml`);
+      if (!existsSync(xmlFile)) continue;
+      
+      const xmlContent = readFileSync(xmlFile, 'utf-8');
+      
+      // ベースライン参照を抽出
+      const baselineRefs = extractBaselineReferences(xmlContent);
+      totalEGovRefs += baselineRefs.length;
+      
+      // LawFinderで参照を検出
+      const ourRefs = await detector.detectReferences(xmlContent, lawId, title);
+      totalOurRefs += ourRefs.length;
+      
+      // 比較（簡易版：テキストマッチング）
+      const egovTexts = new Set(egovRefs.map(r => r.text.trim()));
+      const ourTexts = new Set(ourRefs.map(r => r.text.trim()));
+      
+      // マッチング計算
+      for (const text of ourTexts) {
+        if (baselineTexts.has(text)) {
+          totalMatched++;
+        } else {
+          totalExtra++;
+        }
+      }
+      
+      for (const text of baselineTexts) {
+        if (!ourTexts.has(text)) {
+          totalMissed++;
+        }
+      }
+      
+    } catch (error) {
+      // エラーは無視して続行
+    }
+  }
+  
+  const elapsed = (Date.now() - startTime) / 1000;
+  
+  // 結果表示
+  console.log('\n');
+  console.log(chalk.green('='.repeat(80)));
+  console.log(chalk.cyan('📊 全法令e-Gov精度検証結果'));
+  console.log(chalk.green('='.repeat(80)));
+  console.log(`✅ 処理法令数: ${totalLaws}件`);
+  console.log(`📌 ベースライン参照数: ${totalEGovRefs}件`);
+  console.log(`🔍 LawFinder検出数: ${totalOurRefs}件`);
+  console.log(`✓ マッチ数: ${totalMatched}件`);
+  console.log(`✗ 未検出: ${totalMissed}件`);
+  console.log(`+ 過検出: ${totalExtra}件`);
+  console.log(`⏱️ 処理時間: ${elapsed.toFixed(1)}秒`);
+  console.log(chalk.yellow('\n📈 精度指標:'));
+  
+  const precision = totalOurRefs > 0 ? (totalMatched / totalOurRefs * 100) : 0;
+  const recall = totalEGovRefs > 0 ? (totalMatched / totalEGovRefs * 100) : 0;
+  const f1 = precision + recall > 0 ? (2 * precision * recall / (precision + recall)) : 0;
+  
+  console.log(`  精度(Precision): ${precision.toFixed(2)}%`);
+  console.log(`  再現率(Recall): ${recall.toFixed(2)}%`);
+  console.log(`  F1スコア: ${f1.toFixed(2)}%`);
+  console.log(chalk.green('='.repeat(80)));
+  
+  // レポート保存
+  const report = {
+    timestamp: new Date().toISOString(),
+    totalLaws,
+    totalEGovRefs,
+    totalOurRefs,
+    totalMatched,
+    totalMissed,
+    totalExtra,
+    precision,
+    recall,
+    f1,
+    processingTime: elapsed
+  };
+  
+  const reportPath = `Report/egov_full_comparison_${Date.now()}.json`;
+  writeFileSync(reportPath, JSON.stringify(report, null, 2));
+  console.log(chalk.green(`\n💾 詳細レポート: ${reportPath}`));
+}
+
+/**
+ * XMLから条文を抽出する関数
+ */
+function extractArticlesFromXML(xmlContent: string): { number: string; content: string }[] {
+  const articles: { number: string; content: string }[] = [];
+  
+  // <Article>タグを抽出
+  const articleMatches = xmlContent.matchAll(/<Article[^>]*>([\s\S]*?)<\/Article>/g);
+  
+  for (const match of articleMatches) {
+    const articleContent = match[1];
+    
+    // 条文番号を取得
+    const numMatch = articleContent.match(/<ArticleTitle[^>]*>([^<]+)<\/ArticleTitle>/);
+    const number = numMatch ? numMatch[1] : '';
+    
+    // 条文本文を取得（すべてのテキストを結合）
+    const textContent = articleContent
+      .replace(/<[^>]+>/g, ' ')  // タグを削除
+      .replace(/\s+/g, ' ')       // 連続する空白を1つに
+      .trim();
+    
+    if (textContent) {
+      articles.push({ number, content: textContent });
+    }
+  }
+  
+  return articles;
+}
+
+/**
+ * ベースライン参照を抽出（明確な参照パターンのみ）
+ */
+function extractBaselineReferences(xmlContent: string): any[] {
+  const refs: any[] = [];
+  
+  // XMLから条文を抽出
+  const articles = extractArticlesFromXML(xmlContent);
+  
+  for (const article of articles) {
+    const content = article.content;
+    
+    // 明確な法令名参照（「○○法」「○○令」など）
+    const lawNamePattern = /([^。、\s]{2,20}(?:法|令|規則|条例|通達))(?:（[^）]+）)?(?:第[一二三四五六七八九十百千万]+条|[０-９]+条)/g;
+    const lawMatches = content.matchAll(lawNamePattern);
+    for (const match of lawMatches) {
+      refs.push({ text: match[0], type: 'external' });
+    }
+    
+    // 明確な条文参照（「第○条」）
+    const articlePattern = /第[一二三四五六七八九十百千万０-９]+条(?:第[一二三四五六七八九十百千万０-９]+項)?/g;
+    const articleMatches = content.matchAll(articlePattern);
+    for (const match of articleMatches) {
+      // 法令名が前にない場合は内部参照
+      const prevText = content.substring(Math.max(0, match.index! - 30), match.index!);
+      if (!prevText.match(/(?:法|令|規則|条例|通達)[）)]*$/)) {
+        refs.push({ text: match[0], type: 'internal' });
+      }
+    }
+  }
+  
+  return refs;
+}
+
+/**
+ * XMLファイルを検索する関数
+ */
+async function findXMLFile(lawId: string): Promise<string | null> {
+  const basePath = 'laws_data';
+  
+  // 法令IDに対応するディレクトリを探す
+  try {
+    const dirs = readdirSync(basePath);
+    for (const dir of dirs) {
+      if (dir.startsWith(lawId)) {
+        const dirPath = path.join(basePath, dir);
+        const files = readdirSync(dirPath);
+        const xmlFile = files.find(f => f.endsWith('.xml'));
+        if (xmlFile) {
+          return path.join(dirPath, xmlFile);
+        }
+      }
+    }
+  } catch (error) {
+    // エラーは無視
+  }
+  
+  return null;
+}
+
+/**
+ * サンプリング方式でe-Govタグと比較
+ */
+export async function compareSampleLawsWithEGov(sampleSize: number = 1000) {
+  console.log(chalk.cyan(`\n🔬 サンプリング精度検証 (${sampleSize}法令)`));
+  console.log(chalk.gray('='.repeat(80)));
+  
+  // CSVから法令リストを取得
+  const csvPath = 'laws_data/all_law_list.csv';
+  const csvContent = readFileSync(csvPath, 'utf-8');
+  const lines = csvContent.split('\n').slice(1).filter(line => line.trim());
+  
+  const laws = lines.map(line => {
+    const columns = line.split(',');
+    // 法令ID（12番目のカラム）、法令名（3番目のカラム）、法令番号（2番目のカラム）
+    if (columns.length >= 12) {
+      return { 
+        id: columns[11] ? columns[11].trim() : '',
+        title: columns[2] ? columns[2].trim() : '',
+        lawNum: columns[1] ? columns[1].trim() : ''
+      };
+    }
+    return null;
+  }).filter(law => law && law.id && law.title) as { id: string; title: string; lawNum: string }[];
+  
+  if (laws.length === 0) {
+    console.log(chalk.red('❌ 法令データが見つかりません'));
+    return;
+  }
+  
+  // ランダムサンプリング
+  const shuffled = [...laws].sort(() => 0.5 - Math.random());
+  const samples = shuffled.slice(0, Math.min(sampleSize, laws.length));
+  
+  console.log(`📊 対象法令: ${samples.length}件 / 全${laws.length}件`);
+  console.log(chalk.gray('='.repeat(80)));
+  
+  const detector = new UltimateReferenceDetector(false); // LLM無効化
+  const startTime = Date.now();
+  
+  let totalEGovRefs = 0;
+  let totalOurRefs = 0;
+  let totalMatched = 0;
+  let totalMissed = 0;
+  let totalExtra = 0;
+  let processedCount = 0;
+  let filesFound = 0;
+  let articlesProcessed = 0;
+  
+  // プログレスバー用
+  const progressInterval = Math.max(1, Math.floor(samples.length / 20));
+  
+  for (const law of samples) {
+    processedCount++;
+    
+    // プログレス表示
+    if (processedCount % progressInterval === 0 || processedCount === samples.length) {
+      const progress = (processedCount / samples.length * 100).toFixed(1);
+      process.stdout.write(`\r処理中: ${processedCount}/${samples.length} (${progress}%)`);
+    }
+    
+    try {
+      // デバッグ: 最初の3つの法令IDを表示
+      if (processedCount <= 3) {
+        console.log(`\nDebug: 法令ID = ${law.id}, タイトル = ${law.title.substring(0, 30)}...`);
+      }
+      
+      const xmlPath = await findXMLFile(law.id);
+      if (!xmlPath) {
+        if (processedCount <= 3) {
+          console.log(`  → XMLファイルが見つかりません`);
+        }
+        continue;
+      }
+      
+      filesFound++;
+      const xmlContent = readFileSync(xmlPath, 'utf-8');
+      
+      // ベースライン参照を抽出
+      const baselineRefs = extractBaselineReferences(xmlContent);
+      totalEGovRefs += baselineRefs.length;
+      
+      // LawFinderで参照を検出（全文処理）
+      const articles = extractArticlesFromXML(xmlContent);
+      articlesProcessed += articles.length;
+      const ourRefs: any[] = [];
+      
+      for (const article of articles) {
+        const refs = await detector.detectReferences(article.content, law.id, law.title);
+        ourRefs.push(...refs);
+      }
+      totalOurRefs += ourRefs.length;
+      
+      // 比較（テキストマッチング）
+      const baselineTexts = new Set(baselineRefs.map((r: any) => r.text.trim()));
+      const ourTexts = new Set(ourRefs.map(r => r.text.trim()));
+      
+      // マッチング計算
+      for (const text of ourTexts) {
+        if (baselineTexts.has(text)) {
+          totalMatched++;
+        } else {
+          totalExtra++;
+        }
+      }
+      
+      for (const text of baselineTexts) {
+        if (!ourTexts.has(text)) {
+          totalMissed++;
+        }
+      }
+      
+    } catch (error) {
+      // エラーは無視して続行
+    }
+  }
+  
+  const elapsed = (Date.now() - startTime) / 1000;
+  
+  // 結果表示
+  console.log('\n');
+  console.log(chalk.green('='.repeat(80)));
+  console.log(chalk.cyan('📊 サンプリング精度検証結果'));
+  console.log(chalk.green('='.repeat(80)));
+  console.log(`✅ 処理法令数: ${processedCount}件`);
+  console.log(`📁 XMLファイル発見: ${filesFound}件`);
+  console.log(`📝 処理条文数: ${articlesProcessed}件`);
+  console.log(`📌 ベースライン参照数: ${totalEGovRefs}件`);
+  console.log(`🔍 LawFinder検出数: ${totalOurRefs}件`);
+  console.log(`✓ マッチ数: ${totalMatched}件`);
+  console.log(`✗ 未検出: ${totalMissed}件`);
+  console.log(`+ 過検出: ${totalExtra}件`);
+  console.log(`⏱️ 処理時間: ${elapsed.toFixed(1)}秒`);
+  console.log(chalk.yellow('\n📈 精度指標:'));
+  
+  const precision = totalOurRefs > 0 ? (totalMatched / totalOurRefs * 100) : 0;
+  const recall = totalEGovRefs > 0 ? (totalMatched / totalEGovRefs * 100) : 0;
+  const f1 = precision + recall > 0 ? (2 * precision * recall / (precision + recall)) : 0;
+  
+  console.log(`  精度(Precision): ${precision.toFixed(2)}%`);
+  console.log(`  再現率(Recall): ${recall.toFixed(2)}%`);
+  console.log(`  F1スコア: ${f1.toFixed(2)}%`);
+  console.log(chalk.green('='.repeat(80)));
+  
+  // レポート保存
+  const report = {
+    timestamp: new Date().toISOString(),
+    sampleSize: processedCount,
+    totalLaws: laws.length,
+    totalEGovRefs,
+    totalOurRefs,
+    totalMatched,
+    totalMissed,
+    totalExtra,
+    precision,
+    recall,
+    f1,
+    processingTime: elapsed
+  };
+  
+  const reportPath = `Report/egov_sample_comparison_${Date.now()}.json`;
+  writeFileSync(reportPath, JSON.stringify(report, null, 2));
+  console.log(chalk.green(`\n💾 詳細レポート: ${reportPath}`));
+}
+
 // エクスポート
 export default UltimateReferenceDetector;
+export { extractArticlesFromXML, extractBaselineReferences };

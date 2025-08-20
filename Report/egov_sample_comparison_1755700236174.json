@@ -1,0 +1,14 @@
+{
+  "timestamp": "2025-08-20T14:30:36.174Z",
+  "sampleSize": 10,
+  "totalLaws": 10503,
+  "totalEGovRefs": 0,
+  "totalOurRefs": 25994,
+  "totalMatched": 0,
+  "totalMissed": 0,
+  "totalExtra": 3912,
+  "precision": 0,
+  "recall": 0,
+  "f1": 0,
+  "processingTime": 1.405
+}

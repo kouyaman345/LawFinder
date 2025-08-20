@@ -120,6 +120,7 @@ testCmd
   .option('-c, --count <number>', '検証する法令数', '5')
   .option('-r, --random', 'ランダム選択')
   .option('-s, --stats', '統計のみ表示')
+  .option('-f, --full', '全条文を処理（デフォルト: 最初の3条文）')
   .action(async (lawId, options) => {
     const { compareWithEGov, massEGovValidation } = require('./detector');
     
@@ -133,7 +134,7 @@ testCmd
       if (count > 100) {
         // 大規模検証
         console.log(chalk.cyan(`🚀 ${count}法令での大規模e-Gov検証`));
-        await massEGovValidation(count, options.random, options.stats);
+        await massEGovValidation(count, options.random, options.stats, options.full);
       } else {
         // 小規模検証
         const testCases = [
@@ -199,6 +200,35 @@ testCmd
   .action(async () => {
     console.log(chalk.cyan('🚀 ベンチマーク実行'));
     console.log('処理速度: 1000条/秒');
+    await prisma.$disconnect();
+  });
+
+testCmd
+  .command('egov-full')
+  .description('全法令でe-Govタグと比較')
+  .action(async () => {
+    const { compareAllLawsWithEGov } = require('./detector');
+    await compareAllLawsWithEGov();
+    await prisma.$disconnect();
+  });
+
+testCmd
+  .command('egov-sample')
+  .description('サンプリングでe-Govタグと比較')
+  .option('-n, --number <count>', '検証する法令数', '1000')
+  .action(async (options) => {
+    const { compareSampleLawsWithEGov } = require('./detector');
+    await compareSampleLawsWithEGov(parseInt(options.number));
+    await prisma.$disconnect();
+  });
+
+testCmd
+  .command('all-laws')
+  .description('全法令を段階的に処理（中断・再開可能）')
+  .option('--new', '新規開始（既存の進捗を破棄）')
+  .action(async (options) => {
+    const { processAllLaws } = require('./batch-processor');
+    await processAllLaws(!options.new);
     await prisma.$disconnect();
   });
 
