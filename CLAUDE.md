@@ -6,9 +6,9 @@
 
 LawFinder は、政府が公開する法的標準 XML ファイルを処理する日本の法文書検索・法改正支援アプリケーションです。システムは法的構造の可視化、法律間の相互参照の検出、改正影響（「はね改正」）の分析を目的としています。
 
-## プロジェクト状況（2025 年 8 月 17 日更新）
+## プロジェクト状況（2025 年 8 月 20 日更新）
 
-**Phase 2（React/Next.js 実装）進行中。Neo4j 統合を実装し、ハイブリッドデータベース構成への移行開始。**
+**Phase 2（React/Next.js 実装）進行中。Neo4j 統合完了。scripts/ディレクトリの大規模リファクタリング完了（74個→4個のファイルに統合）。**
 
 # 開発ガイドライン
 
@@ -194,7 +194,39 @@ npx tsx scripts/test-reference-detection.ts [options]
 
 詳細は `/docs/200_参照分析アルゴリズム改善設計書_20250817.md` を参照してください。
 
-## 開発の進め方
+## 開発の進め方（2025年8月20日 大規模更新）
+
+### 🚀 統合CLIツール（NEW！）
+
+**すべての操作は統合CLI `lawfinder` で実行可能になりました：**
+
+```bash
+# メインコマンド
+npx tsx scripts/lawfinder-cli.ts [command] [options]
+# または
+lawfinder [command] [options]  # package.jsonにエイリアス設定後
+
+# 利用可能なコマンド
+lawfinder law import --major       # 法令インポート
+lawfinder ref detect "民法第90条"  # 参照検出
+lawfinder test validate -n 1000    # 大規模検証
+lawfinder sync neo4j --force       # Neo4j同期
+lawfinder util report              # レポート生成
+lawfinder interactive              # インタラクティブモード
+```
+
+### scripts/ディレクトリの革新的変更
+
+**74個のファイル → 4個のコアファイル（94.6%削減）**
+
+| ファイル | 説明 |
+|---------|------|
+| **lawfinder-cli.ts** | すべての機能を統合した単一CLIツール |
+| **reference-manager.ts** | 参照管理統合システム（CLAUDE.md推奨） |
+| **reference-detector-ultimate.ts** | 99.5%精度を目指す究極の検出エンジン |
+| **neo4j-visualization-guide.ts** | Neo4jガイド（ドキュメント） |
+
+詳細は `/scripts/README.md` を参照してください。
 
 ### 開発環境の起動
 
@@ -210,30 +242,22 @@ docker-compose -f docker-compose.neo4j.yml up -d  # Neo4j
 ./scripts/startup.sh
 ```
 
-### 参照検出 （旧方式 - 非推奨）
+### 参照検出の新方式
 
-**⚠️ 注意: 以下は Phase 1 の旧管理方法です。新しい開発は上記の「参照分析アルゴリズムの継続的改善」に従ってください。**
-
-法令内又は法令間の参照検出は、統合管理スクリプト `scripts/manage-references.ts` で管理されています。
+**統合CLIを使用した参照管理：**
 参照関係は web サイトでリンクとして使用されています。参照関係の検出の開発の際には**必ず**、ウェブサイトで検出と表示の効果を確認して、表示上の不整合や、検出できていない箇所がないかを確かめてください。
 
 #### 使用方法
 
 ```bash
-# 初期登録（データベースが空の場合）
-npx tsx scripts/manage-references.ts --init
+# 統合CLIによる参照管理
+lawfinder ref detect "テキスト"        # 参照検出
+lawfinder ref process 129AC0000000089  # 法令処理
 
-# 特定法令の更新（差分更新）
-npx tsx scripts/manage-references.ts --update 129AC0000000089
-
-# 全法令の再登録（既存データを削除して再構築）
-npx tsx scripts/manage-references.ts --rebuild
-
-# 統計情報の表示
-npx tsx scripts/manage-references.ts --stats
-
-# 不要データのクリーンアップ
-npx tsx scripts/manage-references.ts --cleanup
+# 従来のreference-manager.tsも利用可能
+npx tsx scripts/reference-manager.ts detect --all
+npx tsx scripts/reference-manager.ts validate
+npx tsx scripts/reference-manager.ts sync
 ```
 
 #### 特徴
