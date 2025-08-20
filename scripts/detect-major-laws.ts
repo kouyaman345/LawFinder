@@ -11,6 +11,8 @@ import * as path from 'path';
 import chalk from 'chalk';
 import ora from 'ora';
 import { UltimateReferenceDetector } from './detector';
+import { errorHandler, LawFinderError, ErrorCode } from '../src/shared/utils/error-handler';
+import { perfMonitor } from '../src/shared/utils/performance-monitor';
 
 const prisma = new PrismaClient();
 
@@ -74,14 +76,19 @@ async function extractArticles(xmlContent: string): Promise<string[]> {
 }
 
 async function detectAndSaveReferences(lawId: string, lawName: string) {
+  const perfId = perfMonitor.start(`detect_${lawId}`);
   console.log(chalk.cyan(`\n📖 ${lawName} (${lawId}) を処理中...`));
   
-  // XMLファイルを探す
-  const xmlPath = await findXMLFile(lawId);
-  if (!xmlPath) {
-    console.log(chalk.yellow(`  ⚠️ XMLファイルが見つかりません`));
-    return 0;
-  }
+  try {
+    // XMLファイルを探す
+    const xmlPath = await findXMLFile(lawId);
+    if (!xmlPath) {
+      throw new LawFinderError(
+        `XMLファイルが見つかりません: ${lawId}`,
+        ErrorCode.FILE_NOT_FOUND,
+        404
+      );
+    }
   
   // XMLを読み込み
   const xmlContent = fs.readFileSync(xmlPath, 'utf-8');
@@ -163,7 +170,13 @@ async function detectAndSaveReferences(lawId: string, lawName: string) {
     return saved;
   }
   
-  return 0;
+    return 0;
+  } catch (error) {
+    errorHandler.handle(error as Error, `detectAndSaveReferences(${lawId})`);
+    return 0;
+  } finally {
+    perfMonitor.end(perfId);
+  }
 }
 
 async function main() {

@@ -10,6 +10,9 @@
     "start": "next start",
     "lint": "eslint src/**/*.{ts,tsx}",
     "typecheck": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "validation:run": "npx tsx scripts/reference-validation-workflow.ts validate",
     "validation:feedback": "npx tsx scripts/reference-validation-workflow.ts feedback",
     "sync:neo4j": "npx tsx scripts/sync-to-neo4j.ts",
@@ -84,6 +87,7 @@
   },
   "devDependencies": {
     "@types/glob": "^9.0.0",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.10.4",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -94,9 +98,11 @@
     "eslint": "^8.55.0",
     "eslint-config-next": "^15.4.5",
     "glob": "^11.0.3",
+    "jest": "^30.0.5",
     "postcss": "^8",
     "prisma": "^6.13.0",
     "tailwindcss": "^3.4.1",
+    "ts-jest": "^29.4.1",
     "typescript": "^5.3.3"
   },
   "devDependencies-phase2": {
