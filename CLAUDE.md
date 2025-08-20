@@ -8,7 +8,7 @@ LawFinder は、政府が公開する法的標準 XML ファイルを処理す�
 
 ## プロジェクト状況（2025 年 8 月 20 日更新）
 
-**Phase 2（React/Next.js 実装）進行中。Neo4j 統合完了。scripts/ディレクトリの大規模リファクタリング完了（74個→4個のファイルに統合）。**
+**Phase 2（React/Next.js 実装）進行中。Neo4j 統合完了。scripts/ディレクトリの大規模リファクタリング完了（74 個 →4 個のファイルに統合）。**
 
 # 開発ガイドライン
 
@@ -194,15 +194,15 @@ npx tsx scripts/test-reference-detection.ts [options]
 
 詳細は `/docs/200_参照分析アルゴリズム改善設計書_20250817.md` を参照してください。
 
-## 開発の進め方（2025年8月20日 大規模更新）
+## 開発の進め方（2025 年 8 月 20 日 大規模更新）
 
-### 🚀 統合CLIツール（NEW！）
+### 🚀 統合 CLI ツール（NEW！）
 
-**すべての操作は統合CLI `lawfinder` で実行可能になりました：**
+**すべての操作は統合 CLI `lawfinder` で実行可能になりました：**
 
 ```bash
 # メインコマンド
-npx tsx scripts/lawfinder-cli.ts [command] [options]
+npx tsx scripts/cli.ts [command] [options]
 # または
 lawfinder [command] [options]  # package.jsonにエイリアス設定後
 
@@ -217,14 +217,14 @@ lawfinder interactive              # インタラクティブモード
 
 ### scripts/ディレクトリの革新的変更
 
-**74個のファイル → 4個のコアファイル（94.6%削減）**
+**74 個のファイル → 4 個のコアファイル（94.6%削減）**
 
 | ファイル | 説明 |
 |---------|------|
-| **lawfinder-cli.ts** | すべての機能を統合した単一CLIツール |
-| **reference-manager.ts** | 参照管理統合システム（CLAUDE.md推奨） |
-| **reference-detector-ultimate.ts** | 99.5%精度を目指す究極の検出エンジン |
-| **neo4j-visualization-guide.ts** | Neo4jガイド（ドキュメント） |
+| **cli.ts** | すべての機能を統合した単一CLIツール |
+| **manager.ts** | 参照管理統合システム（CLAUDE.md推奨） |
+| **detector.ts** | 99.5%精度を目指す究極の検出エンジン |
+| **neo4j-guide.ts** | Neo4jガイド（ドキュメント） |
 
 詳細は `/scripts/README.md` を参照してください。
 
@@ -244,7 +244,7 @@ docker-compose -f docker-compose.neo4j.yml up -d  # Neo4j
 
 ### 参照検出の新方式
 
-**統合CLIを使用した参照管理：**
+**統合 CLI を使用した参照管理：**
 参照関係は web サイトでリンクとして使用されています。参照関係の検出の開発の際には**必ず**、ウェブサイトで検出と表示の効果を確認して、表示上の不整合や、検出できていない箇所がないかを確かめてください。
 
 #### 使用方法
@@ -254,10 +254,10 @@ docker-compose -f docker-compose.neo4j.yml up -d  # Neo4j
 lawfinder ref detect "テキスト"        # 参照検出
 lawfinder ref process 129AC0000000089  # 法令処理
 
-# 従来のreference-manager.tsも利用可能
-npx tsx scripts/reference-manager.ts detect --all
-npx tsx scripts/reference-manager.ts validate
-npx tsx scripts/reference-manager.ts sync
+# 従来のmanager.tsも利用可能
+npx tsx scripts/manager.ts detect --all
+npx tsx scripts/manager.ts validate
+npx tsx scripts/manager.ts sync
 ```
 
 #### 特徴
