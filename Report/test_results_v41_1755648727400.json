@@ -1,0 +1,89 @@
+[
+  {
+    "text": "第1条の規定により",
+    "expected": {
+      "type": "internal",
+      "articleNumber": "第1条"
+    },
+    "detected": {
+      "sourceText": "第1条",
+      "type": "internal",
+      "targetArticle": "第1条",
+      "position": {
+        "start": 0,
+        "end": 3
+      },
+      "confidence": 0.9
+    },
+    "success": true
+  },
+  {
+    "text": "民法第90条",
+    "expected": {
+      "type": "external",
+      "lawId": "129AC0000000089",
+      "articleNumber": "第90条"
+    },
+    "detected": {
+      "sourceText": "民法第90条",
+      "type": "external",
+      "targetLaw": "民法",
+      "targetArticle": "第90条",
+      "position": {
+        "start": 0,
+        "end": 6
+      },
+      "confidence": 0.85
+    },
+    "success": true
+  },
+  {
+    "text": "前条の規定",
+    "expected": {
+      "type": "relative",
+      "relationType": "previous"
+    },
+    "detected": null,
+    "success": false
+  },
+  {
+    "text": "第1条から第3条まで",
+    "expected": {
+      "type": "range",
+      "startArticle": "第1条",
+      "endArticle": "第3条"
+    },
+    "detected": {
+      "sourceText": "第1条",
+      "type": "internal",
+      "targetArticle": "第1条",
+      "position": {
+        "start": 0,
+        "end": 3
+      },
+      "confidence": 0.9
+    },
+    "success": false
+  },
+  {
+    "text": "第1条及び第2条",
+    "expected": {
+      "type": "multiple",
+      "articles": [
+        "第1条",
+        "第2条"
+      ]
+    },
+    "detected": {
+      "sourceText": "第1条",
+      "type": "internal",
+      "targetArticle": "第1条",
+      "position": {
+        "start": 0,
+        "end": 3
+      },
+      "confidence": 0.9
+    },
+    "success": false
+  }
+]
