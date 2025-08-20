@@ -642,6 +642,19 @@ program
     }
   });
 
+// visualize コマンド
+program
+  .command("visualize")
+  .description("Neo4jデータを可視化")
+  .action(async () => {
+    try {
+      await visualizeNeo4jData();
+    } catch (error) {
+      console.error(chalk.red("❌ エラー:"), error);
+      process.exit(1);
+    }
+  });
+
 // sync コマンド
 program
   .command("sync")

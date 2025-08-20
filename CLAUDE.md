@@ -219,15 +219,15 @@ lawfinder interactive              # インタラクティブモード
 
 ### scripts/ディレクトリの最適化状態
 
-**現在10ファイル（整理・統合済み）**
+**現在6ファイル（最適化完了）**
 
 | ファイル | 説明 | 更新日 |
 |---------|------|--------|
 | **cli.ts** | 統合CLIツール（全機能のエントリポイント） | 8/21 |
 | **detector.ts** | 究極の参照検出エンジン（精度95%以上） | 8/21 |
-| **manager.ts** | 参照管理統合システム | 8/21 |
-| **enhanced-reference-detection.ts** | 拡張検出スクリプト | 8/21 |
-| **visualize-corrected.ts** | Neo4j可視化ツール | 8/21 |
+| **manager.ts** | 参照管理統合システム（可視化機能統合） | 8/21 |
+| **import-all-laws-neo4j.ts** | Neo4j全法令投入スクリプト | 8/21 |
+| **detect-major-laws.ts** | 主要法令参照検出デモ | 8/21 |
 | **startup.sh** | 起動スクリプト | - |
 
 詳細は `/scripts/README.md` を参照してください。
