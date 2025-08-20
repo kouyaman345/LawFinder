@@ -16,3 +16,8 @@ dist/static
 validation_results
 
 neo4j/
+
+# Logs
+*.log
+logs/
+*.log.*

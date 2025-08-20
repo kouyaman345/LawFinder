@@ -74,19 +74,27 @@ const refCmd = program.command('ref').description('参照検出・管理');
 refCmd
   .command('detect <text>')
   .description('テキストから参照を検出')
-  .action(async (text) => {
-    console.log(chalk.cyan('検出結果:'));
-    // 簡易検出ロジック
-    const patterns = [
-      /([^、。\s（）]*法)第([0-9]+)条/g,
-      /(前条|次条|前項|次項)/g
-    ];
+  .option('-l, --law-id <id>', '現在の法令ID')
+  .option('-n, --law-name <name>', '現在の法令名')
+  .action(async (text, options) => {
+    const UltimateReferenceDetector = require('./detector').default;
+    const detector = new UltimateReferenceDetector();
     
-    for (const pattern of patterns) {
-      const matches = text.matchAll(pattern);
-      for (const match of matches) {
-        console.log(`  - ${match[0]}`);
-      }
+    const references = await detector.detectReferences(
+      text,
+      options.lawId || '',
+      options.lawName || ''
+    );
+    
+    console.log(chalk.cyan('検出結果:'));
+    console.log(`総参照数: ${references.length}`);
+    
+    for (const ref of references.slice(0, 10)) {
+      console.log(`  - ${ref.text} → ${ref.targetLaw || ref.targetLawId || ref.targetArticle}`);
+    }
+    
+    if (references.length > 10) {
+      console.log(chalk.gray(`  ...他${references.length - 10}件`));
     }
     
     await prisma.$disconnect();
@@ -104,6 +112,47 @@ refCmd
 
 // ========== テスト・検証サブコマンド ==========
 const testCmd = program.command('test').description('テスト・検証');
+
+testCmd
+  .command('egov [lawId]')
+  .description('e-Govとの比較検証')
+  .option('-n, --name <name>', '法令名')
+  .option('-c, --count <number>', '検証する法令数', '5')
+  .option('-r, --random', 'ランダム選択')
+  .option('-s, --stats', '統計のみ表示')
+  .action(async (lawId, options) => {
+    const { compareWithEGov, massEGovValidation } = require('./detector');
+    
+    if (lawId) {
+      // 単一法令の検証
+      await compareWithEGov(lawId, options.name || lawId);
+    } else {
+      // 複数法令の検証
+      const count = parseInt(options.count);
+      
+      if (count > 100) {
+        // 大規模検証
+        console.log(chalk.cyan(`🚀 ${count}法令での大規模e-Gov検証`));
+        await massEGovValidation(count, options.random, options.stats);
+      } else {
+        // 小規模検証
+        const testCases = [
+          { id: '132AC0000000048', name: '商法' },
+          { id: '129AC0000000089', name: '民法' },
+          { id: '140AC0000000045', name: '刑法' },
+          { id: '417AC0000000086', name: '会社法' },
+          { id: '322AC0000000049', name: '労働基準法' }
+        ];
+        
+        console.log(chalk.cyan(`🧪 ${count}法令でe-Gov比較テスト`));
+        for (const testCase of testCases.slice(0, count)) {
+          await compareWithEGov(testCase.id, testCase.name);
+        }
+      }
+    }
+    
+    await prisma.$disconnect();
+  });
 
 testCmd
   .command('basic')
@@ -180,6 +229,15 @@ syncCmd
 
 // ========== ユーティリティサブコマンド ==========
 const utilCmd = program.command('util').description('ユーティリティ');
+
+utilCmd
+  .command('build-dictionary')
+  .description('法令辞書を構築')
+  .action(async () => {
+    const { buildLawDictionary } = require('./detector');
+    await buildLawDictionary();
+    await prisma.$disconnect();
+  });
 
 utilCmd
   .command('clean')

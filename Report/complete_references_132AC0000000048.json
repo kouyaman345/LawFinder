@@ -1,0 +1,4324 @@
+{
+  "lawId": "132AC0000000048",
+  "totalReferences": 545,
+  "mappedReferences": 271,
+  "accuracy": 49.72477064220184,
+  "references": [
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "民法",
+      "targetLawId": "129AC0000000089",
+      "targetArticle": "第明治二十九年法律第八十九号条",
+      "text": "民法（明治二十九年法律第八十九号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "商業登記法",
+      "targetLawId": "300AC0000000000",
+      "targetArticle": "第昭和三十八年法律第百二十五号条",
+      "text": "商業登記法（昭和三十八年法律第百二十五号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第12条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第13条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第15条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第16条",
+      "targetLawName": "地方自治法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百五十二条",
+      "text": "地方自治法（昭和二十二年法律第六十七号）第二百五十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第16条",
+      "targetLawName": "地方自治法",
+      "targetLawId": "300AC0000000000",
+      "targetArticle": "第昭和二十二年法律第六十七号条",
+      "text": "地方自治法（昭和二十二年法律第六十七号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第16条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前二項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第17条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第18条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第18_2条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第23条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第25条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第28条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第30条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第508条",
+      "targetLawName": "民法",
+      "targetLawId": "129AC0000000089",
+      "targetArticle": "第五百二十四条",
+      "text": "民法第五百二十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第508条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第509条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第515条",
+      "targetLawName": "民法",
+      "targetLawId": "129AC0000000089",
+      "targetArticle": "第三百四十九条",
+      "text": "民法第三百四十九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第524条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第524条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前二項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第526条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第526条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第527条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第527条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第527条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前三項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第528条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第533条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第539条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第541条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第546条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第546条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前二項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第547条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第547条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第548条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第555条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第569条",
+      "targetLawName": "航空法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二条",
+      "text": "航空法（昭和二十七年法律第二百三十一号）第二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第569条",
+      "targetLawName": "航空法",
+      "targetLawId": "300AC0000000000",
+      "targetArticle": "第昭和二十七年法律第二百三十一号条",
+      "text": "航空法（昭和二十七年法律第二百三十一号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第571条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "次項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第571条",
+      "targetLawName": "送り状に記載すべき事項を電磁的方法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第電子情報処理組織を使用する方法その他の情報通信の技術を利用する方法であって法務省令で定めるものをいう。以下同じ。条",
+      "text": "送り状に記載すべき事項を電磁的方法（電子情報処理組織を使用する方法その他の情報通信の技術を利用する方法であって法務省令で定めるものをいう。以下同じ。）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第571条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第576条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第576条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前二項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第577条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第578条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第579条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第579条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前三項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第581条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第582条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第582条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第582条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前二項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第583条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第584条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第585条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第588条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第588条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第591条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第592条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第592条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第592条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前二項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第593条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第596条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前二項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第598条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第602条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第603条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第616条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第617条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第617条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前二項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第686条",
+      "targetLawName": "船舶法",
+      "targetLawId": "100AC0000000000",
+      "targetArticle": "第明治三十二年法律第四十六号条",
+      "text": "船舶法（明治三十二年法律第四十六号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第686条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第694条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第697条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第703条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第703条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第711条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第712条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第715条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第715条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第739条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第740条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第740条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前二項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第743条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第744条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第748条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第749条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第750条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第751条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第752条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第753条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第756条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第756条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第756条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第757条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前二項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第758条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第759条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第759条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第767条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第769条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第770条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前三項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第788条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "次条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第794条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第796条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第797条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第797条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前二項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第797条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第798条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第799条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第799条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第799条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第800条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第802条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第803条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前二項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第803条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前三項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第805条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第805条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第808条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第810条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第810条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第811条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第815条",
+      "targetLawName": "保険法",
+      "targetLawId": "420AC0000000056",
+      "targetArticle": "第平成二十年法律第五十六号条",
+      "text": "保険法（平成二十年法律第五十六号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第817条",
+      "targetLawName": "保険法",
+      "targetLawId": "420AC0000000056",
+      "targetArticle": "第十九条",
+      "text": "保険法第十九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第817条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第817条",
+      "targetLawName": "「商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第八百十七条",
+      "text": "「商法（明治三十二年法律第四十八号）第八百十七条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第817条",
+      "targetLawName": "「商法",
+      "targetLawId": "100AC0000000000",
+      "targetArticle": "第明治三十二年法律第四十八号条",
+      "text": "「商法（明治三十二年法律第四十八号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第821条",
+      "targetLawName": "保険法",
+      "targetLawId": "420AC0000000056",
+      "targetArticle": "第六条",
+      "text": "保険法第六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第825条",
+      "targetLawName": "保険法",
+      "targetLawId": "420AC0000000056",
+      "targetArticle": "第六条",
+      "text": "保険法第六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第825条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第825条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第829条",
+      "targetLawName": "保険法",
+      "targetLawId": "420AC0000000056",
+      "targetArticle": "第二十八条",
+      "text": "保険法第二十八条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第842条",
+      "targetLawName": "国税徴収法",
+      "targetLawId": "300AC0000000000",
+      "targetArticle": "第昭和三十四年法律第百四十七号条",
+      "text": "国税徴収法（昭和三十四年法律第百四十七号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第843条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第843条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第845条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第847条",
+      "targetLawName": "民法",
+      "targetLawId": "129AC0000000089",
+      "targetArticle": "第三百八十四条",
+      "text": "民法第三百八十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第848条",
+      "targetLawName": "民法",
+      "targetLawId": "129AC0000000089",
+      "targetArticle": "第三百三十条",
+      "text": "民法第三百三十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第68条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第五百七十五条",
+      "text": "商法第五百七十五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "旧法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百九十七条",
+      "text": "旧法第二百九十七条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "新法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第百十九条",
+      "text": "新法第百十九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "新法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第百四十七条",
+      "text": "新法第百四十七条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "なお旧法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第百四十三条",
+      "text": "なお旧法第百四十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "旧法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第百四十七条",
+      "text": "旧法第百四十七条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第6条",
+      "targetLawName": "新法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十四条",
+      "text": "新法第二百二十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "なお旧法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十条",
+      "text": "なお旧法第二百八十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "新法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十八条",
+      "text": "新法第二百八十八条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第9条",
+      "targetLawName": "新法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十五条",
+      "text": "新法第二百八十五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第10条",
+      "targetLawName": "新法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十六条",
+      "text": "新法第二百八十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第10条",
+      "targetLawName": "新法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百九十条",
+      "text": "新法第二百九十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第10条",
+      "targetLawName": "新法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十六条",
+      "text": "新法第二百八十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第10条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第11条",
+      "targetLawName": "新法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四百八条",
+      "text": "新法第四百八条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百九条",
+      "text": "商法第二百九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "次条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第三十三条",
+      "text": "商法第三十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "次条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第三十四条",
+      "text": "商法第三十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第三十三条",
+      "text": "商法第三十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百五十六条",
+      "text": "商法第二百五十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "改正規定及び同法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百五十六条",
+      "text": "改正規定及び同法第二百五十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百八十三条",
+      "text": "商法第二百八十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第9条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百八十五条",
+      "text": "商法第二百八十五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第9条",
+      "targetLawName": "ノ六第二項において準用する同法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十五条",
+      "text": "ノ六第二項において準用する同法第二百八十五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第9条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百八十五条",
+      "text": "商法第二百八十五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第9条",
+      "targetLawName": "ノ六第一項及び同条第二項において準用する同法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十五条",
+      "text": "ノ六第一項及び同条第二項において準用する同法第二百八十五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第10条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百九十三条",
+      "text": "商法第二百九十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第12条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第三百七十九条",
+      "text": "商法第三百七十九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第13条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第四百六条",
+      "text": "商法第四百六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第13条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第13条",
+      "targetLawName": "商業登記法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第九十一条",
+      "text": "商業登記法（昭和三十八年法律第百二十五号）第九十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第13条",
+      "targetLawName": "商業登記法",
+      "targetLawId": "300AC0000000000",
+      "targetArticle": "第昭和三十八年法律第百二十五号条",
+      "text": "商業登記法（昭和三十八年法律第百二十五号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百十一条",
+      "text": "商法第二百十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二十四条",
+      "text": "有限会社法第二十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百十一条",
+      "text": "商法第二百十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第四百九十八条",
+      "text": "商法第四百九十八条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第八十五条",
+      "text": "有限会社法第八十五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百五十四条",
+      "text": "商法第二百五十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "第一項及び第四百三十条第二項並びに有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三十二条",
+      "text": "第一項及び第四百三十条第二項並びに有限会社法第三十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百五十四条",
+      "text": "商法第二百五十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第9条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百六十四条",
+      "text": "商法第二百六十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第10条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百六十五条",
+      "text": "商法第二百六十五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第13条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百九十四条",
+      "text": "商法第二百九十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第百六十八条",
+      "text": "商法第百六十八条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "次条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第百条",
+      "text": "商法第百条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第六十一条",
+      "text": "有限会社法第六十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第六十四条",
+      "text": "有限会社法第六十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第六十六条",
+      "text": "有限会社法第六十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "「合名会社ニ付テハ商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第六十四条",
+      "text": "「合名会社ニ付テハ商法第六十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "合資会社ニ付テハ同法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第百四十九条",
+      "text": "合資会社ニ付テハ同法第百四十九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百十条",
+      "text": "商法第二百十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "第四号及び商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十一条",
+      "text": "第四号及び商法第二百十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第六十四条",
+      "text": "有限会社法第六十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第6条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第6条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第三百四十三条",
+      "text": "商法第三百四十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第6条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第6条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第6条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第6条",
+      "targetLawName": "商業登記法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第九十一条",
+      "text": "商業登記法（昭和三十八年法律第百二十五号）第九十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第6条",
+      "targetLawName": "商業登記法",
+      "targetLawId": "300AC0000000000",
+      "targetArticle": "第昭和三十八年法律第百二十五号条",
+      "text": "商業登記法（昭和三十八年法律第百二十五号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "商業登記法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第六十七条",
+      "text": "商業登記法第六十七条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "商業登記法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第七十四条",
+      "text": "商業登記法第七十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "商業登記法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第七十一条",
+      "text": "商業登記法第七十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前二項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "取締役若しくは商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百五十八条",
+      "text": "取締役若しくは商法第二百五十八条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百七十条",
+      "text": "商法第二百七十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第百八十八条",
+      "text": "商法第百八十八条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "第三項において準用する商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第六十七条",
+      "text": "第三項において準用する商法第六十七条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "において準用する有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第六十六条",
+      "text": "において準用する有限会社法第六十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第六十四条",
+      "text": "有限会社法第六十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "附則第五条第四項において準用する商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第百条",
+      "text": "附則第五条第四項において準用する商法第百条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "において準用する商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十一条",
+      "text": "において準用する商法第二百十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第10条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百九十三条",
+      "text": "商法第二百九十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第10条",
+      "targetLawName": "施行前に同法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百九十三条",
+      "text": "施行前に同法第二百九十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "施行前に商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百六十七条",
+      "text": "施行前に商法第二百六十七条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "次条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第6条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第三百二十一条",
+      "text": "商法第三百二十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第6条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "第一条中証券取引法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第百三十条",
+      "text": "第一条中証券取引法第百三十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "同号を同項第四号とする改正規定及び同法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第百三十一条",
+      "text": "同号を同項第四号とする改正規定及び同法第百三十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "第一条中商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十五条",
+      "text": "第一条中商法第二百八十五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "改正規定並びに附則第六条中農林中央金庫法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二十三条",
+      "text": "改正規定並びに附則第六条中農林中央金庫法（大正十二年法律第四十二号）第二十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "附則第七条中商工組合中央金庫法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三十九条",
+      "text": "附則第七条中商工組合中央金庫法（昭和十一年法律第十四号）第三十九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "附則第九条中農業協同組合法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第五十二条",
+      "text": "附則第九条中農業協同組合法（昭和二十二年法律第百三十二号）第五十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "附則第十条中証券取引法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第五十三条",
+      "text": "附則第十条中証券取引法（昭和二十三年法律第二十五号）第五十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "附則第十一条中水産業協同組合法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第五十六条",
+      "text": "附則第十一条中水産業協同組合法（昭和二十三年法律第二百四十二号）第五十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "次に一条を加える改正規定及び同法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第十二条",
+      "text": "次に一条を加える改正規定及び同法第十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "附則第十三条中船主相互保険組合法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四十二条",
+      "text": "附則第十三条中船主相互保険組合法（昭和二十五年法律第百七十七号）第四十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "附則第十六条中信用金庫法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第五十五条",
+      "text": "附則第十六条中信用金庫法（昭和二十六年法律第二百三十八号）第五十五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "附則第十八条中労働金庫法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第六十一条",
+      "text": "附則第十八条中労働金庫法（昭和二十八年法律第二百二十七号）第六十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "附則第二十三条中銀行法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第十七条",
+      "text": "附則第二十三条中銀行法（昭和五十六年法律第五十九号）第十七条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "附則第二十七条中保険業法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第十五条",
+      "text": "附則第二十七条中保険業法（平成七年法律第百五号）第十五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "改正規定並びに附則第六条中農林中央金庫法",
+      "targetLawId": "200AC0000000000",
+      "targetArticle": "第大正十二年法律第四十二号条",
+      "text": "改正規定並びに附則第六条中農林中央金庫法（大正十二年法律第四十二号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "附則第七条中商工組合中央金庫法",
+      "targetLawId": "300AC0000000000",
+      "targetArticle": "第昭和十一年法律第十四号条",
+      "text": "附則第七条中商工組合中央金庫法（昭和十一年法律第十四号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "附則第九条中農業協同組合法",
+      "targetLawId": "300AC0000000000",
+      "targetArticle": "第昭和二十二年法律第百三十二号条",
+      "text": "附則第九条中農業協同組合法（昭和二十二年法律第百三十二号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "附則第十条中証券取引法",
+      "targetLawId": "300AC0000000000",
+      "targetArticle": "第昭和二十三年法律第二十五号条",
+      "text": "附則第十条中証券取引法（昭和二十三年法律第二十五号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "附則第十一条中水産業協同組合法",
+      "targetLawId": "300AC0000000000",
+      "targetArticle": "第昭和二十三年法律第二百四十二号条",
+      "text": "附則第十一条中水産業協同組合法（昭和二十三年法律第二百四十二号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "附則第十三条中船主相互保険組合法",
+      "targetLawId": "300AC0000000000",
+      "targetArticle": "第昭和二十五年法律第百七十七号条",
+      "text": "附則第十三条中船主相互保険組合法（昭和二十五年法律第百七十七号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "附則第十六条中信用金庫法",
+      "targetLawId": "300AC0000000000",
+      "targetArticle": "第昭和二十六年法律第二百三十八号条",
+      "text": "附則第十六条中信用金庫法（昭和二十六年法律第二百三十八号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "附則第十八条中労働金庫法",
+      "targetLawId": "300AC0000000000",
+      "targetArticle": "第昭和二十八年法律第二百二十七号条",
+      "text": "附則第十八条中労働金庫法（昭和二十八年法律第二百二十七号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "附則第二十三条中銀行法",
+      "targetLawId": "300AC0000000000",
+      "targetArticle": "第昭和五十六年法律第五十九号条",
+      "text": "附則第二十三条中銀行法（昭和五十六年法律第五十九号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "附則第二十七条中保険業法",
+      "targetLawId": "407AC0000000000",
+      "targetArticle": "第平成七年法律第百五号条",
+      "text": "附則第二十七条中保険業法（平成七年法律第百五号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "中小企業等協同組合法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第九条",
+      "text": "中小企業等協同組合法（昭和二十四年法律第百八十一号）第九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "保険業法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二条",
+      "text": "保険業法第二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "中小企業等協同組合法",
+      "targetLawId": "300AC0000000000",
+      "targetArticle": "第昭和二十四年法律第百八十一号条",
+      "text": "中小企業等協同組合法（昭和二十四年法律第百八十一号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "次条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "次条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第25条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第三百九条",
+      "text": "商法第三百九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "会社法",
+      "targetLawId": "417AC0000000086",
+      "targetArticle": "第平成十七年法律第八十六号条",
+      "text": "会社法（平成十七年法律第八十六号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百十二条",
+      "text": "商法（以下「旧商法」という。）第二百十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二十四条",
+      "text": "有限会社法（以下「旧有限会社法」という。）第二十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "旧有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二十四条",
+      "text": "旧有限会社法第二十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第以下「旧商法」という。条",
+      "text": "商法（以下「旧商法」という。）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第以下「旧有限会社法」という。条",
+      "text": "有限会社法（以下「旧有限会社法」という。）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十条",
+      "text": "旧商法第二百十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百十条",
+      "text": "商法（以下「新商法」という。）第二百十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第以下「新商法」という。条",
+      "text": "商法（以下「新商法」という。）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "次項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "次項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十条",
+      "text": "旧商法第二百十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十条",
+      "text": "旧商法第二百十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十条",
+      "text": "新商法第二百十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十条",
+      "text": "旧商法第二百十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "際現に旧消却特例法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三条",
+      "text": "際現に旧消却特例法第三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十条",
+      "text": "新商法第二百十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "旧消却特例法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三条",
+      "text": "旧消却特例法第三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "総数から旧消却特例法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三条",
+      "text": "総数から旧消却特例法第三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "旧消却特例法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三条",
+      "text": "旧消却特例法第三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十条",
+      "text": "新商法第二百十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "とされる旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十条",
+      "text": "とされる旧商法第二百十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "例によることとされる旧消却特例法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三条",
+      "text": "例によることとされる旧消却特例法第三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "により株式を買い受ける場合における新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十条",
+      "text": "により株式を買い受ける場合における新商法第二百十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "次条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "日を含む営業年度内に商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百四条",
+      "text": "日を含む営業年度内に商法第二百四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十条",
+      "text": "旧商法第二百十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十条",
+      "text": "新商法第二百十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "旧消却特例法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三条",
+      "text": "旧消却特例法第三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十条",
+      "text": "新商法第二百十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "は「同項ノ合計額ニ同項ニ規定スル規定又ハ同法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第一条",
+      "text": "は「同項ノ合計額ニ同項ニ規定スル規定又ハ同法第一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "第二百十条ノ三第一項本文若ハ第二百十二条ノ二第一項ノ規定若ハ同法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四条",
+      "text": "第二百十条ノ三第一項本文若ハ第二百十二条ノ二第一項ノ規定若ハ同法第四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百五十六条",
+      "text": "新商法第三百五十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "次項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十条",
+      "text": "旧商法第二百十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "会社法",
+      "targetLawId": "417AC0000000086",
+      "targetArticle": "第平成十七年法律第八十六号条",
+      "text": "会社法（平成十七年法律第八十六号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "際旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百三十条",
+      "text": "際旧商法第二百三十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十条",
+      "text": "新商法第二百二十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十条",
+      "text": "新商法第二百二十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "際旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百三十条",
+      "text": "際旧商法第二百三十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "施行前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百三十条",
+      "text": "施行前に旧商法第二百三十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百五十一条",
+      "text": "旧商法第三百五十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "次項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "端株券を会社に提出して新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十条",
+      "text": "端株券を会社に提出して新商法第二百二十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "請求をすること又は新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十条",
+      "text": "請求をすること又は新商法第二百二十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十条",
+      "text": "新商法第二百二十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十条",
+      "text": "新商法第二百二十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四百九十八条",
+      "text": "新商法第四百九十八条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十六条",
+      "text": "新商法第二百十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第9条",
+      "targetLawName": "種類ごとに新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十一条",
+      "text": "種類ごとに新商法第二百二十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第9条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十一条",
+      "text": "新商法第二百二十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第9条",
+      "targetLawName": "条件とする会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第百八十八条",
+      "text": "条件とする会社法第百八十八条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第9条",
+      "targetLawName": "規定により旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百三十条",
+      "text": "規定により旧商法第二百三十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第9条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十条",
+      "text": "新商法第二百二十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第9条",
+      "targetLawName": "会社法",
+      "targetLawId": "417AC0000000086",
+      "targetArticle": "第二百十九条",
+      "text": "会社法第二百十九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第9条",
+      "targetLawName": "項において準用する同法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十九条",
+      "text": "項において準用する同法第二百十九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第10条",
+      "targetLawName": "手続が開始された株主総会若しくは旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百四十五条",
+      "text": "手続が開始された株主総会若しくは旧商法第三百四十五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第11条",
+      "targetLawName": "施行前二週間以内に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百四十五条",
+      "text": "施行前二週間以内に旧商法第二百四十五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第11条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百四十五条",
+      "text": "旧商法第二百四十五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第12条",
+      "targetLawName": "施行前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十条",
+      "text": "施行前に旧商法第二百八十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第13条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十条",
+      "text": "旧商法第二百十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第13条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十条",
+      "text": "新商法第二百八十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第16条",
+      "targetLawName": "施行前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百九十三条",
+      "text": "施行前に旧商法第二百九十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第16条",
+      "targetLawName": "に新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百九十三条",
+      "text": "に新商法第二百九十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第17条",
+      "targetLawName": "分割計画書に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百七十四条",
+      "text": "分割計画書に旧商法第三百七十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第17条",
+      "targetLawName": "旧有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第六十三条",
+      "text": "旧有限会社法第六十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第17条",
+      "targetLawName": "記載がある新設分割又は分割契約書に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百七十四条",
+      "text": "記載がある新設分割又は分割契約書に旧商法第三百七十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第17条",
+      "targetLawName": "旧有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第六十三条",
+      "text": "旧有限会社法第六十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第17条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十二条",
+      "text": "旧商法第二百十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第17条",
+      "targetLawName": "旧有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二十四条",
+      "text": "旧有限会社法第二十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第17条",
+      "targetLawName": "規定によって準用される旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十四条",
+      "text": "規定によって準用される旧商法第二百十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第18条",
+      "targetLawName": "施行前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百七十五条",
+      "text": "施行前に旧商法第三百七十五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第18条",
+      "targetLawName": "第一項又は旧有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四十七条",
+      "text": "第一項又は旧有限会社法第四十七条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第19条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四百十六条",
+      "text": "旧商法第四百十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第19条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四百十六条",
+      "text": "旧商法第四百十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第19条",
+      "targetLawName": "規定において準用する旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八条",
+      "text": "規定において準用する旧商法第二百八条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第20条",
+      "targetLawName": "会社法",
+      "targetLawId": "417AC0000000086",
+      "targetArticle": "第二百十九条",
+      "text": "会社法第二百十九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第20条",
+      "targetLawName": "項において準用する同法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十九条",
+      "text": "項において準用する同法第二百十九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第20条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第三百四十一条",
+      "text": "商法（以下「旧商法」という。）第三百四十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百八十条",
+      "text": "商法（以下「新商法」という。）第二百八十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第以下「旧商法」という。条",
+      "text": "商法（以下「旧商法」という。）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第以下「新商法」という。条",
+      "text": "商法（以下「新商法」という。）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "際定款に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百四十二条",
+      "text": "際定款に旧商法第二百四十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十二条",
+      "text": "新商法第二百二十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十四条",
+      "text": "新商法第二百二十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十二条",
+      "text": "新商法第二百二十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "施行前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十条",
+      "text": "施行前に旧商法第二百八十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第6条",
+      "targetLawName": "施行前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十条",
+      "text": "施行前に旧商法第二百八十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第6条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第6条",
+      "targetLawName": "会社法",
+      "targetLawId": "417AC0000000086",
+      "targetArticle": "第平成十七年法律第八十六号条",
+      "text": "会社法（平成十七年法律第八十六号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百四十一条",
+      "text": "旧商法第三百四十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百四十一条",
+      "text": "旧商法第三百四十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "施行前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百四十一条",
+      "text": "施行前に旧商法第三百四十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第百八十八条",
+      "text": "商法（以下「新商法」という。）第百八十八条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第以下「新商法」という。条",
+      "text": "商法（以下「新商法」という。）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "定款を変更して新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百六十六条",
+      "text": "定款を変更して新商法第二百六十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百六十六条",
+      "text": "新商法第二百六十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百十条",
+      "text": "商法第二百十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百八十条",
+      "text": "商法第二百八十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百六十六条",
+      "text": "新商法第二百六十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百六十七条",
+      "text": "新商法第二百六十七条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百六十七条",
+      "text": "商法（以下「旧商法」という。）第二百六十七条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第以下「旧商法」という。条",
+      "text": "商法（以下「旧商法」という。）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第6条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百六十八条",
+      "text": "新商法第二百六十八条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第6条",
+      "targetLawName": "施行前に提起された旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百六十八条",
+      "text": "施行前に提起された旧商法第二百六十八条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百七十五条",
+      "text": "新商法第二百七十五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "法律において新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百七十五条",
+      "text": "法律において新商法第二百七十五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第9条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十条",
+      "text": "新商法第二百八十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第9条",
+      "targetLawName": "第一項において準用する新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百六十六条",
+      "text": "第一項において準用する新商法第二百六十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第百七十三条",
+      "text": "商法（以下「旧商法」という。）第百七十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第百八十一条",
+      "text": "旧商法第百八十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四十条",
+      "text": "有限会社法（以下「旧有限会社法」という。）第四十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "旧有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第五十二条",
+      "text": "旧有限会社法第五十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "並びに旧有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第十二条",
+      "text": "並びに旧有限会社法第十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第以下「旧商法」という。条",
+      "text": "商法（以下「旧商法」という。）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第以下「旧有限会社法」という。条",
+      "text": "有限会社法（以下「旧有限会社法」という。）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第百七十三条",
+      "text": "商法（以下「新商法」という。）第百七十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第百八十一条",
+      "text": "新商法第百八十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四十条",
+      "text": "有限会社法（以下「新有限会社法」という。）第四十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "新有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第五十二条",
+      "text": "新有限会社法第五十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "並びに新有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第十二条",
+      "text": "並びに新有限会社法第十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第以下「新商法」という。条",
+      "text": "商法（以下「新商法」という。）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第以下「新有限会社法」という。条",
+      "text": "有限会社法（以下「新有限会社法」という。）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百四十六条",
+      "text": "新商法第二百四十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十条",
+      "text": "新商法第二百八十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "新有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第五十二条",
+      "text": "新有限会社法第五十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "及び新有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四十条",
+      "text": "及び新有限会社法第四十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第百七十三条",
+      "text": "新商法第百七十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "新有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第十二条",
+      "text": "新有限会社法第十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第百八十一条",
+      "text": "新商法第百八十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "規定を新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百四十六条",
+      "text": "規定を新商法第二百四十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "新有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四十条",
+      "text": "新有限会社法第四十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第百九十七条",
+      "text": "新商法第百九十七条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百四十六条",
+      "text": "新商法第二百四十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十条",
+      "text": "新商法第二百八十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "新有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第十五条",
+      "text": "新有限会社法第十五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "新有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四十条",
+      "text": "新有限会社法第四十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "新有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第五十五条",
+      "text": "新有限会社法第五十五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百三十条",
+      "text": "新商法第二百三十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "総会に関する新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百三十二条",
+      "text": "総会に関する新商法第二百三十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十二条",
+      "text": "新商法第二百二十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第4条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百四十六条",
+      "text": "新商法第三百四十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "施行前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百三十七条",
+      "text": "施行前に旧商法第二百三十七条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十二条",
+      "text": "旧商法第二百二十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百四十六条",
+      "text": "旧商法第三百四十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第5条",
+      "targetLawName": "及び第四百三十条第二項並びに旧有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三十七条",
+      "text": "及び第四百三十条第二項並びに旧有限会社法第三十七条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第6条",
+      "targetLawName": "施行前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十九条",
+      "text": "施行前に旧商法第二百八十九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第6条",
+      "targetLawName": "旧有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四十六条",
+      "text": "旧有限会社法第四十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第6条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百七十四条",
+      "text": "旧商法第三百七十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第6条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "施行前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四百七十九条",
+      "text": "施行前に旧商法第四百七十九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四百八十三条",
+      "text": "新商法第四百八十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四百八十三条",
+      "text": "新商法第四百八十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "新有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第七十六条",
+      "text": "新有限会社法第七十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "施行前に外国会社が旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四百七十九条",
+      "text": "施行前に外国会社が旧商法第四百七十九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "旧有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第七十六条",
+      "text": "旧有限会社法第七十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四百七十九条",
+      "text": "新商法第四百七十九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "新有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第七十六条",
+      "text": "新有限会社法第七十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "施行前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四百七十九条",
+      "text": "施行前に旧商法第四百七十九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "旧有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第七十六条",
+      "text": "旧有限会社法第七十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四百八十四条",
+      "text": "新商法第四百八十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "新有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第七十六条",
+      "text": "新有限会社法第七十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四百八十四条",
+      "text": "新商法第四百八十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "第一条ノ規定ニ依ル改正前ノ本法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四百七十九条",
+      "text": "第一条ノ規定ニ依ル改正前ノ本法第四百七十九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第四百七十九条",
+      "text": "本法第四百七十九条",
+      "type": "internal"
+    },
+    {
+      "sourceArticle": "第19条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百九十五条",
+      "text": "商法（以下「旧商法」という。）第二百九十五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第19条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第以下「旧商法」という。条",
+      "text": "商法（以下「旧商法」という。）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第19条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第19条",
+      "targetLawName": "施行日前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第八百四十八条",
+      "text": "施行日前に旧商法第八百四十八条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第19条",
+      "targetLawName": "第三項において準用する旧民法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百八十三条",
+      "text": "第三項において準用する旧民法第三百八十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第19条",
+      "targetLawName": "同項において準用する旧民法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百七十八条",
+      "text": "同項において準用する旧民法第三百七十八条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第19条",
+      "targetLawName": "規定による滌除及び同項において準用する旧民法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百八十四条",
+      "text": "規定による滌除及び同項において準用する旧民法第三百八十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第19条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "破産法",
+      "targetLawId": "416AC0000000075",
+      "targetArticle": "第平成十六年法律第七十五号。次条第八項並びに附則第三条第八項、第五条第八項、第十六項及び第二十一項、第八条第三項並びに第十三条において「新破産法」という。条",
+      "text": "破産法（平成十六年法律第七十五号。次条第八項並びに附則第三条第八項、第五条第八項、第十六項及び第二十一項、第八条第三項並びに第十三条において「新破産法」という。）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "次条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第三百八十一条",
+      "text": "商法（次項において「旧商法」という。）第三百八十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第次項において「旧商法」という。条",
+      "text": "商法（次項において「旧商法」という。）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "次項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "施行日前にされた旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四百三十一条",
+      "text": "施行日前にされた旧商法第四百三十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "申立て又は施行日前に職権でされた同条第三項において準用する旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百八十一条",
+      "text": "申立て又は施行日前に職権でされた同条第三項において準用する旧商法第三百八十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第四百三条",
+      "text": "商法第四百三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "第一項又は第四百五十六条第一項において準用する新破産法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第七十一条",
+      "text": "第一項又は第四百五十六条第一項において準用する新破産法第七十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第14条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第百四条",
+      "text": "商法（以下この条において「旧商法」という。）第百四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "農業協同組合法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第七十三条",
+      "text": "農業協同組合法第七十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "証券取引法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第百一条",
+      "text": "証券取引法第百一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "金融先物取引法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三十四条",
+      "text": "金融先物取引法第三十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "保険業法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第八十四条",
+      "text": "保険業法第八十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "中間法人法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二十二条",
+      "text": "中間法人法第二十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第以下この条において「旧商法」という。条",
+      "text": "商法（以下この条において「旧商法」という。）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "次項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百九条",
+      "text": "旧商法第三百九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "有限会社法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第六十四条",
+      "text": "有限会社法第六十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "担保附社債信託法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第八十二条",
+      "text": "担保附社債信託法第八十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "旧投信法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第百三十九条",
+      "text": "旧投信法第百三十九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "新事業創出促進法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第十条",
+      "text": "新事業創出促進法第十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "とされる同法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第一条",
+      "text": "とされる同法第一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第3条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前条",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "「同法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二条",
+      "text": "「同法第二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "附則第百二十三条中産業活力再生特別措置法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第十二条",
+      "text": "附則第百二十三条中産業活力再生特別措置法（平成十一年法律第百三十一号）第十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "規定並びに附則第百二十九条中会社更生法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百五条",
+      "text": "規定並びに附則第百二十九条中会社更生法（平成十四年法律第百五十四号）第二百五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "附則第百二十三条中産業活力再生特別措置法",
+      "targetLawId": "400AC0000000000",
+      "targetArticle": "第平成十一年法律第百三十一号条",
+      "text": "附則第百二十三条中産業活力再生特別措置法（平成十一年法律第百三十一号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第1条",
+      "targetLawName": "規定並びに附則第百二十九条中会社更生法",
+      "targetLawId": "400AC0000000000",
+      "targetArticle": "第平成十四年法律第百五十四号条",
+      "text": "規定並びに附則第百二十九条中会社更生法（平成十四年法律第百五十四号）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第二百十一条",
+      "text": "商法（以下「旧商法」という。）第二百十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "第三項において準用する旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十条",
+      "text": "第三項において準用する旧商法第二百八十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十一条",
+      "text": "新商法第二百十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "第三項において準用する新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十条",
+      "text": "第三項において準用する新商法第二百八十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第以下「旧商法」という。条",
+      "text": "商法（以下「旧商法」という。）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "消却をしようとする会社が一部施行日前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十三条",
+      "text": "消却をしようとする会社が一部施行日前に旧商法第二百十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "第二項において準用する旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十五条",
+      "text": "第二項において準用する旧商法第二百十五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十三条",
+      "text": "新商法第二百十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "併合をしようとする会社が一部施行日前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十五条",
+      "text": "併合をしようとする会社が一部施行日前に旧商法第二百十五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十五条",
+      "text": "新商法第二百十五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十二条",
+      "text": "旧商法第二百二十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十二条",
+      "text": "新商法第二百二十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "当該会社が一部施行日前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十条",
+      "text": "当該会社が一部施行日前に旧商法第二百八十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十条",
+      "text": "新商法第二百八十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十条",
+      "text": "旧商法第二百八十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十条",
+      "text": "新商法第二百八十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百四十八条",
+      "text": "旧商法第三百四十八条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "決議をした会社が一部施行日前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百五十条",
+      "text": "決議をした会社が一部施行日前に旧商法第三百五十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百五十条",
+      "text": "新商法第三百五十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "株式交換により完全子会社となる会社が一部施行日前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百五十九条",
+      "text": "株式交換により完全子会社となる会社が一部施行日前に旧商法第三百五十九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "株式交換により完全親会社となる会社が一部施行日前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百六十二条",
+      "text": "株式交換により完全親会社となる会社が一部施行日前に旧商法第三百六十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "第二項において準用する旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百五十条",
+      "text": "第二項において準用する旧商法第三百五十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百六十二条",
+      "text": "新商法第三百六十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "第二項において準用する新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百五十条",
+      "text": "第二項において準用する新商法第三百五十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "当該会社が一部施行日前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百六十三条",
+      "text": "当該会社が一部施行日前に旧商法第三百六十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "第五項において準用する旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十条",
+      "text": "第五項において準用する旧商法第二百八十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百六十三条",
+      "text": "新商法第三百六十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "第五項において準用する新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十条",
+      "text": "第五項において準用する新商法第二百八十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "株式移転により完全子会社となる会社が一部施行日前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百六十八条",
+      "text": "株式移転により完全子会社となる会社が一部施行日前に旧商法第三百六十八条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "吸収分割により営業を承継する会社が一部施行日前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百七十四条",
+      "text": "吸収分割により営業を承継する会社が一部施行日前に旧商法第三百七十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "ノ三十一第二項において準用する旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百五十条",
+      "text": "ノ三十一第二項において準用する旧商法第三百五十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百七十四条",
+      "text": "新商法第三百七十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "ノ三十一第二項において準用する新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百五十条",
+      "text": "ノ三十一第二項において準用する新商法第三百五十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "合併により消滅する会社が一部施行日前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四百十三条",
+      "text": "合併により消滅する会社が一部施行日前に旧商法第四百十三条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "合併後存続する会社が一部施行日前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四百十六条",
+      "text": "合併後存続する会社が一部施行日前に旧商法第四百十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "第四項において準用する旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百五十条",
+      "text": "第四項において準用する旧商法第三百五十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第四百十六条",
+      "text": "新商法第四百十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "第四項において準用する新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百五十条",
+      "text": "第四項において準用する新商法第三百五十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十四条",
+      "text": "旧商法第二百二十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "閉鎖期間を定めた会社が新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百十九条",
+      "text": "閉鎖期間を定めた会社が新商法第二百十九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十一条",
+      "text": "新商法第二百二十一条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百八十条",
+      "text": "新商法第二百八十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第三百七十四条",
+      "text": "新商法第三百七十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "当該閉鎖期間内に新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十条",
+      "text": "当該閉鎖期間内に新商法第二百二十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "当該閉鎖期間内に新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十二条",
+      "text": "当該閉鎖期間内に新商法第二百二十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "当該閉鎖期間内に新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十二条",
+      "text": "当該閉鎖期間内に新商法第二百二十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百三十条",
+      "text": "新商法第二百三十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "であって旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十四条",
+      "text": "であって旧商法第二百二十四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第36条",
+      "targetLawName": "一部施行日前に旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二百二十六条",
+      "text": "一部施行日前に旧商法第二百二十六条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第以下「新商法」という。条",
+      "text": "商法（以下「新商法」という。）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第2条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "targetArticle": "第以下「旧商法」という。条",
+      "text": "商法（以下「旧商法」という。）",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第7条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第六百八十九条",
+      "text": "新商法第六百八十九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第六百九十七条",
+      "text": "旧商法第六百九十七条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第六百九十九条",
+      "text": "新商法第六百九十九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第8条",
+      "targetLawName": "商法",
+      "targetLawId": "132AC0000000048",
+      "text": "前項",
+      "type": "relative"
+    },
+    {
+      "sourceArticle": "第9条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第七百二条",
+      "text": "新商法第七百二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第10条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第七百四条",
+      "text": "新商法第七百四条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第11条",
+      "targetLawName": "行為に基づく旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第七百五条",
+      "text": "行為に基づく旧商法第七百五条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第11条",
+      "targetLawName": "既発航船舶に係る旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第七百二十条",
+      "text": "既発航船舶に係る旧商法第七百二十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第12条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第七百八十八条",
+      "text": "新商法第七百八十八条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第12条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第七百九十条",
+      "text": "新商法第七百九十条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第13条",
+      "targetLawName": "新商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第八百七条",
+      "text": "新商法第八百七条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第14条",
+      "targetLawName": "既発航船舶に係る旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第七百九十九条",
+      "text": "既発航船舶に係る旧商法第七百九十九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第16条",
+      "targetLawName": "属具及び受領していない運送賃に関し国税徴収法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第二条",
+      "text": "属具及び受領していない運送賃に関し国税徴収法（昭和三十四年法律第百四十七号）第二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第16条",
+      "targetLawName": "更生手続又は特別清算手続が開始された場合における旧商法",
+      "targetLawId": "UNKNOWN",
+      "targetArticle": "第八百四十二条",
+      "text": "更生手続又は特別清算手続が開始された場合における旧商法第八百四十二条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第16条",
+      "targetLawName": "国際海上物品運送法",
+      "targetLawId": "332AC0000000172",
+      "targetArticle": "第十九条",
+      "text": "国際海上物品運送法第十九条",
+      "type": "external"
+    },
+    {
+      "sourceArticle": "第16条",
+      "targetLawName": "属具及び受領していない運送賃に関し国税徴収法",
+      "targetLawId": "300AC0000000000",
+      "targetArticle": "第昭和三十四年法律第百四十七号条",
+      "text": "属具及び受領していない運送賃に関し国税徴収法（昭和三十四年法律第百四十七号）",
+      "type": "external"
+    }
+  ],
+  "unmappedLaws": [
+    "地方自治法",
+    "航空法",
+    "送り状に記載すべき事項を電磁的方法",
+    "「商法",
+    "旧法",
+    "新法",
+    "なお旧法",
+    "改正規定及び同法",
+    "ノ六第二項において準用する同法",
+    "ノ六第一項及び同条第二項において準用する同法",
+    "商業登記法",
+    "有限会社法",
+    "第一項及び第四百三十条第二項並びに有限会社法",
+    "「合名会社ニ付テハ商法",
+    "合資会社ニ付テハ同法",
+    "第四号及び商法",
+    "取締役若しくは商法",
+    "第三項において準用する商法",
+    "において準用する有限会社法",
+    "附則第五条第四項において準用する商法",
+    "において準用する商法",
+    "施行前に同法",
+    "施行前に商法",
+    "第一条中証券取引法",
+    "同号を同項第四号とする改正規定及び同法",
+    "第一条中商法",
+    "改正規定並びに附則第六条中農林中央金庫法",
+    "附則第七条中商工組合中央金庫法",
+    "附則第九条中農業協同組合法",
+    "附則第十条中証券取引法",
+    "附則第十一条中水産業協同組合法",
+    "次に一条を加える改正規定及び同法",
+    "附則第十三条中船主相互保険組合法",
+    "附則第十六条中信用金庫法",
+    "附則第十八条中労働金庫法",
+    "附則第二十三条中銀行法",
+    "附則第二十七条中保険業法",
+    "中小企業等協同組合法",
+    "保険業法",
+    "旧有限会社法",
+    "旧商法",
+    "新商法",
+    "際現に旧消却特例法",
+    "旧消却特例法",
+    "総数から旧消却特例法",
+    "とされる旧商法",
+    "例によることとされる旧消却特例法",
+    "により株式を買い受ける場合における新商法",
+    "日を含む営業年度内に商法",
+    "は「同項ノ合計額ニ同項ニ規定スル規定又ハ同法",
+    "第二百十条ノ三第一項本文若ハ第二百十二条ノ二第一項ノ規定若ハ同法",
+    "際旧商法",
+    "施行前に旧商法",
+    "端株券を会社に提出して新商法",
+    "請求をすること又は新商法",
+    "種類ごとに新商法",
+    "条件とする会社法",
+    "規定により旧商法",
+    "項において準用する同法",
+    "手続が開始された株主総会若しくは旧商法",
+    "施行前二週間以内に旧商法",
+    "に新商法",
+    "分割計画書に旧商法",
+    "記載がある新設分割又は分割契約書に旧商法",
+    "規定によって準用される旧商法",
+    "第一項又は旧有限会社法",
+    "規定において準用する旧商法",
+    "際定款に旧商法",
+    "定款を変更して新商法",
+    "施行前に提起された旧商法",
+    "法律において新商法",
+    "第一項において準用する新商法",
+    "並びに旧有限会社法",
+    "新有限会社法",
+    "並びに新有限会社法",
+    "及び新有限会社法",
+    "規定を新商法",
+    "総会に関する新商法",
+    "及び第四百三十条第二項並びに旧有限会社法",
+    "施行前に外国会社が旧商法",
+    "第一条ノ規定ニ依ル改正前ノ本法",
+    "施行日前に旧商法",
+    "第三項において準用する旧民法",
+    "同項において準用する旧民法",
+    "規定による滌除及び同項において準用する旧民法",
+    "施行日前にされた旧商法",
+    "申立て又は施行日前に職権でされた同条第三項において準用する旧商法",
+    "第一項又は第四百五十六条第一項において準用する新破産法",
+    "農業協同組合法",
+    "証券取引法",
+    "金融先物取引法",
+    "中間法人法",
+    "担保附社債信託法",
+    "旧投信法",
+    "新事業創出促進法",
+    "とされる同法",
+    "「同法",
+    "附則第百二十三条中産業活力再生特別措置法",
+    "規定並びに附則第百二十九条中会社更生法",
+    "第三項において準用する旧商法",
+    "第三項において準用する新商法",
+    "消却をしようとする会社が一部施行日前に旧商法",
+    "第二項において準用する旧商法",
+    "併合をしようとする会社が一部施行日前に旧商法",
+    "当該会社が一部施行日前に旧商法",
+    "決議をした会社が一部施行日前に旧商法",
+    "株式交換により完全子会社となる会社が一部施行日前に旧商法",
+    "株式交換により完全親会社となる会社が一部施行日前に旧商法",
+    "第二項において準用する新商法",
+    "第五項において準用する旧商法",
+    "第五項において準用する新商法",
+    "株式移転により完全子会社となる会社が一部施行日前に旧商法",
+    "吸収分割により営業を承継する会社が一部施行日前に旧商法",
+    "ノ三十一第二項において準用する旧商法",
+    "ノ三十一第二項において準用する新商法",
+    "合併により消滅する会社が一部施行日前に旧商法",
+    "合併後存続する会社が一部施行日前に旧商法",
+    "第四項において準用する旧商法",
+    "第四項において準用する新商法",
+    "閉鎖期間を定めた会社が新商法",
+    "当該閉鎖期間内に新商法",
+    "であって旧商法",
+    "一部施行日前に旧商法",
+    "行為に基づく旧商法",
+    "既発航船舶に係る旧商法",
+    "属具及び受領していない運送賃に関し国税徴収法",
+    "更生手続又は特別清算手続が開始された場合における旧商法"
+  ]
+}

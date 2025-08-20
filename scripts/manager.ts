@@ -589,5 +589,52 @@ program
     }
   });
 
+// Neo4jグラフ分析機能
+export async function analyzeNeo4jGraph() {
+  const neo4j = require('neo4j-driver');
+  const driver = neo4j.driver(
+    'bolt://localhost:7687',
+    neo4j.auth.basic('neo4j', 'lawfinder123')
+  );
+  
+  const session = driver.session();
+  try {
+    console.log('🗺️ Neo4j グラフ全体構造の可視化ガイド');
+    console.log('='.repeat(70));
+    
+    // 主要ハブ法令を特定
+    const hubs = await session.run(`
+      MATCH (target:Law)<-[r:REFERENCES]-(source:Law)
+      WHERE source.id <> target.id
+      RETURN target.id as id, target.title as title, COUNT(r) as inDegree
+      ORDER BY inDegree DESC
+      LIMIT 5
+    `);
+    
+    console.log('\n📍 主要ハブ法令（最も参照される法令）:');
+    hubs.records.forEach((r: any, i: number) => {
+      console.log(`  ${i+1}. ${r.get('title')} (${r.get('inDegree').toNumber()}件の参照)`);
+    });
+    
+    // 統計情報
+    const stats = await session.run(`
+      MATCH (l:Law)
+      WITH COUNT(l) as totalLaws
+      MATCH ()-[r:REFERENCES]->()
+      RETURN totalLaws, COUNT(r) as totalReferences
+    `);
+    
+    if (stats.records.length > 0) {
+      const record = stats.records[0];
+      console.log('\n📊 統計:');
+      console.log(`  法令数: ${record.get('totalLaws').toNumber()}`);
+      console.log(`  参照数: ${record.get('totalReferences').toNumber()}`);
+    }
+  } finally {
+    await session.close();
+    await driver.close();
+  }
+}
+
 // プログラム実行
 program.parse(process.argv);

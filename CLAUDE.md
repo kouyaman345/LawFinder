@@ -360,3 +360,27 @@ npx tsx scripts/manager.ts sync
 - グラフ探索: 5 段階参照を 180ms で実行可能
 
 詳細は `/Report/20250817_neo4j_integration_report.md` および `/docs/180_Neo4j統合実装計画書_20250817.md` を参照してください。
+
+## スクリプト開発のルール
+
+### 絶対的ルール
+- **scripts/フォルダ内にスクリプトを分散させない**
+- **新規スクリプトファイル（*.ts）を作成しない**
+- **なるべく既にあるファイルを編集してアルゴリズムを完成させる**
+
+### 実装方針
+- **既存ファイルの編集を優先**: cli.ts, detector.ts, manager.tsのみを使用
+- **統合CLIの活用**: 新機能はlawfinderコマンドのサブコマンドとして追加
+- **detector.tsへの集約**: 参照検出アルゴリズムはすべてdetector.tsに実装
+- **テストもCLIコマンド化**: `npx tsx scripts/cli.ts test egov`のように実装
+
+### 例
+```bash
+# ❌ 悪い例：新しいスクリプトを作成
+npx tsx scripts/test-egov-comparison.ts
+npx tsx scripts/build-dictionary.ts
+
+# ✅ 良い例：既存のCLIコマンドとして実装
+npx tsx scripts/cli.ts test egov
+npx tsx scripts/cli.ts util build-dictionary
+```
