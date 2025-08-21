@@ -733,6 +733,166 @@ export class UltimateReferenceDetector {
       }
     }
 
+    // パターン11: 階層構造（編・章・節・款・目）の検出
+    const hierarchyPattern = /第([一二三四五六七八九十百千]+)(編|章|節|款|目)(?:第([一二三四五六七八九十百千]+)(編|章|節|款|目))?(?:第([一二三四五六七八九十百千]+)(編|章|節|款|目))?(?:第([一二三四五六七八九十百千]+)(編|章|節|款|目))?/g;
+    while ((match = hierarchyPattern.exec(text)) !== null) {
+      references.push({
+        type: 'structural',
+        text: match[0],
+        confidence: 0.85,
+        resolutionMethod: 'pattern',
+        position: match.index
+      });
+    }
+    
+    // パターン12: 前々条・次々条の検出
+    const doubleRelativePattern = /(前々|次々)(条|項|号)/g;
+    while ((match = doubleRelativePattern.exec(text)) !== null) {
+      references.push({
+        type: 'relative',
+        text: match[0],
+        confidence: 0.8,
+        resolutionMethod: 'pattern',
+        position: match.index
+      });
+    }
+    
+    // パターン13: 条項混在範囲（第X条第Y項から第Z条第W項まで）
+    const mixedRangePattern = /第(\d+)条第(\d+)項から第(\d+)条第(\d+)項まで/g;
+    while ((match = mixedRangePattern.exec(text)) !== null) {
+      references.push({
+        type: 'range',
+        text: match[0],
+        rangeStart: `第${match[1]}条第${match[2]}項`,
+        rangeEnd: `第${match[3]}条第${match[4]}項`,
+        confidence: 0.9,
+        resolutionMethod: 'pattern',
+        position: match.index
+      });
+    }
+    
+    // パターン14: 政令・省令・規則参照（告示も含む改良版）
+    const regulationPattern = /(?:(?:平成|令和|昭和)([一二三四五六七八九十]+)年)?([^、。\s（）「」『』]*(?:省|府|庁|委員会))?(?:告示|施行令|施行規則|省令|政令|規則)(?:第([一二三四五六七八九十百千]+)号)?(?:第(\d+)条)?(?:第(\d+)項)?/g;
+    while ((match = regulationPattern.exec(text)) !== null) {
+      if (match[4] || match[3]) { // 条文番号または号番号がある場合
+        references.push({
+          type: 'external',
+          text: match[0],
+          targetLaw: match[0].replace(/第\d+条.*/, '').trim(),
+          targetArticle: match[4] ? `第${match[4]}条` : undefined,
+          confidence: 0.85,
+          resolutionMethod: 'pattern',
+          position: match.index
+        });
+      }
+    }
+    
+    // パターン15: 号のイロハ列挙（第X条第Y項第Z号イからホまで）
+    const irohaPattern = /第(\d+)条(?:第(\d+)項)?第(\d+)号([イロハニホヘトチリヌルヲワカヨタレソツネナラムウヰノオクヤマケフコエテアサキユメミシヱヒモセス])から([イロハニホヘトチリヌルヲワカヨタレソツネナラムウヰノオクヤマケフコエテアサキユメミシヱヒモセス])まで/g;
+    while ((match = irohaPattern.exec(text)) !== null) {
+      references.push({
+        type: 'range',
+        text: match[0],
+        rangeStart: `第${match[1]}条${match[2] ? `第${match[2]}項` : ''}第${match[3]}号${match[4]}`,
+        rangeEnd: `第${match[1]}条${match[2] ? `第${match[2]}項` : ''}第${match[3]}号${match[5]}`,
+        confidence: 0.85,
+        resolutionMethod: 'pattern',
+        position: match.index
+      });
+    }
+    
+    // パターン16: 若しくは・又は・並びにの選択的参照
+    const selectivePattern = /第(\d+)条(?:若しくは|又は|並びに)第(\d+)条/g;
+    while ((match = selectivePattern.exec(text)) !== null) {
+      // 最初の条文
+      references.push({
+        type: 'internal',
+        text: `第${match[1]}条`,
+        targetArticle: `第${match[1]}条`,
+        confidence: 0.95,
+        resolutionMethod: 'pattern',
+        position: match.index
+      });
+      // 2番目の条文
+      references.push({
+        type: 'internal',
+        text: `第${match[2]}条`,
+        targetArticle: `第${match[2]}条`,
+        confidence: 0.95,
+        resolutionMethod: 'pattern',
+        position: match.index + match[0].lastIndexOf(`第${match[2]}条`)
+      });
+    }
+    
+    // パターン17: 附則参照の強化
+    const supplementaryPattern = /附則第(\d+)条(?:から第(\d+)条まで)?(?:第(\d+)項)?/g;
+    while ((match = supplementaryPattern.exec(text)) !== null) {
+      if (match[2]) {
+        // 範囲参照
+        references.push({
+          type: 'range',
+          text: match[0],
+          rangeStart: `附則第${match[1]}条`,
+          rangeEnd: `附則第${match[2]}条`,
+          confidence: 0.85,
+          resolutionMethod: 'pattern',
+          position: match.index
+        });
+      } else {
+        // 単一参照
+        references.push({
+          type: 'internal',
+          text: match[0],
+          targetArticle: `附則第${match[1]}条${match[3] ? `第${match[3]}項` : ''}`,
+          confidence: 0.9,
+          resolutionMethod: 'pattern',
+          position: match.index
+        });
+      }
+    }
+    
+    // パターン18: 複数号の列挙（第三号及び第四号）
+    const multipleItemPattern = /(?:同項)?第([一二三四五六七八九十]+)号(?:及び|並びに|又は|若しくは)第([一二三四五六七八九十]+)号/g;
+    while ((match = multipleItemPattern.exec(text)) !== null) {
+      // 第一号
+      references.push({
+        type: 'internal',
+        text: `第${match[1]}号`,
+        confidence: 0.9,
+        resolutionMethod: 'pattern',
+        position: match.index
+      });
+      // 第二号
+      references.push({
+        type: 'internal',
+        text: `第${match[2]}号`,
+        confidence: 0.9,
+        resolutionMethod: 'pattern',
+        position: match.index + match[0].lastIndexOf(`第${match[2]}号`)
+      });
+    }
+    
+    // パターン19: 定義後の略称使用（「法」第91条のような略称）
+    // 定義検出で記録された略称を使用
+    if (this.contextState && this.contextState.definitions) {
+      for (const [abbreviation, definition] of this.contextState.definitions) {
+        // 「法」第XX条のパターン
+        const abbrevPattern = new RegExp(`${abbreviation}第(\\d+)条`, 'g');
+        let match;
+        while ((match = abbrevPattern.exec(text)) !== null) {
+          references.push({
+            type: 'external',
+            text: match[0],
+            targetLaw: definition.actualLaw,
+            targetArticle: `第${match[1]}条`,
+            confidence: 0.85,
+            resolutionMethod: 'context',
+            position: match.index
+          });
+        }
+      }
+    }
+
     return references;
   }
 

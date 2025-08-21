@@ -22,3 +22,12 @@ neo4j/
 *.log
 logs/
 *.log.*
+
+# Test results
+Report/*.json
+Report/*.log
+
+# Temporary files
+*.tmp
+*.bak
+*.old
