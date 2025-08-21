@@ -1,0 +1,197 @@
+[
+  {
+    "name": "省略形: 同条第2項",
+    "text": "前条の規定により、同条第2項の適用を受ける",
+    "expected": 2,
+    "detected": 2,
+    "success": true,
+    "references": [
+      {
+        "type": "relative",
+        "text": "前条",
+        "confidence": 0.85
+      },
+      {
+        "type": "contextual",
+        "text": "同条第2項",
+        "confidence": 0.85
+      }
+    ]
+  },
+  {
+    "name": "省略形: 同項",
+    "text": "同項の規定にかかわらず",
+    "expected": 1,
+    "detected": 1,
+    "success": true,
+    "references": [
+      {
+        "type": "contextual",
+        "text": "同項",
+        "confidence": 0.8
+      }
+    ]
+  },
+  {
+    "name": "省略形: 同号",
+    "text": "同号に掲げる事項",
+    "expected": 1,
+    "detected": 1,
+    "success": true,
+    "references": [
+      {
+        "type": "contextual",
+        "text": "同号",
+        "confidence": 0.8
+      }
+    ]
+  },
+  {
+    "name": "入れ子: 法令内の条文参照",
+    "text": "民法（明治二十九年法律第八十九号）第90条から第92条まで",
+    "expected": 1,
+    "detected": 2,
+    "success": true,
+    "references": [
+      {
+        "type": "external",
+        "text": "民法（明治二十九年法律第八十九号）",
+        "confidence": 0.95
+      },
+      {
+        "type": "range",
+        "text": "第90条から第92条まで",
+        "confidence": 0.9
+      }
+    ]
+  },
+  {
+    "name": "入れ子: 括弧内の参照",
+    "text": "第5条（第3条第2項の規定を準用する場合を含む。）",
+    "expected": 2,
+    "detected": 2,
+    "success": true,
+    "references": [
+      {
+        "type": "internal",
+        "text": "第5条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第3条第2項",
+        "confidence": 0.9
+      }
+    ]
+  },
+  {
+    "name": "範囲: 枝番号付き",
+    "text": "第32条の2から第32条の5まで",
+    "expected": 1,
+    "detected": 1,
+    "success": true,
+    "references": [
+      {
+        "type": "range",
+        "text": "第32条の2から第32条の5まで",
+        "confidence": 0.9
+      }
+    ]
+  },
+  {
+    "name": "範囲: 項の範囲",
+    "text": "第10条第2項から第4項まで",
+    "expected": 1,
+    "detected": 1,
+    "success": true,
+    "references": [
+      {
+        "type": "range",
+        "text": "第10条第2項から第4項まで",
+        "confidence": 0.9
+      }
+    ]
+  },
+  {
+    "name": "準用: 基本形",
+    "text": "第50条の規定は、前項の場合について準用する",
+    "expected": 2,
+    "detected": 2,
+    "success": true,
+    "references": [
+      {
+        "type": "application",
+        "text": "第50条の規定は、前項の場合について準用",
+        "confidence": 0.95
+      },
+      {
+        "type": "relative",
+        "text": "前項",
+        "confidence": 0.85
+      }
+    ]
+  },
+  {
+    "name": "準用: 読替え",
+    "text": "第30条中「許可」とあるのは「届出」と読み替える",
+    "expected": 1,
+    "detected": 1,
+    "success": true,
+    "references": [
+      {
+        "type": "application",
+        "text": "第30条中「許可」とあるのは「届出」と読み替え",
+        "confidence": 0.95
+      }
+    ]
+  },
+  {
+    "name": "複数法令: 並列",
+    "text": "民法第90条及び商法第48条",
+    "expected": 2,
+    "detected": 0,
+    "success": false,
+    "references": []
+  },
+  {
+    "name": "複数法令: ただし書き",
+    "text": "民法第90条の規定にかかわらず、会社法第2条の定めるところによる",
+    "expected": 2,
+    "detected": 2,
+    "success": true,
+    "references": [
+      {
+        "type": "external",
+        "text": "民法",
+        "confidence": 0.95
+      },
+      {
+        "type": "external",
+        "text": "会社法",
+        "confidence": 0.95
+      }
+    ]
+  },
+  {
+    "name": "特殊: ローマ数字混在",
+    "text": "附則第II条",
+    "expected": 0,
+    "detected": 0,
+    "success": true,
+    "references": []
+  },
+  {
+    "name": "特殊: 別表参照",
+    "text": "別表第一（第3条関係）",
+    "expected": 1,
+    "detected": 1,
+    "success": true,
+    "references": [
+      {
+        "type": "structural",
+        "text": "別表第一",
+        "confidence": 0.85
+      }
+    ]
+  }
+]

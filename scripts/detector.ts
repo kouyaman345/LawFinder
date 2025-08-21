@@ -469,6 +469,51 @@ export class UltimateReferenceDetector {
       }
     }
     
+    // パターン5c: 範囲参照（枝番号付き）
+    const rangePatternBranch = /第(\d+)条の(\d+)から第(\d+)条の(\d+)まで/g;
+    
+    while ((match = rangePatternBranch.exec(text)) !== null) {
+      const startArticle = parseInt(match[1]);
+      const startBranch = parseInt(match[2]);
+      const endArticle = parseInt(match[3]);
+      const endBranch = parseInt(match[4]);
+      
+      if (startArticle && startBranch && endArticle && endBranch) {
+        references.push({
+          type: 'range' as const,
+          text: match[0],
+          targetLawId: this.contextState.currentLawId,
+          targetLaw: this.contextState.currentLawName,
+          targetArticle: `第${startArticle}条の${startBranch}から第${endArticle}条の${endBranch}まで`,
+          confidence: 0.90,
+          resolutionMethod: 'pattern',
+          position: match.index
+        });
+      }
+    }
+    
+    // パターン5d: 項の範囲参照
+    const rangePatternParagraph = /第(\d+)条第(\d+)項から第(\d+)項まで/g;
+    
+    while ((match = rangePatternParagraph.exec(text)) !== null) {
+      const article = parseInt(match[1]);
+      const startPara = parseInt(match[2]);
+      const endPara = parseInt(match[3]);
+      
+      if (article && startPara && endPara) {
+        references.push({
+          type: 'range' as const,
+          text: match[0],
+          targetLawId: this.contextState.currentLawId,
+          targetLaw: this.contextState.currentLawName,
+          targetArticle: `第${article}条第${startPara}項から第${endPara}項まで`,
+          confidence: 0.90,
+          resolutionMethod: 'pattern',
+          position: match.index
+        });
+      }
+    }
+    
     // パターン5.5: 構造参照（章・節）
     const pattern5_5 = /第(\d+)章(?:第(\d+)節)?/g;
     while ((match = pattern5_5.exec(text)) !== null) {
@@ -536,6 +581,77 @@ export class UltimateReferenceDetector {
         }
       }
     }
+    
+    // パターン7: 括弧内参照の処理（新規追加）
+    // まず括弧外の第X条を検出
+    const articleWithBracketPattern = /第(\d+)条（([^）]+)）/g;
+    while ((match = articleWithBracketPattern.exec(text)) !== null) {
+      // メインの条文参照
+      references.push({
+        type: 'internal',
+        text: `第${match[1]}条`,
+        targetArticle: `第${match[1]}条`,
+        confidence: 0.95,
+        resolutionMethod: 'pattern',
+        position: match.index
+      });
+      
+      // 括弧内のテキストを解析
+      const innerText = match[2];
+      if (innerText.includes('第') && (innerText.includes('条') || innerText.includes('項'))) {
+        // 括弧内の条文参照を検出
+        const innerPattern = /第(\d+)条(?:第(\d+)項)?/g;
+        let innerMatch;
+        while ((innerMatch = innerPattern.exec(innerText)) !== null) {
+          references.push({
+            type: 'internal',
+            text: innerMatch[0],
+            targetArticle: innerMatch[0],
+            confidence: 0.90, // 括弧内なので信頼度を少し下げる
+            resolutionMethod: 'pattern',
+            position: match.index + match[0].indexOf(innerMatch[0]),
+            inBracket: true
+          });
+        }
+      }
+    }
+    
+    // パターン8: 準用パターン（新規追加）
+    const junyoPattern = /第(\d+)条(?:から第(\d+)条まで)?の規定[はを]、?([^。]+について)?準用/g;
+    while ((match = junyoPattern.exec(text)) !== null) {
+      const startArticle = match[1];
+      const endArticle = match[2];
+      
+      references.push({
+        type: 'application' as const,
+        text: match[0],
+        targetLawId: this.contextState.currentLawId,
+        targetLaw: this.contextState.currentLawName,
+        targetArticle: endArticle ? `第${startArticle}条から第${endArticle}条まで` : `第${startArticle}条`,
+        applicationMethod: 'junyo',
+        confidence: 0.95,
+        resolutionMethod: 'pattern',
+        position: match.index
+      });
+    }
+    
+    // パターン9: 読替えパターン（新規追加）
+    const yomikaePattern = /第(\d+)条(?:第(\d+)項)?中「([^」]+)」とあるのは「([^」]+)」と読み替え/g;
+    while ((match = yomikaePattern.exec(text)) !== null) {
+      references.push({
+        type: 'application' as const,
+        text: match[0],
+        targetLawId: this.contextState.currentLawId,
+        targetLaw: this.contextState.currentLawName,
+        targetArticle: match[2] ? `第${match[1]}条第${match[2]}項` : `第${match[1]}条`,
+        applicationMethod: 'yomikae',
+        originalTerm: match[3],
+        replacedTerm: match[4],
+        confidence: 0.95,
+        resolutionMethod: 'pattern',
+        position: match.index
+      });
+    }
 
     return references;
   }
@@ -552,13 +668,57 @@ export class UltimateReferenceDetector {
       { pattern: /当該(.+法)(?:第([一二三四五六七八九十百千]+)条)?/g, key: 'mentioned_law' },
       { pattern: /この法律/g, key: 'this_law' },
       { pattern: /本法/g, key: 'main_law' },
-      { pattern: /この法/g, key: 'this_law_short' }
+      { pattern: /この法/g, key: 'this_law_short' },
+      // 省略形参照の追加
+      { pattern: /同条第(\d+)項/g, key: 'same_article_para' },
+      { pattern: /同項/g, key: 'same_paragraph' },
+      { pattern: /同号/g, key: 'same_item' },
+      { pattern: /別表第([一二三四五六七八九十]+)/g, key: 'appendix' }
     ];
 
     for (const { pattern, key } of contextPatterns) {
       let match;
       while ((match = pattern.exec(text)) !== null) {
-        if (key === 'same_law' || key === '当該法') {
+        if (key === 'same_article_para') {
+          // 同条第2項のような省略形
+          const para = match[1];
+          references.push({
+            type: 'contextual',
+            text: match[0],
+            targetLawId: this.contextState.currentLawId,
+            targetLaw: this.contextState.currentLawName,
+            targetArticle: this.contextState.currentArticle,
+            targetParagraph: para,
+            confidence: 0.85,
+            resolutionMethod: 'context',
+            position: match.index
+          });
+        } else if (key === 'same_paragraph' || key === 'same_item') {
+          // 同項、同号の参照
+          references.push({
+            type: 'contextual',
+            text: match[0],
+            targetLawId: this.contextState.currentLawId,
+            targetLaw: this.contextState.currentLawName,
+            targetArticle: this.contextState.currentArticle,
+            confidence: 0.80,
+            resolutionMethod: 'context',
+            position: match.index
+          });
+        } else if (key === 'appendix') {
+          // 別表参照
+          const tableNum = this.kanjiToNumber(match[1]);
+          references.push({
+            type: 'structural',
+            text: match[0],
+            targetLawId: this.contextState.currentLawId,
+            targetLaw: this.contextState.currentLawName,
+            targetArticle: `別表第${tableNum}`,
+            confidence: 0.85,
+            resolutionMethod: 'pattern',
+            position: match.index
+          });
+        } else if (key === 'same_law' || key === '当該法') {
           // 直近の法令を探す
           const recentLaw = this.contextState.recentLaws.find(law => 
             law.position < (match.index || 0)

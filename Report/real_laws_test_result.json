@@ -1,0 +1,113 @@
+[
+  {
+    "lawId": "129AC0000000089",
+    "lawName": "民法",
+    "processedSentences": 35,
+    "totalSentences": 100,
+    "detectedRefs": 49,
+    "expectedMinRefs": 100,
+    "success": false,
+    "processingTime": 9,
+    "refTypes": {
+      "internal": 23,
+      "contextual": 8,
+      "relative": 18
+    },
+    "confidenceDistribution": {
+      "0.9-1.0": 25,
+      "0.8-0.9": 24,
+      "0.7-0.8": 0,
+      "0.6-0.7": 0,
+      "< 0.6": 0
+    }
+  },
+  {
+    "lawId": "132AC0000000048",
+    "lawName": "商法",
+    "processedSentences": 27,
+    "totalSentences": 100,
+    "detectedRefs": 54,
+    "expectedMinRefs": 80,
+    "success": false,
+    "processingTime": 3,
+    "refTypes": {
+      "internal": 14,
+      "contextual": 26,
+      "external": 1,
+      "relative": 13
+    },
+    "confidenceDistribution": {
+      "0.9-1.0": 20,
+      "0.8-0.9": 23,
+      "0.7-0.8": 0,
+      "0.6-0.7": 11,
+      "< 0.6": 0
+    }
+  },
+  {
+    "lawId": "417AC0000000086",
+    "lawName": "会社法",
+    "processedSentences": 31,
+    "totalSentences": 100,
+    "detectedRefs": 69,
+    "expectedMinRefs": 150,
+    "success": false,
+    "processingTime": 2,
+    "refTypes": {
+      "internal": 18,
+      "contextual": 51
+    },
+    "confidenceDistribution": {
+      "0.9-1.0": 24,
+      "0.8-0.9": 8,
+      "0.7-0.8": 0,
+      "0.6-0.7": 37,
+      "< 0.6": 0
+    }
+  },
+  {
+    "lawId": "322AC0000000049",
+    "lawName": "労働基準法",
+    "processedSentences": 43,
+    "totalSentences": 100,
+    "detectedRefs": 94,
+    "expectedMinRefs": 50,
+    "success": true,
+    "processingTime": 3,
+    "refTypes": {
+      "internal": 25,
+      "contextual": 46,
+      "relative": 23
+    },
+    "confidenceDistribution": {
+      "0.9-1.0": 26,
+      "0.8-0.9": 40,
+      "0.7-0.8": 0,
+      "0.6-0.7": 28,
+      "< 0.6": 0
+    }
+  },
+  {
+    "lawId": "140AC0000000045",
+    "lawName": "刑法",
+    "processedSentences": 51,
+    "totalSentences": 100,
+    "detectedRefs": 160,
+    "expectedMinRefs": 60,
+    "success": true,
+    "processingTime": 2,
+    "refTypes": {
+      "internal": 126,
+      "contextual": 10,
+      "relative": 12,
+      "range": 12
+    },
+    "confidenceDistribution": {
+      "0.9-1.0": 99,
+      "0.8-0.9": 61,
+      "0.7-0.8": 0,
+      "0.6-0.7": 0,
+      "< 0.6": 0
+    }
+  }
+]
