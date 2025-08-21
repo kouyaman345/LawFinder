@@ -652,6 +652,86 @@ export class UltimateReferenceDetector {
         position: match.index
       });
     }
+    
+    // パターン10: 複数法令並列参照（新規追加）
+    const multiLawPattern = /([^、。\s（）「」『』]+法)第(\d+)条(?:(?:及び|並びに|又は|若しくは)([^、。\s（）「」『』]+法)第(\d+)条)+/g;
+    while ((match = multiLawPattern.exec(text)) !== null) {
+      // 最初の法令と条文
+      const firstLaw = match[1];
+      const firstArticle = match[2];
+      
+      // 最初の法令を検出
+      const firstLawId = this.findLawId(firstLaw);
+      if (firstLawId) {
+        references.push({
+          type: 'external',
+          text: `${firstLaw}第${firstArticle}条`,
+          targetLaw: firstLaw,
+          targetLawId: firstLawId,
+          targetArticle: `第${firstArticle}条`,
+          confidence: 0.95,
+          resolutionMethod: 'pattern',
+          position: match.index
+        });
+      }
+      
+      // 2番目の法令と条文（存在する場合）
+      if (match[3] && match[4]) {
+        const secondLaw = match[3];
+        const secondArticle = match[4];
+        const secondLawId = this.findLawId(secondLaw);
+        
+        if (secondLawId) {
+          references.push({
+            type: 'external',
+            text: `${secondLaw}第${secondArticle}条`,
+            targetLaw: secondLaw,
+            targetLawId: secondLawId,
+            targetArticle: `第${secondArticle}条`,
+            confidence: 0.95,
+            resolutionMethod: 'pattern',
+            position: match.index + match[0].indexOf(secondLaw)
+          });
+        }
+      }
+    }
+    
+    // パターン10b: 簡略版の複数法令並列（「民法第90条及び第91条」のような同一法令内）
+    const sameLawMultiplePattern = /([^、。\s（）「」『』]+法)第(\d+)条(?:(?:及び|並びに|又は|若しくは)第(\d+)条)+/g;
+    while ((match = sameLawMultiplePattern.exec(text)) !== null) {
+      const lawName = match[1];
+      const firstArticle = match[2];
+      const secondArticle = match[3];
+      
+      const lawId = this.findLawId(lawName);
+      if (lawId) {
+        // 最初の条文
+        references.push({
+          type: 'external',
+          text: `${lawName}第${firstArticle}条`,
+          targetLaw: lawName,
+          targetLawId: lawId,
+          targetArticle: `第${firstArticle}条`,
+          confidence: 0.95,
+          resolutionMethod: 'pattern',
+          position: match.index
+        });
+        
+        // 2番目の条文
+        if (secondArticle) {
+          references.push({
+            type: 'external',
+            text: `第${secondArticle}条`,
+            targetLaw: lawName,
+            targetLawId: lawId,
+            targetArticle: `第${secondArticle}条`,
+            confidence: 0.95,
+            resolutionMethod: 'pattern',
+            position: match.index + match[0].lastIndexOf(`第${secondArticle}条`)
+          });
+        }
+      }
+    }
 
     return references;
   }

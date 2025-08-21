@@ -149,9 +149,20 @@
     "name": "複数法令: 並列",
     "text": "民法第90条及び商法第48条",
     "expected": 2,
-    "detected": 0,
-    "success": false,
-    "references": []
+    "detected": 2,
+    "success": true,
+    "references": [
+      {
+        "type": "external",
+        "text": "民法第90条",
+        "confidence": 0.95
+      },
+      {
+        "type": "external",
+        "text": "商法第48条",
+        "confidence": 0.95
+      }
+    ]
   },
   {
     "name": "複数法令: ただし書き",
