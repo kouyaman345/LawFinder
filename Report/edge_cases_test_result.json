@@ -80,7 +80,7 @@
       {
         "type": "internal",
         "text": "第3条第2項",
-        "confidence": 0.9
+        "confidence": 0.95
       }
     ]
   },
@@ -116,18 +116,13 @@
     "name": "準用: 基本形",
     "text": "第50条の規定は、前項の場合について準用する",
     "expected": 2,
-    "detected": 2,
-    "success": true,
+    "detected": 1,
+    "success": false,
     "references": [
       {
         "type": "application",
         "text": "第50条の規定は、前項の場合について準用",
         "confidence": 0.95
-      },
-      {
-        "type": "relative",
-        "text": "前項",
-        "confidence": 0.85
       }
     ]
   },
@@ -173,12 +168,12 @@
     "references": [
       {
         "type": "external",
-        "text": "民法",
+        "text": "民法第90条",
         "confidence": 0.95
       },
       {
         "type": "external",
-        "text": "会社法",
+        "text": "会社法第2条",
         "confidence": 0.95
       }
     ]
@@ -195,13 +190,18 @@
     "name": "特殊: 別表参照",
     "text": "別表第一（第3条関係）",
     "expected": 1,
-    "detected": 1,
+    "detected": 2,
     "success": true,
     "references": [
       {
         "type": "structural",
         "text": "別表第一",
         "confidence": 0.85
+      },
+      {
+        "type": "internal",
+        "text": "第3条",
+        "confidence": 0.95
       }
     ]
   }

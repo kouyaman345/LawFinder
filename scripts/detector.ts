@@ -12,6 +12,8 @@ import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import chalk from 'chalk';
+import { NegativePatternFilter } from './negative-patterns';
+
 // 生成された辞書ファイルがあれば読み込み
 let findLawIdByName: (name: string) => string | undefined = () => undefined;
 let findLawIdByNumber: (number: string) => string | undefined = () => undefined;
@@ -93,11 +95,12 @@ export class UltimateReferenceDetector {
   private lawTitleCache: Map<string, string> = new Map();
   private contextState: ContextState;
   private llmAvailable: boolean = false;
+  private negativeFilter: NegativePatternFilter;
   
   // 法令メタデータキャッシュ（条文数を記録）
   private lawMetadataCache: Map<string, { maxArticle: number; title: string }> = new Map();
 
-  constructor(enableLLM = true) {
+  constructor(enableLLM = true, enableNegativeFilter = true) {
     this.contextState = {
       currentLawId: '',
       currentLawName: '',
@@ -108,6 +111,7 @@ export class UltimateReferenceDetector {
       recentArticles: [],
       definitions: new Map()
     };
+    this.negativeFilter = new NegativePatternFilter();
     this.initializeLawCache();
     if (enableLLM) {
       this.checkLLMAvailability();
@@ -187,7 +191,13 @@ export class UltimateReferenceDetector {
     }
 
     // 重複除去と信頼度でソート
-    return this.deduplicateAndSort(references);
+    const deduplicated = this.deduplicateAndSort(references);
+    
+    // === Phase 4: ネガティブパターンフィルタリング ===
+    // 参照でないものを除外して精度を向上
+    const filtered = this.filterNegativePatterns(deduplicated, text);
+    
+    return filtered;
   }
 
   /**
@@ -224,11 +234,37 @@ export class UltimateReferenceDetector {
       }
     }
 
-    // パターン2: 法令名＋条文（漢数字対応版）
+    // パターン2a: 法令名＋条文（数字版）
+    const pattern2a = /([^、。\s（）「」『』]+(?:法|令|規則|条例))第(\d+)条(?:第(\d+)項)?/g;
+    
+    while ((match = pattern2a.exec(text)) !== null) {
+      const lawName = match[1];
+      const lawId = this.findLawId(lawName);
+      
+      if (lawId && lawId !== this.contextState.currentLawId) {
+        // 外部法令参照
+        let refText = `${lawName}第${match[2]}条`;
+        if (match[3]) refText = `${lawName}第${match[2]}条第${match[3]}項`;
+        
+        references.push({
+          type: 'external',
+          text: refText,
+          targetLaw: lawName,
+          targetLawId: lawId,
+          targetArticle: `第${match[2]}条` + (match[3] ? `第${match[3]}項` : ''),
+          articleNumber: parseInt(match[2]),
+          confidence: 0.95,
+          resolutionMethod: 'dictionary',
+          position: match.index
+        });
+      }
+    }
+    
+    // パターン2b: 法令名＋条文（漢数字対応版）
     // 改善版: 法令名の前に区切り文字を要求し、長すぎる法令名を除外
-    const pattern2 = /(?:^|[、。\s（「『])((?:[^、。\s（）「』]{2,30})?法(?:律)?)第([一二三四五六七八九十百千]+)条/g;
+    const pattern2b = /(?:^|[、。\s（「『])((?:[^、。\s（）「』]{2,30})?法(?:律)?)第([一二三四五六七八九十百千]+)条/g;
 
-    while ((match = pattern2.exec(text)) !== null) {
+    while ((match = pattern2b.exec(text)) !== null) {
       const lawName = match[1];
       
       // 法令名の妥当性チェック
@@ -301,10 +337,10 @@ export class UltimateReferenceDetector {
       }
     }
 
-    // パターン2b: 単独の条文参照（漢数字対応）
-    const pattern2b = /第([一二三四五六七八九十百千]+)条/g;
+    // パターン2c: 単独の条文参照（漢数字対応）
+    const pattern2c = /第([一二三四五六七八九十百千]+)条/g;
     
-    while ((match = pattern2b.exec(text)) !== null) {
+    while ((match = pattern2c.exec(text)) !== null) {
       // 既に検出済みでないか確認
       const alreadyDetected = references.some(ref => 
         ref.position === match.index
@@ -330,9 +366,37 @@ export class UltimateReferenceDetector {
     }
 
     
-    // パターン2.5: 複数条文（及び・並びに）
-    const pattern2_5 = /第(\d+)条(?:及び|並びに)第(\d+)条/g;
-    while ((match = pattern2_5.exec(text)) !== null) {
+    // パターン2.5: 単独の条文参照（数字）
+    const pattern2_5a = /第(\d+)条(?:第(\d+)項)?(?:第(\d+)号)?/g;
+    while ((match = pattern2_5a.exec(text)) !== null) {
+      // 既に検出済みでないか確認
+      const alreadyDetected = references.some(ref => 
+        ref.position === match.index
+      );
+      
+      if (!alreadyDetected) {
+        const articleNumber = parseInt(match[1]);
+        let refText = `第${match[1]}条`;
+        if (match[2]) refText += `第${match[2]}項`;
+        if (match[3]) refText += `第${match[3]}号`;
+        
+        references.push({
+          type: 'internal',
+          text: refText,
+          targetLawId: this.contextState.currentLawId,
+          targetLaw: this.contextState.currentLawName,
+          targetArticle: refText,
+          articleNumber: articleNumber,
+          confidence: 0.95,
+          resolutionMethod: 'pattern',
+          position: match.index
+        });
+      }
+    }
+    
+    // パターン2.6: 複数条文（及び・並びに）
+    const pattern2_6 = /第(\d+)条(?:及び|並びに)第(\d+)条/g;
+    while ((match = pattern2_6.exec(text)) !== null) {
       // 第1条文
       references.push({
         type: 'internal',
@@ -1553,18 +1617,67 @@ export class UltimateReferenceDetector {
    * 重複除去とソート
    */
   private deduplicateAndSort(references: DetectedReference[]): DetectedReference[] {
-    const seen = new Set<string>();
+    // まずポジションでソート
+    const sorted = references.sort((a, b) => (a.position || 0) - (b.position || 0));
+    
     const unique: DetectedReference[] = [];
-
-    for (const ref of references) {
-      const key = `${ref.position || 0}:${ref.text}`;
-      if (!seen.has(key)) {
-        seen.add(key);
-        unique.push(ref);
+    const covered = new Set<string>(); // "start-end"形式でカバー済み範囲を記録
+    
+    for (const ref of sorted) {
+      const start = ref.position || 0;
+      const end = start + ref.text.length;
+      
+      // この参照が既存の参照に完全に含まれているかチェック
+      let isSubsumed = false;
+      for (const range of covered) {
+        const [coveredStart, coveredEnd] = range.split('-').map(Number);
+        if (start >= coveredStart && end <= coveredEnd) {
+          isSubsumed = true;
+          break;
+        }
+      }
+      
+      if (!isSubsumed) {
+        // この参照に含まれる既存の参照を削除
+        const filtered = unique.filter(existing => {
+          const existingStart = existing.position || 0;
+          const existingEnd = existingStart + existing.text.length;
+          // 既存の参照がこの参照に完全に含まれる場合は削除
+          return !(existingStart >= start && existingEnd <= end);
+        });
+        
+        // 新しい参照を追加
+        filtered.push(ref);
+        unique.length = 0;
+        unique.push(...filtered);
+        
+        // カバー範囲を更新
+        covered.add(`${start}-${end}`);
       }
     }
 
     return unique.sort((a, b) => (a.position || 0) - (b.position || 0));
+  }
+
+  /**
+   * ネガティブパターンで参照をフィルタリング
+   */
+  private filterNegativePatterns(references: DetectedReference[], fullText: string): DetectedReference[] {
+    const filtered: DetectedReference[] = [];
+    
+    for (const ref of references) {
+      // 参照の前後のコンテキストを取得（前後30文字）
+      const startPos = Math.max(0, (ref.position || 0) - 30);
+      const endPos = Math.min(fullText.length, (ref.position || 0) + ref.text.length + 30);
+      const context = fullText.substring(startPos, endPos);
+      
+      // ネガティブパターンに一致するかチェック
+      if (!this.negativeFilter.isNegative(context)) {
+        filtered.push(ref);
+      }
+    }
+    
+    return filtered;
   }
 
   /**
