@@ -1,0 +1,38 @@
+[
+  {
+    "timestamp": "2025-08-21T08:51:02.875Z",
+    "reference": {
+      "type": "range",
+      "text": "第三十二条から第三十二条の五まで",
+      "confidence": null,
+      "requiresLLMCheck": true,
+      "llmChecked": true
+    },
+    "context": "第三十二条から第三十二条の五まで若しくは第四十条の労働時間",
+    "status": "pending"
+  },
+  {
+    "timestamp": "2025-08-21T08:51:02.876Z",
+    "reference": {
+      "type": "contextual",
+      "text": "第四十条",
+      "confidence": null,
+      "requiresLLMCheck": true,
+      "llmChecked": true
+    },
+    "context": "第三十二条から第三十二条の五まで若しくは第四十条の労働時間",
+    "status": "pending"
+  },
+  {
+    "timestamp": "2025-08-21T08:51:57.270Z",
+    "reference": {
+      "type": "contextual",
+      "text": "その他の法令",
+      "confidence": null,
+      "requiresLLMCheck": true,
+      "llmChecked": true
+    },
+    "context": "第五百六十六条の規定を準用する",
+    "status": "pending"
+  }
+]

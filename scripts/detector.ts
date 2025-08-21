@@ -224,7 +224,7 @@ export class UltimateReferenceDetector {
       }
     }
 
-    // パターン2: 法令名＋条文
+    // パターン2: 法令名＋条文（漢数字対応版）
     // 改善版: 法令名の前に区切り文字を要求し、長すぎる法令名を除外
     const pattern2 = /(?:^|[、。\s（「『])((?:[^、。\s（）「』]{2,30})?法(?:律)?)第([一二三四五六七八九十百千]+)条/g;
 
@@ -301,6 +301,34 @@ export class UltimateReferenceDetector {
       }
     }
 
+    // パターン2b: 単独の条文参照（漢数字対応）
+    const pattern2b = /第([一二三四五六七八九十百千]+)条/g;
+    
+    while ((match = pattern2b.exec(text)) !== null) {
+      // 既に検出済みでないか確認
+      const alreadyDetected = references.some(ref => 
+        ref.position === match.index
+      );
+      
+      if (!alreadyDetected) {
+        const articleNumber = this.kanjiToNumber(match[1]);
+        
+        if (articleNumber) {
+          references.push({
+            type: 'internal',
+            text: match[0],
+            targetLawId: this.contextState.currentLawId,
+            targetLaw: this.contextState.currentLawName,
+            targetArticle: match[0],
+            articleNumber: articleNumber,
+            confidence: 0.95,
+            resolutionMethod: 'pattern',
+            position: match.index
+          });
+        }
+      }
+    }
+
     // パターン3: 内部参照
     const pattern3 = /(この法律|本法)(?:第([一二三四五六七八九十百千]+)条)?/g;
 
@@ -340,7 +368,60 @@ export class UltimateReferenceDetector {
       }
     }
 
-    // パターン5: 定義された用語（新法、旧法など）
+    // パターン5: 範囲参照の展開（新規追加）
+    const rangePattern = /第([一二三四五六七八九十百千]+)条(?:の([一二三四五六七八九十]))?から第([一二三四五六七八九十百千]+)条(?:の([一二三四五六七八九十]))?まで/g;
+    
+    while ((match = rangePattern.exec(text)) !== null) {
+      const startArticle = this.kanjiToNumber(match[1]);
+      const startBranch = match[2] ? this.kanjiToNumber(match[2]) : null;
+      const endArticle = this.kanjiToNumber(match[3]);
+      const endBranch = match[4] ? this.kanjiToNumber(match[4]) : null;
+      
+      if (startArticle && endArticle) {
+        // 範囲参照として記録
+        references.push({
+          type: 'range' as const,
+          text: match[0],
+          targetLawId: this.contextState.currentLawId,
+          targetLaw: this.contextState.currentLawName,
+          targetArticle: `第${startArticle}条から第${endArticle}条まで`,
+          confidence: 0.90,
+          resolutionMethod: 'pattern',
+          position: match.index
+        });
+        
+        // 範囲内の各条文を展開（オプション）
+        if (startArticle === endArticle && startBranch && endBranch) {
+          // 同じ条の枝番号範囲（例：第32条の2から第32条の5まで）
+          for (let i = startBranch; i <= endBranch; i++) {
+            references.push({
+              type: 'internal',
+              text: `第${startArticle}条の${i}`,
+              targetLawId: this.contextState.currentLawId,
+              targetArticle: `第${startArticle}条の${i}`,
+              confidence: 0.85,
+              resolutionMethod: 'pattern',
+              position: match.index
+            });
+          }
+        } else if (!startBranch && !endBranch) {
+          // 通常の条文範囲（例：第1条から第3条まで）
+          for (let i = startArticle; i <= endArticle; i++) {
+            references.push({
+              type: 'internal',
+              text: `第${i}条`,
+              targetLawId: this.contextState.currentLawId,
+              targetArticle: `第${i}条`,
+              confidence: 0.85,
+              resolutionMethod: 'pattern',
+              position: match.index
+            });
+          }
+        }
+      }
+    }
+
+    // パターン6: 定義された用語（新法、旧法など）
     const definedTerms = ['新法', '旧法', '新商法', '旧商法', '改正法'];
     
     for (const term of definedTerms) {
@@ -651,6 +732,124 @@ export class UltimateReferenceDetector {
   }
 
   /**
+   * 漢数字を数値に変換（メソッドとして抽出）
+   */
+  private kanjiToNumber(text: string): number | null {
+    // 改善版：より正確な漢数字変換
+    const singleDigits: Record<string, number> = {
+      '〇': 0, '零': 0,
+      '一': 1, '二': 2, '三': 3, '四': 4, '五': 5,
+      '六': 6, '七': 7, '八': 8, '九': 9
+    };
+    
+    // 基本単位
+    const units: Record<string, number> = {
+      '千': 1000,
+      '百': 100,
+      '十': 10
+    };
+    
+    // 空文字や不正な入力のチェック
+    if (!text || text.length === 0) return null;
+    
+    // 単純な一桁の数字
+    if (singleDigits[text] !== undefined) return singleDigits[text];
+    
+    // 完全な漢数字パーサー実装
+    let result = 0;
+    let currentNumber = 0;
+    let i = 0;
+    
+    while (i < text.length) {
+      const char = text[i];
+      
+      // 千の位の処理
+      if (char === '千') {
+        if (i === 0) {
+          // "千"で始まる場合は1000
+          result += 1000;
+        } else {
+          const prevChar = text[i - 1];
+          if (singleDigits[prevChar] !== undefined) {
+            result += singleDigits[prevChar] * 1000;
+            currentNumber = 0;
+          } else {
+            result += 1000;
+          }
+        }
+      }
+      // 百の位の処理
+      else if (char === '百') {
+        if (i === 0 || (i > 0 && units[text[i - 1]])) {
+          // "百"で始まるか、前が単位の場合は100
+          result += 100;
+        } else {
+          const prevChar = text[i - 1];
+          if (singleDigits[prevChar] !== undefined) {
+            result += singleDigits[prevChar] * 100;
+            currentNumber = 0;
+          } else {
+            result += 100;
+          }
+        }
+      }
+      // 十の位の処理
+      else if (char === '十') {
+        if (i === 0 || (i > 0 && units[text[i - 1]])) {
+          // "十"で始まるか、前が単位の場合は10
+          result += 10;
+        } else {
+          const prevChar = text[i - 1];
+          if (singleDigits[prevChar] !== undefined) {
+            result += singleDigits[prevChar] * 10;
+            currentNumber = 0;
+          } else {
+            result += 10;
+          }
+        }
+      }
+      // 一の位の処理
+      else if (singleDigits[char] !== undefined) {
+        // 次の文字を確認
+        if (i + 1 < text.length) {
+          const nextChar = text[i + 1];
+          if (!units[nextChar]) {
+            // 次が単位でない場合は一の位として加算
+            result += singleDigits[char];
+          }
+          // 次が単位の場合は、単位の処理で扱われる
+        } else {
+          // 最後の文字の場合は一の位として加算
+          result += singleDigits[char];
+        }
+      }
+      
+      i++;
+    }
+    
+    // 特殊ケース: "五百六十六"のようなパターンの再チェック
+    if (result === 0) {
+      // 正規表現でのパターンマッチング
+      const pattern = /^([一二三四五六七八九])?千?([一二三四五六七八九])?百?([一二三四五六七八九])?十?([一二三四五六七八九])?$/;
+      const match = text.match(pattern);
+      
+      if (match) {
+        if (match[1]) result += (singleDigits[match[1]] || 1) * 1000;
+        if (match[2]) result += (singleDigits[match[2]] || 1) * 100;
+        if (match[3]) result += (singleDigits[match[3]] || 1) * 10;
+        if (match[4]) result += singleDigits[match[4]] || 0;
+        
+        // 千・百・十が単独で現れた場合の処理
+        if (text.includes('千') && !match[1]) result += 1000;
+        if (text.includes('百') && !match[2]) result += 100;
+        if (text.includes('十') && !match[3]) result += 10;
+      }
+    }
+    
+    return result > 0 ? result : null;
+  }
+
+  /**
    * 法令番号から法令IDを生成（汎用版）
    */
   private parseLawNumber(text: string): string | null {
@@ -670,64 +869,115 @@ export class UltimateReferenceDetector {
     };
     
     const convertKanjiToNumber = (text: string): number | null => {
+      // 改善版：より正確な漢数字変換
       const singleDigits: Record<string, number> = {
         '〇': 0, '零': 0,
         '一': 1, '二': 2, '三': 3, '四': 4, '五': 5,
         '六': 6, '七': 7, '八': 8, '九': 9
       };
       
-      const tens: Record<string, number> = {
-        '十': 10, '二十': 20, '三十': 30, '四十': 40, '五十': 50,
-        '六十': 60, '七十': 70, '八十': 80, '九十': 90
+      // 基本単位
+      const units: Record<string, number> = {
+        '千': 1000,
+        '百': 100,
+        '十': 10
       };
       
-      const hundreds: Record<string, number> = {
-        '百': 100, '二百': 200, '三百': 300, '四百': 400, '五百': 500,
-        '六百': 600, '七百': 700, '八百': 800, '九百': 900
-      };
+      // 空文字や不正な入力のチェック
+      if (!text || text.length === 0) return null;
       
+      // 単純な一桁の数字
       if (singleDigits[text] !== undefined) return singleDigits[text];
-      if (tens[text] !== undefined) return tens[text];
-      if (hundreds[text] !== undefined) return hundreds[text];
       
+      // 完全な漢数字パーサー実装
       let result = 0;
-      let tempText = text;
+      let currentNumber = 0;
+      let i = 0;
       
-      for (const [kanji, value] of Object.entries(hundreds)) {
-        if (tempText.includes(kanji)) {
-          result += value;
-          tempText = tempText.replace(kanji, '');
-          break;
+      while (i < text.length) {
+        const char = text[i];
+        
+        // 千の位の処理
+        if (char === '千') {
+          if (i === 0) {
+            // "千"で始まる場合は1000
+            result += 1000;
+          } else {
+            const prevChar = text[i - 1];
+            if (singleDigits[prevChar] !== undefined) {
+              result += singleDigits[prevChar] * 1000;
+              currentNumber = 0;
+            } else {
+              result += 1000;
+            }
+          }
         }
-      }
-      
-      for (const [kanji, value] of Object.entries(tens)) {
-        if (tempText.includes(kanji)) {
-          result += value;
-          tempText = tempText.replace(kanji, '');
-          break;
+        // 百の位の処理
+        else if (char === '百') {
+          if (i === 0 || (i > 0 && units[text[i - 1]])) {
+            // "百"で始まるか、前が単位の場合は100
+            result += 100;
+          } else {
+            const prevChar = text[i - 1];
+            if (singleDigits[prevChar] !== undefined) {
+              result += singleDigits[prevChar] * 100;
+              currentNumber = 0;
+            } else {
+              result += 100;
+            }
+          }
         }
-      }
-      
-      for (const [kanji, value] of Object.entries(singleDigits)) {
-        if (tempText === kanji) {
-          result += value;
-          break;
+        // 十の位の処理
+        else if (char === '十') {
+          if (i === 0 || (i > 0 && units[text[i - 1]])) {
+            // "十"で始まるか、前が単位の場合は10
+            result += 10;
+          } else {
+            const prevChar = text[i - 1];
+            if (singleDigits[prevChar] !== undefined) {
+              result += singleDigits[prevChar] * 10;
+              currentNumber = 0;
+            } else {
+              result += 10;
+            }
+          }
         }
+        // 一の位の処理
+        else if (singleDigits[char] !== undefined) {
+          // 次の文字を確認
+          if (i + 1 < text.length) {
+            const nextChar = text[i + 1];
+            if (!units[nextChar]) {
+              // 次が単位でない場合は一の位として加算
+              result += singleDigits[char];
+            }
+            // 次が単位の場合は、単位の処理で扱われる
+          } else {
+            // 最後の文字の場合は一の位として加算
+            result += singleDigits[char];
+          }
+        }
+        
+        i++;
       }
       
-      if (text === '十') return 10;
-      if (text.startsWith('十') && text.length === 2) {
-        const ones = singleDigits[text[1]];
-        if (ones !== undefined) return 10 + ones;
-      }
-      
-      const complexPattern = /^([二三四五六七八九]?)十([一二三四五六七八九]?)$/;
-      const complexMatch = text.match(complexPattern);
-      if (complexMatch) {
-        const tensDigit = complexMatch[1] ? singleDigits[complexMatch[1]] : 1;
-        const onesDigit = complexMatch[2] ? singleDigits[complexMatch[2]] : 0;
-        return tensDigit * 10 + onesDigit;
+      // 特殊ケース: "五百六十六"のようなパターンの再チェック
+      if (result === 0) {
+        // 正規表現でのパターンマッチング
+        const pattern = /^([一二三四五六七八九])?千?([一二三四五六七八九])?百?([一二三四五六七八九])?十?([一二三四五六七八九])?$/;
+        const match = text.match(pattern);
+        
+        if (match) {
+          if (match[1]) result += singleDigits[match[1]] * 1000 || 0;
+          if (match[2]) result += singleDigits[match[2]] * 100 || 0;
+          if (match[3]) result += singleDigits[match[3]] * 10 || 0;
+          if (match[4]) result += singleDigits[match[4]] || 0;
+          
+          // 千・百・十が単独で現れた場合の処理
+          if (text.includes('千') && !match[1]) result += 1000;
+          if (text.includes('百') && !match[2]) result += 100;
+          if (text.includes('十') && !match[3]) result += 10;
+        }
       }
       
       return result > 0 ? result : null;
