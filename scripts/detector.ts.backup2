@@ -446,42 +446,6 @@ export class UltimateReferenceDetector {
         }
       }
     }
-    
-    // パターン5b: 範囲参照（アラビア数字版）
-    const rangePatternArabic = /第(\d+)条から第(\d+)条まで/g;
-    
-    while ((match = rangePatternArabic.exec(text)) !== null) {
-      const startArticle = parseInt(match[1]);
-      const endArticle = parseInt(match[2]);
-      
-      if (startArticle && endArticle) {
-        // 範囲参照として記録
-        references.push({
-          type: 'range' as const,
-          text: match[0],
-          targetLawId: this.contextState.currentLawId,
-          targetLaw: this.contextState.currentLawName,
-          targetArticle: `第${startArticle}条から第${endArticle}条まで`,
-          confidence: 0.90,
-          resolutionMethod: 'pattern',
-          position: match.index
-        });
-      }
-    }
-    
-    // パターン5.5: 構造参照（章・節）
-    const pattern5_5 = /第(\d+)章(?:第(\d+)節)?/g;
-    while ((match = pattern5_5.exec(text)) !== null) {
-      references.push({
-        type: 'structural',
-        text: match[0],
-        targetArticle: match[2] ? `章${match[1]}節${match[2]}` : `章${match[1]}`,
-        confidence: 0.85,
-        resolutionMethod: 'pattern',
-        position: match.index
-      });
-    }
-
 
     // パターン6: 定義された用語（新法、旧法など）
     const definedTerms = ['新法', '旧法', '新商法', '旧商法', '改正法'];
@@ -588,36 +552,6 @@ export class UltimateReferenceDetector {
             position: match.index
           });
         }
-      }
-    }
-
-    
-    // 同法の検出
-    if (text.includes('同法')) {
-      const matches = text.matchAll(/同法第(\d+)条/g);
-      for (const match of matches) {
-        references.push({
-          type: 'contextual',
-          text: match[0],
-          targetArticle: match[1],
-          confidence: 0.70,
-          resolutionMethod: 'context',
-          position: match.index
-        });
-      }
-    }
-    
-    // 当該規定の検出
-    if (text.includes('当該')) {
-      const matches = text.matchAll(/当該[^、。]{1,10}/g);
-      for (const match of matches) {
-        references.push({
-          type: 'contextual',
-          text: match[0],
-          confidence: 0.60,
-          resolutionMethod: 'context',
-          position: match.index
-        });
       }
     }
 

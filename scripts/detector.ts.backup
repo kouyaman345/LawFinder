@@ -197,7 +197,7 @@ export class UltimateReferenceDetector {
     const references: DetectedReference[] = [];
 
     // パターン1: 法令名（括弧付き法令番号）
-    const pattern1 = /([^、。\s（）]*法)(?:（[^）]+）)?/g;
+    const pattern1 = /([^、。\s（）]*法)（([^）]+)）/g;
     let match;
 
     while ((match = pattern1.exec(text)) !== null) {
@@ -329,32 +329,6 @@ export class UltimateReferenceDetector {
       }
     }
 
-    
-    // パターン2.5: 複数条文（及び・並びに）
-    const pattern2_5 = /第(\d+)条(?:及び|並びに)第(\d+)条/g;
-    while ((match = pattern2_5.exec(text)) !== null) {
-      // 第1条文
-      references.push({
-        type: 'internal',
-        text: `第${match[1]}条`,
-        targetArticle: match[1],
-        confidence: 0.95,
-        resolutionMethod: 'pattern',
-        position: match.index
-      });
-      // 第2条文
-      references.push({
-        type: 'internal',
-        text: `第${match[2]}条`,
-        targetArticle: match[2],
-        confidence: 0.95,
-        resolutionMethod: 'pattern',
-        position: match.index + match[0].indexOf(`第${match[2]}条`)
-      });
-    }
-
-    
-
     // パターン3: 内部参照
     const pattern3 = /(この法律|本法)(?:第([一二三四五六七八九十百千]+)条)?/g;
 
@@ -446,42 +420,6 @@ export class UltimateReferenceDetector {
         }
       }
     }
-    
-    // パターン5b: 範囲参照（アラビア数字版）
-    const rangePatternArabic = /第(\d+)条から第(\d+)条まで/g;
-    
-    while ((match = rangePatternArabic.exec(text)) !== null) {
-      const startArticle = parseInt(match[1]);
-      const endArticle = parseInt(match[2]);
-      
-      if (startArticle && endArticle) {
-        // 範囲参照として記録
-        references.push({
-          type: 'range' as const,
-          text: match[0],
-          targetLawId: this.contextState.currentLawId,
-          targetLaw: this.contextState.currentLawName,
-          targetArticle: `第${startArticle}条から第${endArticle}条まで`,
-          confidence: 0.90,
-          resolutionMethod: 'pattern',
-          position: match.index
-        });
-      }
-    }
-    
-    // パターン5.5: 構造参照（章・節）
-    const pattern5_5 = /第(\d+)章(?:第(\d+)節)?/g;
-    while ((match = pattern5_5.exec(text)) !== null) {
-      references.push({
-        type: 'structural',
-        text: match[0],
-        targetArticle: match[2] ? `章${match[1]}節${match[2]}` : `章${match[1]}`,
-        confidence: 0.85,
-        resolutionMethod: 'pattern',
-        position: match.index
-      });
-    }
-
 
     // パターン6: 定義された用語（新法、旧法など）
     const definedTerms = ['新法', '旧法', '新商法', '旧商法', '改正法'];
@@ -588,36 +526,6 @@ export class UltimateReferenceDetector {
             position: match.index
           });
         }
-      }
-    }
-
-    
-    // 同法の検出
-    if (text.includes('同法')) {
-      const matches = text.matchAll(/同法第(\d+)条/g);
-      for (const match of matches) {
-        references.push({
-          type: 'contextual',
-          text: match[0],
-          targetArticle: match[1],
-          confidence: 0.70,
-          resolutionMethod: 'context',
-          position: match.index
-        });
-      }
-    }
-    
-    // 当該規定の検出
-    if (text.includes('当該')) {
-      const matches = text.matchAll(/当該[^、。]{1,10}/g);
-      for (const match of matches) {
-        references.push({
-          type: 'contextual',
-          text: match[0],
-          confidence: 0.60,
-          resolutionMethod: 'context',
-          position: match.index
-        });
       }
     }
 
@@ -945,7 +853,6 @@ export class UltimateReferenceDetector {
    * 法令番号から法令IDを生成（汎用版）
    */
   private parseLawNumber(text: string): string | null {
-    if (!text) return null;
     // 自動生成辞書から検索
     const lawId = findLawIdByNumber(text);
     if (lawId) {
