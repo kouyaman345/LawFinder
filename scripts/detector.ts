@@ -957,6 +957,64 @@ export class UltimateReferenceDetector {
       }
     }
 
+    // パターン20: 選択的参照（若しくは・又は）
+    const alternativePattern = /第(\d+)条(?:第(\d+)項)?(?:若しくは|又は)第(\d+)条(?:第(\d+)項)?/g;
+    while ((match = alternativePattern.exec(text)) !== null) {
+      // 第1の選択肢
+      references.push({
+        type: 'internal',
+        text: match[2] ? `第${match[1]}条第${match[2]}項` : `第${match[1]}条`,
+        targetArticle: match[2] ? `第${match[1]}条第${match[2]}項` : `第${match[1]}条`,
+        articleNumber: parseInt(match[1]),
+        confidence: 0.95,
+        resolutionMethod: 'pattern',
+        position: match.index
+      });
+      
+      // 第2の選択肢
+      const secondStart = match.index + match[0].indexOf(`第${match[3]}条`);
+      references.push({
+        type: 'internal',
+        text: match[4] ? `第${match[3]}条第${match[4]}項` : `第${match[3]}条`,
+        targetArticle: match[4] ? `第${match[3]}条第${match[4]}項` : `第${match[3]}条`,
+        articleNumber: parseInt(match[3]),
+        confidence: 0.95,
+        resolutionMethod: 'pattern',
+        position: secondStart
+      });
+    }
+    
+    // パターン21: 除外規定（〜を除く）
+    const exclusionPattern = /第(\d+)条(?:（第(\d+)項を除く。?）)?/g;
+    while ((match = exclusionPattern.exec(text)) !== null) {
+      if (match[2]) {
+        references.push({
+          type: 'internal',
+          text: match[0],
+          targetArticle: `第${match[1]}条`,
+          articleNumber: parseInt(match[1]),
+          exclusion: `第${match[2]}項`,
+          confidence: 0.95,
+          resolutionMethod: 'pattern',
+          position: match.index
+        });
+      }
+    }
+    
+    // パターン22: 号の列挙（第X号から第Y号まで）
+    const itemRangePattern = /第(\d+)条(?:第(\d+)項)?第(\d+)号から第(\d+)号まで/g;
+    while ((match = itemRangePattern.exec(text)) !== null) {
+      references.push({
+        type: 'internal',
+        text: match[0],
+        targetArticle: match[2] ? `第${match[1]}条第${match[2]}項` : `第${match[1]}条`,
+        itemRange: `第${match[3]}号から第${match[4]}号まで`,
+        confidence: 0.95,
+        resolutionMethod: 'pattern',
+        position: match.index
+      });
+    }
+
     return references;
   }
 
@@ -1056,18 +1114,27 @@ export class UltimateReferenceDetector {
     }
 
     
-    // 同法の検出
+    // 同法の検出（改善版）
     if (text.includes('同法')) {
-      const matches = text.matchAll(/同法第(\d+)条/g);
+      const matches = text.matchAll(/同法(?:第(\d+)条)?/g);
       for (const match of matches) {
-        references.push({
-          type: 'contextual',
-          text: match[0],
-          targetArticle: match[1],
-          confidence: 0.70,
-          resolutionMethod: 'context',
-          position: match.index
-        });
+        // 直近の外部法令参照を探す
+        const recentExternalRef = references
+          .filter(r => r.type === 'external' && r.position! < match.index!)
+          .sort((a, b) => (b.position || 0) - (a.position || 0))[0];
+        
+        if (recentExternalRef) {
+          references.push({
+            type: 'contextual',
+            text: match[0],
+            targetLaw: recentExternalRef.targetLaw,
+            targetLawId: recentExternalRef.targetLawId,
+            targetArticle: match[1] ? `第${match[1]}条` : undefined,
+            confidence: 0.85,
+            resolutionMethod: 'context',
+            position: match.index
+          });
+        }
       }
     }
     

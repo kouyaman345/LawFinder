@@ -4,7 +4,7 @@
     "lawName": "民法",
     "processedSentences": 35,
     "totalSentences": 100,
-    "detectedRefs": 47,
+    "detectedRefs": 48,
     "expectedMinRefs": 100,
     "success": false,
     "processingTime": 5,
@@ -12,10 +12,11 @@
       "internal": 23,
       "relative": 18,
       "structural": 1,
+      "external": 1,
       "contextual": 5
     },
     "confidenceDistribution": {
-      "0.9-1.0": 22,
+      "0.9-1.0": 23,
       "0.8-0.9": 25,
       "0.7-0.8": 0,
       "0.6-0.7": 0,
@@ -25,21 +26,21 @@
   {
     "lawId": "132AC0000000048",
     "lawName": "商法",
-    "processedSentences": 27,
+    "processedSentences": 28,
     "totalSentences": 100,
-    "detectedRefs": 49,
+    "detectedRefs": 51,
     "expectedMinRefs": 80,
     "success": false,
-    "processingTime": 4,
+    "processingTime": 5,
     "refTypes": {
       "internal": 14,
       "contextual": 20,
-      "external": 1,
+      "external": 3,
       "relative": 13,
       "structural": 1
     },
     "confidenceDistribution": {
-      "0.9-1.0": 14,
+      "0.9-1.0": 16,
       "0.8-0.9": 24,
       "0.7-0.8": 0,
       "0.6-0.7": 11,
@@ -70,19 +71,20 @@
   {
     "lawId": "322AC0000000049",
     "lawName": "労働基準法",
-    "processedSentences": 44,
+    "processedSentences": 45,
     "totalSentences": 100,
-    "detectedRefs": 85,
+    "detectedRefs": 86,
     "expectedMinRefs": 50,
     "success": true,
-    "processingTime": 7,
+    "processingTime": 8,
     "refTypes": {
       "internal": 25,
       "relative": 21,
-      "contextual": 39
+      "contextual": 39,
+      "external": 1
     },
     "confidenceDistribution": {
-      "0.9-1.0": 19,
+      "0.9-1.0": 20,
       "0.8-0.9": 38,
       "0.7-0.8": 0,
       "0.6-0.7": 28,
