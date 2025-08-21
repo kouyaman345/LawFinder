@@ -936,7 +936,99 @@ export class UltimateReferenceDetector {
       });
     }
     
-    // パターン19: 定義後の略称使用（「法」第91条のような略称）
+    // パターン19: 会社法特有の括弧内準用（第XXX条第X項において準用する場合を含む）
+    const companyLawJunyoPattern = /第(\d+)条(?:第(\d+)項)?（第(\d+)条(?:第(\d+)項)?において準用する場合を含む。）/g;
+    while ((match = companyLawJunyoPattern.exec(text)) !== null) {
+      // 元の条文
+      references.push({
+        type: 'internal',
+        text: `第${match[1]}条${match[2] ? `第${match[2]}項` : ''}`,
+        targetArticle: `第${match[1]}条${match[2] ? `第${match[2]}項` : ''}`,
+        confidence: 0.95,
+        resolutionMethod: 'pattern',
+        position: match.index
+      });
+      // 準用先の条文
+      references.push({
+        type: 'application',
+        text: `第${match[3]}条${match[4] ? `第${match[4]}項` : ''}において準用`,
+        targetArticle: `第${match[3]}条${match[4] ? `第${match[4]}項` : ''}`,
+        confidence: 0.95,
+        resolutionMethod: 'pattern',
+        position: match.index
+      });
+    }
+
+    // パターン20: 会社法の条文範囲表記（第XXX条の二、第XXX条の三など）
+    const companyLawRangePattern = /第(\d+)条から第(\d+)条の(\d+)まで/g;
+    while ((match = companyLawRangePattern.exec(text)) !== null) {
+      references.push({
+        type: 'range',
+        text: match[0],
+        rangeStart: `第${match[1]}条`,
+        rangeEnd: `第${match[2]}条の${match[3]}`,
+        confidence: 0.9,
+        resolutionMethod: 'pattern',
+        position: match.index
+      });
+    }
+
+    // パターン21: 会社法の複雑な条項組み合わせ（第XXX条第Y項第Z号）
+    const companyLawComplexPattern = /第(\d+)条第([一二三四五六七八九十]+)項第([一二三四五六七八九十]+)号/g;
+    while ((match = companyLawComplexPattern.exec(text)) !== null) {
+      const paragraph = this.kanjiToNumber(match[2]);
+      const item = this.kanjiToNumber(match[3]);
+      references.push({
+        type: 'internal',
+        text: match[0],
+        targetArticle: `第${match[1]}条第${paragraph}項第${item}号`,
+        confidence: 0.95,
+        resolutionMethod: 'pattern',
+        position: match.index
+      });
+    }
+
+    // パターン22: 会社法の複雑な準用パターン（において準用する同条第X項）
+    const complexJunyoPattern = /第(\d+)条(?:第(\d+)項)?において準用する(?:同条)?第(\d+)項/g;
+    while ((match = complexJunyoPattern.exec(text)) !== null) {
+      references.push({
+        type: 'application',
+        text: match[0],
+        targetArticle: `第${match[1]}条${match[3] ? `第${match[3]}項` : ''}`,
+        confidence: 0.9,
+        resolutionMethod: 'pattern',
+        position: match.index
+      });
+    }
+
+    // パターン23: 会社法の条文番号枝番（第XXX条の二、第XXX条の三）
+    const branchNumberPattern = /第(\d+)条の([二三四五六七八九十]+)/g;
+    while ((match = branchNumberPattern.exec(text)) !== null) {
+      const branchNum = this.kanjiToNumber(match[2]);
+      references.push({
+        type: 'internal',
+        text: match[0],
+        targetArticle: `第${match[1]}条の${branchNum}`,
+        confidence: 0.95,
+        resolutionMethod: 'pattern',
+        position: match.index
+      });
+    }
+
+    // パターン24: 会社法の場合分け参照（場合には、場合において）
+    const conditionalPattern = /(?:の場合には|の場合において)、第(\d+)条(?:第(\d+)項)?(?:の規定)?/g;
+    while ((match = conditionalPattern.exec(text)) !== null) {
+      references.push({
+        type: 'conditional',
+        text: match[0],
+        targetArticle: `第${match[1]}条${match[2] ? `第${match[2]}項` : ''}`,
+        confidence: 0.85,
+        resolutionMethod: 'pattern',
+        position: match.index
+      });
+    }
+
+    // パターン25: 定義後の略称使用（「法」第91条のような略称）
     // 定義検出で記録された略称を使用
     if (this.contextState && this.contextState.definitions) {
       for (const [abbreviation, definition] of this.contextState.definitions) {
@@ -1156,7 +1248,7 @@ export class UltimateReferenceDetector {
   }
 
   /**
-   * Phase 3: LLMによる検出（困難ケース）
+   * Phase 3: LLMによる検出（困難ケース・拡張版）
    */
   private async detectByLLM(
     text: string, 
@@ -1164,36 +1256,76 @@ export class UltimateReferenceDetector {
   ): Promise<DetectedReference[]> {
     const references: DetectedReference[] = [];
 
-    // 未解決の文脈依存参照を抽出
-    const unresolvedPatterns = [
-      /別表第[一二三四五六七八九十]+に掲げる法律/g,
-      /前各号の法/g,
-      /関係法令/g,
-      /改正前の(.+法)/g
+    // 1. 曖昧な参照パターンの解決
+    const ambiguousPatterns = [
+      { pattern: /同法(?:第(\d+)条)?/g, type: 'same_law' },
+      { pattern: /当該[^、。]{1,20}/g, type: 'current_ref' },
+      { pattern: /別表第[一二三四五六七八九十]+に掲げる法律/g, type: 'appendix_law' },
+      { pattern: /前各号の法/g, type: 'previous_items' },
+      { pattern: /関係法令/g, type: 'related_laws' },
+      { pattern: /改正前の(.+法)/g, type: 'old_law' },
+      { pattern: /「(.{1,20}法)」/g, type: 'quoted_law' }
     ];
 
-    for (const pattern of unresolvedPatterns) {
+    // 2. 準用・読替えパターンの詳細解析
+    const applicationPatterns = [
+      { pattern: /(.+)の規定は、?(.+)について準用する/g, type: 'junyo' },
+      { pattern: /(.+)中「(.+)」とあるのは「(.+)」と読み替える/g, type: 'yomikae' },
+      { pattern: /(.+)の規定を準用する場合において/g, type: 'junyo_conditional' }
+    ];
+
+    // 3. 複雑な構造参照
+    const complexPatterns = [
+      { pattern: /第(\d+)条(?:第(\d+)項)?(?:（[^）]+を除く。?）)/g, type: 'exclusion' },
+      { pattern: /第(\d+)条第(\d+)項(?:若しくは|又は)第(\d+)項/g, type: 'alternative' },
+      { pattern: /第(\d+)条(?:第(\d+)項)?各号/g, type: 'all_items' }
+    ];
+
+    // LLMによる曖昧参照の解決
+    for (const { pattern, type } of ambiguousPatterns) {
       let match;
       while ((match = pattern.exec(text)) !== null) {
-        // 既に検出済みでないか確認
         const alreadyDetected = existingRefs.some(ref => 
-          ref.text === match[0]
+          ref.text === match[0] || (ref.position === match.index)
         );
 
         if (!alreadyDetected) {
-          // LLMに問い合わせ
-          const llmResult = await this.queryLLM(match[0], text);
+          const llmResult = await this.queryLLMEnhanced(
+            match[0], 
+            text, 
+            type,
+            existingRefs
+          );
           
-          if (llmResult) {
+          if (llmResult && llmResult.confidence > 0.6) {
             references.push({
-              type: 'contextual',
+              type: llmResult.referenceType || 'contextual',
               text: match[0],
               targetLaw: llmResult.lawName,
               targetLawId: llmResult.lawId,
-              confidence: 0.7,
-              resolutionMethod: 'llm'
+              targetArticle: llmResult.article,
+              confidence: llmResult.confidence,
+              resolutionMethod: 'llm',
+              position: match.index
             });
           }
+        }
+      }
+    }
+
+    // 準用・読替えパターンの高度な解析
+    for (const { pattern, type } of applicationPatterns) {
+      let match;
+      while ((match = pattern.exec(text)) !== null) {
+        const llmResult = await this.analyzeApplicationPattern(
+          match,
+          text,
+          type,
+          existingRefs
+        );
+        
+        if (llmResult) {
+          references.push(...llmResult);
         }
       }
     }
@@ -1202,25 +1334,163 @@ export class UltimateReferenceDetector {
   }
 
   /**
-   * LLMへの問い合わせ
+   * 拡張版LLMクエリ（構造化された応答）
    */
-  private async queryLLM(
-    referenceText: string, 
-    context: string
-  ): Promise<{ lawName: string; lawId?: string } | null> {
+  private async queryLLMEnhanced(
+    referenceText: string,
+    context: string,
+    referenceType: string,
+    existingRefs: DetectedReference[]
+  ): Promise<{
+    lawName: string;
+    lawId?: string;
+    article?: string;
+    confidence: number;
+    referenceType?: string;
+  } | null> {
     if (!this.llmAvailable) return null;
 
     try {
+      // 文脈情報を充実させる
+      const contextStart = Math.max(0, context.indexOf(referenceText) - 500);
+      const contextEnd = Math.min(context.length, context.indexOf(referenceText) + 500);
+      const enrichedContext = context.substring(contextStart, contextEnd);
+      
+      // 最近の法令参照を含める
+      const recentLaws = existingRefs
+        .filter(r => r.type === 'external')
+        .slice(-3)
+        .map(r => `${r.targetLaw}（${r.targetLawId}）`)
+        .join(', ');
+
+      // Few-shotプロンプティング
+      const fewShotExamples = `
+【解析例】
+例1:
+入力: "民法第90条"
+出力: {"lawName": "民法", "article": "第90条", "confidence": 1.0}
+
+例2:
+入力: "同法第5条"（文脈：商法について議論中）
+出力: {"lawName": "商法", "article": "第5条", "confidence": 0.9}
+
+例3:
+入力: "前条の規定"（直前が第42条）
+出力: {"lawName": "現在の法令", "article": "第41条", "confidence": 0.95}
+
+例4:
+入力: "第331条第1項（第335条第1項において準用する場合を含む）"
+出力: {"lawName": "会社法", "article": "第331条第1項", "confidence": 0.95}`;
+
       const prompt = `
-法令文書の参照を解析してください。
+あなたは日本の法令文書の専門家です。以下の参照を解析してください。
 
-文脈: ${context.substring(0, 500)}
-参照テキスト: "${referenceText}"
+${fewShotExamples}
 
-この参照が指している法令名を特定してください。
-回答は法令名のみを返してください。
+【文脈】
+${enrichedContext}
 
-回答:`;
+【最近参照された法令】
+${recentLaws || 'なし'}
+
+【現在の法令】
+${this.contextState.currentLawName || '不明'}
+
+【解析対象の参照】
+"${referenceText}"
+
+【参照タイプ】
+${referenceType}
+
+【タスク】
+この参照が指している内容を特定し、以下のJSON形式で回答してください：
+{
+  "lawName": "法令名（必須）",
+  "article": "条文番号（あれば）",
+  "confidence": 0.0-1.0の信頼度,
+  "referenceType": "internal/external/contextual/application",
+  "reasoning": "判断理由（簡潔に）"
+}
+
+JSONのみを回答してください。`;
+
+      const response = execSync(
+        `curl -s http://localhost:11434/api/generate -d '${JSON.stringify({
+          model: 'mistral',
+          prompt,
+          stream: false,
+          temperature: 0.1,
+          max_tokens: 200
+        }).replace(/'/g, "'\\''")}'`,
+        { encoding: 'utf-8', maxBuffer: 1024 * 1024 }
+      );
+
+      const result = JSON.parse(response);
+      if (result.response) {
+        // JSON部分を抽出
+        const jsonMatch = result.response.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          try {
+            const parsed = JSON.parse(jsonMatch[0]);
+            const lawId = this.findLawId(parsed.lawName);
+            return {
+              lawName: parsed.lawName,
+              lawId,
+              article: parsed.article,
+              confidence: parsed.confidence || 0.7,
+              referenceType: parsed.referenceType
+            };
+          } catch (e) {
+            // JSON解析失敗時のフォールバック
+            const lawNameMatch = result.response.match(/法令名[：:]\s*([^、。\n]+)/);
+            if (lawNameMatch) {
+              const lawName = lawNameMatch[1].trim();
+              const lawId = this.findLawId(lawName);
+              return { lawName, lawId, confidence: 0.5 };
+            }
+          }
+        }
+      }
+    } catch (error) {
+      // エラーは静かに処理
+    }
+
+    return null;
+  }
+
+  /**
+   * 準用・読替えパターンの高度な解析
+   */
+  private async analyzeApplicationPattern(
+    match: RegExpMatchArray,
+    context: string,
+    type: string,
+    existingRefs: DetectedReference[]
+  ): Promise<DetectedReference[]> {
+    if (!this.llmAvailable) return [];
+
+    try {
+      const prompt = `
+日本の法令における${type === 'junyo' ? '準用' : '読替え'}規定を解析してください。
+
+【文脈】
+${context.substring(Math.max(0, match.index! - 300), Math.min(context.length, match.index! + 300))}
+
+【解析対象】
+"${match[0]}"
+
+【タスク】
+1. 準用元/読替え元の条文を特定
+2. 準用先/読替え先を特定
+3. 適用範囲を明確化
+
+JSON形式で回答：
+{
+  "sourceArticle": "準用元の条文",
+  "targetContext": "準用先の文脈",
+  "modifications": ["変更内容1", "変更内容2"],
+  "confidence": 0.0-1.0
+}`;
 
       const response = execSync(
         `curl -s http://localhost:11434/api/generate -d '${JSON.stringify({
@@ -1228,20 +1498,55 @@ export class UltimateReferenceDetector {
           prompt,
           stream: false,
           temperature: 0.1
-        })}'`,
-        { encoding: 'utf-8' }
+        }).replace(/'/g, "'\\''")}'`,
+        { encoding: 'utf-8', maxBuffer: 1024 * 1024 }
       );
 
       const result = JSON.parse(response);
       if (result.response) {
-        const lawName = result.response.trim();
-        const lawId = this.findLawId(lawName);
-        return { lawName, lawId };
+        const jsonMatch = result.response.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          try {
+            const parsed = JSON.parse(jsonMatch[0]);
+            return [{
+              type: 'application',
+              text: match[0],
+              targetArticle: parsed.sourceArticle,
+              applicationMethod: type,
+              confidence: parsed.confidence || 0.7,
+              resolutionMethod: 'llm',
+              position: match.index
+            }];
+          } catch (e) {
+            // フォールバック
+          }
+        }
       }
     } catch (error) {
-      console.error('LLMエラー:', error);
+      // エラーは静かに処理
     }
 
+    return [];
+  }
+
+  /**
+   * 旧LLMクエリ（互換性のため残す）
+   */
+  private async queryLLM(
+    referenceText: string, 
+    context: string
+  ): Promise<{ lawName: string; lawId?: string } | null> {
+    const result = await this.queryLLMEnhanced(
+      referenceText,
+      context,
+      'unknown',
+      []
+    );
+    
+    if (result) {
+      return { lawName: result.lawName, lawId: result.lawId };
+    }
+    
     return null;
   }
 

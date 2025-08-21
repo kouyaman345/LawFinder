@@ -1,0 +1,274 @@
+[
+  {
+    "fileName": "108DF0000000054_20030501_414CO0000000277.xml",
+    "lawTitle": "不明な法令",
+    "articleCount": 6,
+    "detectedReferences": 6,
+    "uniqueReferences": 6,
+    "referenceTypes": {
+      "internal": 6
+    },
+    "sampleReferences": [
+      {
+        "type": "internal",
+        "text": "第一条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第二条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第三条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第四条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第五条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第六条",
+        "confidence": 0.95
+      }
+    ],
+    "processingTime": 15
+  },
+  {
+    "fileName": "108DF0000000103_18750608_000000000000000.xml",
+    "lawTitle": "不明な法令",
+    "articleCount": 3,
+    "detectedReferences": 3,
+    "uniqueReferences": 3,
+    "referenceTypes": {
+      "internal": 3
+    },
+    "sampleReferences": [
+      {
+        "type": "internal",
+        "text": "第三条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第四条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第五条",
+        "confidence": 0.95
+      }
+    ],
+    "processingTime": 11
+  },
+  {
+    "fileName": "117DF1000000032_20250601_504AC0000000068.xml",
+    "lawTitle": "不明な法令",
+    "articleCount": 17,
+    "detectedReferences": 70,
+    "uniqueReferences": 24,
+    "referenceTypes": {
+      "internal": 56,
+      "relative": 1,
+      "contextual": 7,
+      "external": 4,
+      "range": 2
+    },
+    "sampleReferences": [
+      {
+        "type": "internal",
+        "text": "第一条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第二条",
+        "confidence": 0.95
+      },
+      {
+        "type": "relative",
+        "text": "前条",
+        "confidence": 0.85
+      },
+      {
+        "type": "internal",
+        "text": "第三条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第一条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第四条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第一条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第五条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第一条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第六条",
+        "confidence": 0.95
+      }
+    ],
+    "processingTime": 17
+  },
+  {
+    "fileName": "119IO0000000000_18860420_000000000000000.xml",
+    "lawTitle": "不明な法令",
+    "articleCount": 14,
+    "detectedReferences": 17,
+    "uniqueReferences": 14,
+    "referenceTypes": {
+      "internal": 17
+    },
+    "sampleReferences": [
+      {
+        "type": "internal",
+        "text": "第一条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第二条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第三条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第四条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第五条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第六条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第七条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第六条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第七条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第八条",
+        "confidence": 0.95
+      }
+    ],
+    "processingTime": 19
+  },
+  {
+    "fileName": "121IO0000000001_20030501_414CO0000000277.xml",
+    "lawTitle": "不明な法令",
+    "articleCount": 2,
+    "detectedReferences": 3,
+    "uniqueReferences": 2,
+    "referenceTypes": {
+      "internal": 3
+    },
+    "sampleReferences": [
+      {
+        "type": "internal",
+        "text": "第一条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第一条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第二条",
+        "confidence": 0.95
+      }
+    ],
+    "processingTime": 12
+  },
+  {
+    "fileName": "121IO0000000076_20030501_414CO0000000277.xml",
+    "lawTitle": "不明な法令",
+    "articleCount": 6,
+    "detectedReferences": 6,
+    "uniqueReferences": 6,
+    "referenceTypes": {
+      "internal": 6
+    },
+    "sampleReferences": [
+      {
+        "type": "internal",
+        "text": "第一条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第二条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第三条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第四条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第五条",
+        "confidence": 0.95
+      },
+      {
+        "type": "internal",
+        "text": "第六条",
+        "confidence": 0.95
+      }
+    ],
+    "processingTime": 15
+  }
+]
