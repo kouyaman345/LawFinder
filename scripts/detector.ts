@@ -13,6 +13,14 @@ import path from 'path';
 import { execSync } from 'child_process';
 import chalk from 'chalk';
 import { NegativePatternFilter } from './negative-patterns';
+import { 
+  normalizeArticleNumber, 
+  toNumericFormat, 
+  toDisplayFormat, 
+  resolveRelativeReference,
+  extractArticleNumbers 
+} from '../src/utils/article-normalizer';
+import { RelativeReferenceResolver, CurrentContext } from '../src/services/relative-reference-resolver';
 
 // 生成された辞書ファイルがあれば読み込み
 let findLawIdByName: (name: string) => string | undefined = () => undefined;
@@ -31,7 +39,7 @@ try {
 const prisma = new PrismaClient();
 
 interface DetectedReference {
-  type: 'external' | 'internal' | 'relative' | 'structural' | 'application' | 'contextual' | 'defined';
+  type: 'external' | 'internal' | 'relative' | 'structural' | 'application' | 'contextual' | 'defined' | 'range' | 'conditional';
   text: string;
   targetLaw?: string;
   targetLawId?: string;
@@ -41,6 +49,26 @@ interface DetectedReference {
   confidence: number;
   resolutionMethod: 'pattern' | 'dictionary' | 'context' | 'llm' | 'definition' | 'lawNumber' | 'relative';
   position?: number;
+  
+  // 拡張位置情報（新規追加）
+  enhanced?: {
+    source: {
+      startPos: number;
+      endPos: number;
+      lineNumber?: number;
+      paragraphNumber?: number;
+      itemNumber?: string;
+    };
+    target: {
+      paragraphNumber?: number;
+      itemNumber?: string;
+      subItemNumber?: string;
+    };
+  };
+  
+  // 範囲参照用
+  rangeStart?: string;
+  rangeEnd?: string;
 }
 
 interface ContextState {
@@ -68,6 +96,9 @@ interface Definition {
 export class UltimateReferenceDetector {
   // 自動生成された辞書を使用
   private readonly lawDictionary = GENERATED_LAW_DICTIONARY;
+  
+  // 相対参照リゾルバー
+  private readonly relativeResolver = new RelativeReferenceResolver();
   
   // 基本的な法令辞書（自動生成辞書が無い場合のフォールバック）
   private readonly BASIC_LAW_DICTIONARY: Record<string, string> = {
@@ -251,7 +282,7 @@ export class UltimateReferenceDetector {
           text: refText,
           targetLaw: lawName,
           targetLawId: lawId,
-          targetArticle: `第${match[2]}条` + (match[3] ? `第${match[3]}項` : ''),
+          targetArticle: toNumericFormat(`第${match[2]}条`) + (match[3] ? `第${match[3]}項` : ''),
           articleNumber: parseInt(match[2]),
           confidence: 0.95,
           resolutionMethod: 'dictionary',
@@ -433,28 +464,62 @@ export class UltimateReferenceDetector {
       });
     }
 
-    // パターン4: 相対参照
+    // パターン4: 相対参照（改善版）
     const relativePatterns = [
-      '前条', '次条', '前項', '次項', '前二項', '前三項', '前各項'
+      '前条', '次条', '前項', '次項', '前二項', '前三項', '前各項',
+      '同条', '本条', '同項', '本項', '各項', '前号', '次号', '前各号'
     ];
 
     for (const pattern of relativePatterns) {
       const regex = new RegExp(pattern, 'g');
       while ((match = regex.exec(text)) !== null) {
-        const resolved = this.resolveRelativeReference(pattern);
+        // 新しいリゾルバーを使用
+        const context: CurrentContext = {
+          lawId: this.contextState.currentLawId,
+          lawName: this.contextState.currentLawName,
+          articleNumber: toNumericFormat(this.contextState.currentArticle),
+          paragraphNumber: this.contextState.currentParagraphNumber || undefined
+        };
         
-        references.push({
-          type: 'relative',
-          text: pattern,
-          targetLawId: this.contextState.currentLawId,
-          targetLaw: this.contextState.currentLawName,
-          targetArticle: resolved ? `第${resolved.articleNumber}条` : undefined,
-          articleNumber: resolved?.articleNumber,
-          targetParagraph: resolved?.paragraphNumber,
-          confidence: 0.85,
-          resolutionMethod: 'relative',
-          position: match.index
-        });
+        const resolved = this.relativeResolver.resolve(pattern, context);
+        
+        if (resolved) {
+          references.push({
+            type: 'relative',
+            text: pattern,
+            targetLawId: resolved.lawId,
+            targetLaw: this.contextState.currentLawName,
+            targetArticle: resolved.articleNumber,
+            articleNumber: parseInt(resolved.articleNumber, 10),
+            targetParagraph: resolved.paragraphNumber,
+            confidence: resolved.confidence,
+            resolutionMethod: 'relative',
+            position: match.index,
+            // 拡張情報を追加
+            enhanced: {
+              source: {
+                startPos: match.index!,
+                endPos: match.index! + pattern.length,
+                lineNumber: this.getLineNumber(text, match.index!),
+                paragraphNumber: this.contextState.currentParagraphNumber
+              },
+              target: {
+                paragraphNumber: resolved.paragraphNumber
+              }
+            }
+          });
+        } else {
+          // 解決できない場合も記録（信頼度低）
+          references.push({
+            type: 'relative',
+            text: pattern,
+            targetLawId: this.contextState.currentLawId,
+            targetLaw: this.contextState.currentLawName,
+            confidence: 0.3,
+            resolutionMethod: 'relative',
+            position: match.index
+          });
+        }
       }
     }
 
@@ -1593,6 +1658,14 @@ JSON形式で回答：
         }
       }
     }
+  }
+
+  /**
+   * 行番号を取得
+   */
+  private getLineNumber(text: string, position: number): number {
+    const beforeText = text.substring(0, position);
+    return beforeText.split('\n').length;
   }
 
   /**

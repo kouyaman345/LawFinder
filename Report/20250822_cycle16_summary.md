@@ -166,10 +166,6 @@ logger.logDetectionSummary(lawId, references, time);
    - アラート設定
    - ダッシュボード作成
 
-5. **セキュリティ強化**
-   - API 認証実装
-   - レート制限
-   - SQL インジェクション対策
 
 ## 成果サマリー
 

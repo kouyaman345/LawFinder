@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LawFinder - Neo4j参照関係可視化（位置情報付き）</title>
+    <script src="https://unpkg.com/neo4j-driver"></script>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .connection-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .connection-panel h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .form-group input, .form-group select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .form-group button {
+            padding: 10px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        
+        .form-group button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .visualization-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .panel {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .panel h3 {
+            color: #333;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        #network {
+            height: 500px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            background: #fafafa;
+        }
+        
+        #details {
+            height: 500px;
+            overflow-y: auto;
+        }
+        
+        .detail-item {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        
+        .detail-item h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .detail-item .position-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+        }
+        
+        .detail-item .position-info span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .detail-item .position-info .label {
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .detail-item .position-info .value {
+            color: #333;
+            font-family: monospace;
+        }
+        
+        .stats-panel {
+            grid-column: span 2;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-card h4 {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: bold;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        .query-panel {
+            grid-column: span 2;
+        }
+        
+        .query-editor {
+            width: 100%;
+            min-height: 150px;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+        }
+        
+        .query-result {
+            margin-top: 15px;
+            max-height: 400px;
+            overflow: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            background: #f8f9fa;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .legend {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+        
+        @media (max-width: 768px) {
+            .visualization-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-panel, .query-panel {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 LawFinder Neo4j 参照関係可視化</h1>
+        
+        <!-- 接続パネル -->
+        <div class="connection-panel">
+            <h2>Neo4j接続設定</h2>
+            <div class="form-group">
+                <input type="text" id="neo4j-url" value="bolt://localhost:7687" placeholder="Neo4j URL">
+                <input type="text" id="neo4j-user" value="neo4j" placeholder="ユーザー名">
+                <input type="password" id="neo4j-password" value="lawfinder123" placeholder="パスワード">
+                <button onclick="connectToNeo4j()">接続</button>
+            </div>
+            <div id="connection-status"></div>
+        </div>
+        
+        <!-- グラフプリセット選択 -->
+        <div class="panel" style="margin-bottom: 20px;">
+            <h3>🎯 グラフプリセット選択</h3>
+            <div class="form-group">
+                <select id="graph-preset" onchange="loadGraphPreset()" style="min-width: 300px;">
+                    <option value="enhanced">拡張参照ネットワーク（位置情報付き）</option>
+                    <option value="civil">民法の参照ネットワーク</option>
+                    <option value="commercial">商法の参照ネットワーク</option>
+                    <option value="criminal">刑法の参照ネットワーク</option>
+                    <option value="mutual">相互参照ネットワーク</option>
+                    <option value="chain">参照チェーン（3段階）</option>
+                    <option value="hierarchy">法令階層構造</option>
+                    <option value="density">高密度参照ノード</option>
+                </select>
+                <button onclick="loadGraphPreset()">グラフ更新</button>
+                <span id="graph-status" style="margin-left: 10px; color: #666;"></span>
+            </div>
+        </div>
+        
+        <!-- ビジュアライゼーショングリッド -->
+        <div class="visualization-grid">
+            <!-- ネットワークグラフ -->
+            <div class="panel">
+                <h3>📊 <span id="graph-title">参照ネットワーク（位置情報付き）</span></h3>
+                <div id="network"></div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #4CAF50;"></div>
+                        <span>法令</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #2196F3;"></div>
+                        <span>条文</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #FF9800;"></div>
+                        <span>項</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #9C27B0;"></div>
+                        <span>拡張参照</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 詳細情報パネル -->
+            <div class="panel">
+                <h3>📍 位置情報詳細</h3>
+                <div id="details">
+                    <p style="color: #999; text-align: center; padding: 20px;">
+                        グラフのエッジをクリックすると詳細が表示されます
+                    </p>
+                </div>
+            </div>
+            
+            <!-- 統計パネル -->
+            <div class="panel stats-panel">
+                <h3>📈 統計情報</h3>
+                <div class="stats-grid" id="stats-grid">
+                    <div class="stat-card">
+                        <h4>拡張参照数</h4>
+                        <div class="value" id="enhanced-count">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>平均信頼度</h4>
+                        <div class="value" id="avg-confidence">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>法令数</h4>
+                        <div class="value" id="law-count">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>条文数</h4>
+                        <div class="value" id="article-count">-</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="position-chart"></canvas>
+                </div>
+            </div>
+            
+            <!-- クエリ実行パネル -->
+            <div class="panel query-panel">
+                <h3>🔧 カスタムクエリ実行</h3>
+                <textarea class="query-editor" id="custom-query">
+// 位置情報付き参照を取得
+MATCH (source)-[r:REFERENCES]->(target)
+WHERE r.enhanced = true
+RETURN 
+  source.lawId as 参照元法令,
+  source.number as 参照元条文,
+  r.sourceText as 参照テキスト,
+  r.sourceStartPos as 開始位置,
+  r.sourceEndPos as 終了位置,
+  r.sourceLineNumber as 行番号,
+  target.lawId as 参照先法令,
+  target.number as 参照先条文
+LIMIT 10</textarea>
+                <div class="form-group" style="margin-top: 10px;">
+                    <button onclick="executeQuery()">クエリ実行</button>
+                    <select id="preset-queries" onchange="loadPresetQuery()">
+                        <option value="">プリセットクエリを選択...</option>
+                        <option value="enhanced">拡張参照一覧</option>
+                        <option value="civil">民法の参照</option>
+                        <option value="commercial">商法の参照</option>
+                        <option value="mutual">相互参照</option>
+                        <option value="chain">参照チェーン</option>
+                        <option value="stats">統計情報</option>
+                    </select>
+                </div>
+                <div class="query-result" id="query-result"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let driver = null;
+        let network = null;
+        let nodes = null;
+        let edges = null;
+        
+        // プリセットクエリ
+        const presetQueries = {
+            enhanced: `MATCH (source)-[r:REFERENCES]->(target)
+WHERE r.enhanced = true
+RETURN 
+  source.lawId as 参照元法令,
+  source.number as 参照元条文,
+  r.sourceText as 参照テキスト,
+  r.sourceStartPos as 開始位置,
+  r.sourceEndPos as 終了位置,
+  r.sourceLineNumber as 行番号,
+  target.lawId as 参照先法令,
+  target.number as 参照先条文
+LIMIT 20`,
+            
+            civil: `MATCH (civil:Law {id: '129AC0000000089'})-[:HAS_ARTICLE]->(article:Article)
+OPTIONAL MATCH (article)-[r:REFERENCES]->(target)
+WHERE r.enhanced = true
+RETURN article.number as 条文, r.sourceText as 参照テキスト, 
+       r.sourceStartPos as 開始位置, target.lawId as 参照先, target.number as 参照先条文
+LIMIT 20`,
+            
+            commercial: `MATCH (commercial:Law {id: '132AC0000000048'})-[:HAS_ARTICLE]->(article:Article)
+OPTIONAL MATCH (article)-[r:REFERENCES]->(target)
+WHERE r.enhanced = true
+RETURN article.number as 条文, r.sourceText as 参照テキスト,
+       r.sourceStartPos as 開始位置, target.lawId as 参照先, target.number as 参照先条文
+LIMIT 20`,
+            
+            mutual: `MATCH (a)-[r1:REFERENCES]->(b)
+MATCH (b)-[r2:REFERENCES]->(a)
+WHERE r1.enhanced = true AND r2.enhanced = true
+RETURN a.lawId as 法令A, a.number as 条文A,
+       b.lawId as 法令B, b.number as 条文B
+LIMIT 10`,
+            
+            chain: `MATCH path = (start:Article)-[:REFERENCES*1..3]->(end:Article)
+WHERE ALL(r IN relationships(path) WHERE r.enhanced = true)
+RETURN length(path) as チェーン長, 
+       [n IN nodes(path) | n.lawId + ':' + n.number] as 経路
+LIMIT 10`,
+            
+            stats: `MATCH ()-[r:REFERENCES]->()
+WHERE r.enhanced = true
+RETURN 
+  count(r) as 拡張参照数,
+  avg(r.confidence) as 平均信頼度,
+  min(r.sourceStartPos) as 最小開始位置,
+  max(r.sourceEndPos) as 最大終了位置,
+  avg(r.sourceLineNumber) as 平均行番号`
+        };
+        
+        // Neo4j接続
+        async function connectToNeo4j() {
+            const url = document.getElementById('neo4j-url').value;
+            const user = document.getElementById('neo4j-user').value;
+            const password = document.getElementById('neo4j-password').value;
+            const statusDiv = document.getElementById('connection-status');
+            
+            try {
+                driver = neo4j.driver(url, neo4j.auth.basic(user, password));
+                const session = driver.session();
+                
+                // 接続テスト
+                await session.run('RETURN 1');
+                
+                statusDiv.className = 'status success';
+                statusDiv.innerHTML = '✅ 接続成功！データを読み込み中...';
+                
+                // データ読み込み
+                await loadData();
+                await loadStats();
+                
+                statusDiv.innerHTML = '✅ 接続成功！データ読み込み完了';
+                
+                session.close();
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.innerHTML = `❌ 接続失敗: ${error.message}`;
+                console.error('Connection error:', error);
+            }
+        }
+        
+        // グラフプリセットクエリ
+        const graphPresets = {
+            enhanced: {
+                title: '拡張参照ネットワーク（位置情報付き）',
+                query: `MATCH (source)-[r:REFERENCES]->(target)
+                        WHERE r.enhanced = true
+                        RETURN source, r, target
+                        LIMIT 100`
+            },
+            civil: {
+                title: '民法の参照ネットワーク',
+                query: `MATCH (civil:Law {id: '129AC0000000089'})-[:HAS_ARTICLE]->(article:Article)
+                        OPTIONAL MATCH (article)-[r:REFERENCES]->(target)
+                        RETURN article as source, r, target
+                        LIMIT 100`
+            },
+            commercial: {
+                title: '商法の参照ネットワーク',
+                query: `MATCH (commercial:Law {id: '132AC0000000048'})-[:HAS_ARTICLE]->(article:Article)
+                        OPTIONAL MATCH (article)-[r:REFERENCES]->(target)
+                        RETURN article as source, r, target
+                        LIMIT 100`
+            },
+            criminal: {
+                title: '刑法の参照ネットワーク',
+                query: `MATCH (criminal:Law {id: '140AC0000000045'})-[:HAS_ARTICLE]->(article:Article)
+                        OPTIONAL MATCH (article)-[r:REFERENCES]->(target)
+                        RETURN article as source, r, target
+                        LIMIT 100`
+            },
+            mutual: {
+                title: '相互参照ネットワーク',
+                query: `MATCH (a)-[r1:REFERENCES]->(b)
+                        MATCH (b)-[r2:REFERENCES]->(a)
+                        WHERE r1.enhanced = true OR r2.enhanced = true
+                        RETURN a as source, r1 as r, b as target
+                        UNION
+                        MATCH (a)-[r1:REFERENCES]->(b)
+                        MATCH (b)-[r2:REFERENCES]->(a)
+                        WHERE r1.enhanced = true OR r2.enhanced = true
+                        RETURN b as source, r2 as r, a as target
+                        LIMIT 50`
+            },
+            chain: {
+                title: '参照チェーン（3段階）',
+                query: `MATCH path = (start:Article)-[:REFERENCES*1..3]->(end:Article)
+                        WHERE ALL(r IN relationships(path) WHERE r.enhanced = true OR r.confidence > 0.8)
+                        WITH path, nodes(path) as nodes, relationships(path) as rels
+                        UNWIND range(0, size(nodes)-2) as i
+                        RETURN nodes[i] as source, rels[i] as r, nodes[i+1] as target
+                        LIMIT 100`
+            },
+            hierarchy: {
+                title: '法令階層構造',
+                query: `MATCH (law:Law)-[:HAS_ARTICLE]->(article:Article)
+                        WHERE law.id IN ['129AC0000000089', '132AC0000000048', '140AC0000000045']
+                        OPTIONAL MATCH (article)-[:HAS_PARAGRAPH]->(paragraph:Paragraph)
+                        WITH law, article, paragraph
+                        RETURN law as source, 
+                               {type: 'HAS_ARTICLE', properties: {type: 'structure'}} as r, 
+                               article as target
+                        UNION
+                        MATCH (article:Article)-[:HAS_PARAGRAPH]->(paragraph:Paragraph)
+                        RETURN article as source,
+                               {type: 'HAS_PARAGRAPH', properties: {type: 'structure'}} as r,
+                               paragraph as target
+                        LIMIT 100`
+            },
+            density: {
+                title: '高密度参照ノード',
+                query: `MATCH (article:Article)
+                        WITH article, size((article)-[:REFERENCES]->()) as outDegree,
+                             size((article)<-[:REFERENCES]-()) as inDegree
+                        WHERE outDegree + inDegree > 3
+                        MATCH (article)-[r:REFERENCES]-(connected)
+                        RETURN article as source, r, connected as target
+                        LIMIT 100`
+            }
+        };
+        
+        // グラフプリセット読み込み
+        async function loadGraphPreset() {
+            const preset = document.getElementById('graph-preset').value;
+            const statusSpan = document.getElementById('graph-status');
+            const titleSpan = document.getElementById('graph-title');
+            
+            if (!driver) {
+                statusSpan.textContent = '⚠️ 先に接続してください';
+                statusSpan.style.color = 'red';
+                return;
+            }
+            
+            const presetConfig = graphPresets[preset];
+            if (!presetConfig) return;
+            
+            statusSpan.textContent = '読み込み中...';
+            statusSpan.style.color = '#666';
+            titleSpan.textContent = presetConfig.title;
+            
+            const session = driver.session();
+            
+            try {
+                const result = await session.run(presetConfig.query);
+                
+                const nodeMap = new Map();
+                const edgeList = [];
+                
+                result.records.forEach(record => {
+                    const source = record.get('source');
+                    const target = record.get('target');
+                    const ref = record.get('r');
+                    
+                    if (source) {
+                        const sourceId = generateNodeId(source);
+                        if (!nodeMap.has(sourceId)) {
+                            nodeMap.set(sourceId, createNodeData(source, sourceId));
+                        }
+                    }
+                    
+                    if (target) {
+                        const targetId = generateNodeId(target);
+                        if (!nodeMap.has(targetId)) {
+                            nodeMap.set(targetId, createNodeData(target, targetId));
+                        }
+                    }
+                    
+                    if (source && target && ref) {
+                        edgeList.push(createEdgeData(
+                            generateNodeId(source),
+                            generateNodeId(target),
+                            ref
+                        ));
+                    }
+                });
+                
+                // ネットワーク更新
+                updateNetwork(Array.from(nodeMap.values()), edgeList);
+                
+                statusSpan.textContent = `✅ ${result.records.length}件読み込み完了`;
+                statusSpan.style.color = 'green';
+                
+            } catch (error) {
+                statusSpan.textContent = `❌ エラー: ${error.message}`;
+                statusSpan.style.color = 'red';
+                console.error('Graph preset error:', error);
+            } finally {
+                session.close();
+            }
+        }
+        
+        // ノードID生成
+        function generateNodeId(node) {
+            if (!node) return 'unknown';
+            const labels = node.labels || [];
+            const props = node.properties || {};
+            return `${labels[0] || 'Node'}_${props.id || props.lawId + '_' + props.number || Math.random()}`;
+        }
+        
+        // ノードデータ作成
+        function createNodeData(node, id) {
+            const labels = node.labels || [];
+            const props = node.properties || {};
+            return {
+                id: id,
+                label: props.number || props.id || props.name || 'Unknown',
+                group: labels[0] || 'Unknown',
+                title: `${labels[0]}: ${JSON.stringify(props, null, 2)}`
+            };
+        }
+        
+        // エッジデータ作成
+        function createEdgeData(sourceId, targetId, ref) {
+            const props = ref.properties || {};
+            return {
+                from: sourceId,
+                to: targetId,
+                label: props.type || ref.type || 'REFERENCES',
+                title: `参照テキスト: ${props.sourceText || 'N/A'}
+開始位置: ${props.sourceStartPos || 'N/A'}
+終了位置: ${props.sourceEndPos || 'N/A'}
+行番号: ${props.sourceLineNumber || 'N/A'}
+信頼度: ${props.confidence || 'N/A'}`,
+                color: props.enhanced ? '#9C27B0' : (ref.type === 'HAS_ARTICLE' || ref.type === 'HAS_PARAGRAPH' ? '#4CAF50' : '#999'),
+                width: props.confidence ? props.confidence * 3 : 1,
+                arrows: ref.type === 'REFERENCES' ? 'to' : '',
+                data: props
+            };
+        }
+        
+        // ネットワーク更新
+        function updateNetwork(nodeData, edgeData) {
+            if (nodes) nodes.clear();
+            if (edges) edges.clear();
+            
+            nodes.add(nodeData);
+            edges.add(edgeData);
+            
+            if (network) {
+                network.fit();
+            }
+        }
+        
+        // データ読み込み
+        async function loadData() {
+            const preset = document.getElementById('graph-preset').value;
+            const presetConfig = graphPresets[preset];
+            const session = driver.session();
+            
+            try {
+                // プリセットクエリを使用
+                const result = await session.run(presetConfig.query);
+                
+                const nodeMap = new Map();
+                const edgeList = [];
+                
+                result.records.forEach(record => {
+                    const source = record.get('source');
+                    const target = record.get('target');
+                    const ref = record.get('r');
+                    
+                    // ソースノード追加
+                    const sourceId = `${source.labels[0]}_${source.properties.id || source.properties.lawId + '_' + source.properties.number}`;
+                    if (!nodeMap.has(sourceId)) {
+                        nodeMap.set(sourceId, {
+                            id: sourceId,
+                            label: source.properties.number || source.properties.id || 'Unknown',
+                            group: source.labels[0],
+                            title: `${source.labels[0]}: ${JSON.stringify(source.properties, null, 2)}`
+                        });
+                    }
+                    
+                    // ターゲットノード追加
+                    const targetId = `${target.labels[0]}_${target.properties.id || target.properties.lawId + '_' + target.properties.number}`;
+                    if (!nodeMap.has(targetId)) {
+                        nodeMap.set(targetId, {
+                            id: targetId,
+                            label: target.properties.number || target.properties.id || 'Unknown',
+                            group: target.labels[0],
+                            title: `${target.labels[0]}: ${JSON.stringify(target.properties, null, 2)}`
+                        });
+                    }
+                    
+                    // エッジ追加
+                    edgeList.push({
+                        from: sourceId,
+                        to: targetId,
+                        label: ref.properties.type || 'REFERENCES',
+                        title: `参照テキスト: ${ref.properties.sourceText || 'N/A'}
+開始位置: ${ref.properties.sourceStartPos || 'N/A'}
+終了位置: ${ref.properties.sourceEndPos || 'N/A'}
+行番号: ${ref.properties.sourceLineNumber || 'N/A'}
+信頼度: ${ref.properties.confidence || 'N/A'}`,
+                        color: ref.properties.enhanced ? '#9C27B0' : '#999',
+                        width: ref.properties.confidence ? ref.properties.confidence * 3 : 1,
+                        arrows: 'to',
+                        data: ref.properties
+                    });
+                });
+                
+                // ネットワーク作成
+                createNetwork(Array.from(nodeMap.values()), edgeList);
+                
+            } finally {
+                session.close();
+            }
+        }
+        
+        // ネットワーク作成
+        function createNetwork(nodeData, edgeData) {
+            const container = document.getElementById('network');
+            
+            nodes = new vis.DataSet(nodeData);
+            edges = new vis.DataSet(edgeData);
+            
+            const data = { nodes, edges };
+            
+            const options = {
+                groups: {
+                    Law: { color: { background: '#4CAF50' }, shape: 'box' },
+                    Article: { color: { background: '#2196F3' }, shape: 'ellipse' },
+                    Paragraph: { color: { background: '#FF9800' }, shape: 'diamond' },
+                    Item: { color: { background: '#F44336' }, shape: 'triangle' }
+                },
+                physics: {
+                    enabled: true,
+                    solver: 'forceAtlas2Based',
+                    forceAtlas2Based: {
+                        gravitationalConstant: -50,
+                        springLength: 200,
+                        springConstant: 0.05
+                    }
+                },
+                interaction: {
+                    hover: true,
+                    tooltipDelay: 0
+                }
+            };
+            
+            network = new vis.Network(container, data, options);
+            
+            // エッジクリック時の詳細表示
+            network.on('selectEdge', function(params) {
+                if (params.edges.length > 0) {
+                    const edgeId = params.edges[0];
+                    const edge = edges.get(edgeId);
+                    showEdgeDetails(edge);
+                }
+            });
+        }
+        
+        // エッジ詳細表示
+        function showEdgeDetails(edge) {
+            const detailsDiv = document.getElementById('details');
+            const data = edge.data || {};
+            
+            detailsDiv.innerHTML = `
+                <div class="detail-item">
+                    <h4>参照情報</h4>
+                    <p><strong>参照タイプ:</strong> ${data.type || 'N/A'}</p>
+                    <p><strong>参照テキスト:</strong> ${data.sourceText || 'N/A'}</p>
+                    <p><strong>信頼度:</strong> ${data.confidence ? (data.confidence * 100).toFixed(1) + '%' : 'N/A'}</p>
+                    <p><strong>検出方法:</strong> ${data.detectionMethod || 'N/A'}</p>
+                    
+                    <div class="position-info">
+                        <span>
+                            <span class="label">📍 開始位置:</span>
+                            <span class="value">${data.sourceStartPos || 'N/A'}</span>
+                        </span>
+                        <span>
+                            <span class="label">📍 終了位置:</span>
+                            <span class="value">${data.sourceEndPos || 'N/A'}</span>
+                        </span>
+                        <span>
+                            <span class="label">📄 行番号:</span>
+                            <span class="value">${data.sourceLineNumber || 'N/A'}</span>
+                        </span>
+                        <span>
+                            <span class="label">📏 参照長:</span>
+                            <span class="value">${data.sourceEndPos && data.sourceStartPos ? 
+                                (data.sourceEndPos - data.sourceStartPos) + ' 文字' : 'N/A'}</span>
+                        </span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 統計情報読み込み
+        async function loadStats() {
+            const session = driver.session();
+            
+            try {
+                // 統計クエリ実行
+                const result = await session.run(`
+                    MATCH (l:Law)
+                    WITH count(l) as lawCount
+                    MATCH (a:Article)
+                    WITH lawCount, count(a) as articleCount
+                    MATCH ()-[r:REFERENCES]->()
+                    WHERE r.enhanced = true
+                    WITH lawCount, articleCount, count(r) as enhancedCount, avg(r.confidence) as avgConfidence
+                    RETURN lawCount, articleCount, enhancedCount, avgConfidence
+                `);
+                
+                if (result.records.length > 0) {
+                    const record = result.records[0];
+                    document.getElementById('law-count').textContent = record.get('lawCount').toNumber();
+                    document.getElementById('article-count').textContent = record.get('articleCount').toNumber();
+                    document.getElementById('enhanced-count').textContent = record.get('enhancedCount').toNumber();
+                    document.getElementById('avg-confidence').textContent = 
+                        (record.get('avgConfidence') * 100).toFixed(1) + '%';
+                }
+                
+                // 位置情報分布グラフ
+                await loadPositionChart();
+                
+            } finally {
+                session.close();
+            }
+        }
+        
+        // 位置情報分布チャート
+        async function loadPositionChart() {
+            const session = driver.session();
+            
+            try {
+                const result = await session.run(`
+                    MATCH ()-[r:REFERENCES]->()
+                    WHERE r.enhanced = true AND r.sourceLineNumber IS NOT NULL
+                    RETURN r.sourceLineNumber as line, count(*) as count
+                    ORDER BY line
+                    LIMIT 20
+                `);
+                
+                const labels = [];
+                const data = [];
+                
+                result.records.forEach(record => {
+                    labels.push(`行 ${record.get('line')}`);
+                    data.push(record.get('count').toNumber());
+                });
+                
+                const ctx = document.getElementById('position-chart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: '参照数',
+                            data: data,
+                            backgroundColor: 'rgba(102, 126, 234, 0.5)',
+                            borderColor: 'rgba(102, 126, 234, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: '行番号別参照分布'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+                
+            } finally {
+                session.close();
+            }
+        }
+        
+        // クエリ実行
+        async function executeQuery() {
+            const query = document.getElementById('custom-query').value;
+            const resultDiv = document.getElementById('query-result');
+            
+            if (!driver) {
+                resultDiv.innerHTML = '<p style="color: red;">先にNeo4jに接続してください</p>';
+                return;
+            }
+            
+            const session = driver.session();
+            
+            try {
+                resultDiv.innerHTML = '<p>実行中...</p>';
+                
+                const result = await session.run(query);
+                
+                if (result.records.length === 0) {
+                    resultDiv.innerHTML = '<p>結果なし</p>';
+                    return;
+                }
+                
+                // テーブル作成
+                const keys = result.records[0].keys;
+                let html = '<table><thead><tr>';
+                keys.forEach(key => {
+                    html += `<th>${key}</th>`;
+                });
+                html += '</tr></thead><tbody>';
+                
+                result.records.forEach(record => {
+                    html += '<tr>';
+                    keys.forEach(key => {
+                        const value = record.get(key);
+                        html += `<td>${value === null ? 'NULL' : value}</td>`;
+                    });
+                    html += '</tr>';
+                });
+                
+                html += '</tbody></table>';
+                resultDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">エラー: ${error.message}</p>`;
+            } finally {
+                session.close();
+            }
+        }
+        
+        // プリセットクエリ読み込み
+        function loadPresetQuery() {
+            const select = document.getElementById('preset-queries');
+            const editor = document.getElementById('custom-query');
+            
+            if (select.value && presetQueries[select.value]) {
+                editor.value = presetQueries[select.value];
+            }
+        }
+        
+        // ページ読み込み時に自動接続試行
+        window.addEventListener('DOMContentLoaded', () => {
+            // 自動接続（ローカル環境の場合）
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                setTimeout(() => {
+                    connectToNeo4j();
+                }, 500);
+            }
+        });
+    </script>
+</body>
+</html>
