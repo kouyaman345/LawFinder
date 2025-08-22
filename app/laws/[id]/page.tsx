@@ -1,9 +1,8 @@
 import Link from 'next/link';
 import { LawDetailClient } from '../../components/LawDetailClient';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../../../src/lib/prisma';
 import HybridDBClient from '../../../src/lib/hybrid-db';
 
-const prisma = new PrismaClient();
 const hybridDB = HybridDBClient.getInstance();
 
 // XMLから制定文を抽出
@@ -193,21 +192,38 @@ export default async function LawDetailPage(props: { params: Promise<{ id: strin
   
   try {
     // データベースから法令を取得（XMLも含む）
-    const law = await prisma.law.findUnique({
+    // LawMasterとLawVersionの新スキーマに対応
+    const lawMaster = await prisma.lawMaster.findUnique({
       where: { id: lawId },
       include: {
-        articles: {
+        currentVersion: {
           include: {
-            paragraphs: {
+            articles: {
               include: {
-                items: true
-              }
+                paragraphs: {
+                  include: {
+                    items: true
+                  }
+                }
+              },
+              orderBy: { sortOrder: 'asc' }
             }
-          },
-          orderBy: { sortOrder: 'asc' }
+          }
         }
       }
     });
+    
+    if (!lawMaster || !lawMaster.currentVersion) {
+      throw new Error(`Law ${lawId} not found or has no current version`);
+    }
+    
+    const law = {
+      ...lawMaster,
+      ...lawMaster.currentVersion,
+      title: lawMaster.title,
+      lawNumber: lawMaster.lawNumber,
+      articles: lawMaster.currentVersion.articles
+    };
     
     if (!law) {
       throw new Error('Law not found');

@@ -7,43 +7,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// 法令マスタ（法令番号ごとに1レコード）
 model LawMaster {
-  id                String    @id // 法令番号（例：129AC0000000089）
-  title             String
-  lawType           String?
-  lawNumber         String?
-  
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  
-  versions          LawVersion[]
-  currentVersion    LawVersion? @relation("CurrentVersion", fields: [currentVersionId], references: [id])
-  currentVersionId  String?   @unique
-  
+  id               String       @id
+  title            String
+  lawType          String?
+  lawNumber        String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  currentVersionId String?      @unique
+  currentVersion   LawVersion?  @relation("CurrentVersion", fields: [currentVersionId], references: [id])
+  versions         LawVersion[]
+
   @@index([title])
   @@index([lawNumber])
 }
 
-// 法令バージョン（各施行日バージョン）
 model LawVersion {
-  id                String    @id // lawId_effectiveDate形式（例：129AC0000000089_20250606）
-  lawId             String    // 法令番号
-  versionDate       DateTime  // 施行日
-  promulgationDate  DateTime? // 公布日
-  amendmentLawId    String?   // 改正法令ID
-  amendmentDate     DateTime? // 改正日
-  xmlContent        String
-  status            String    @default("現行") // 現行/改正予定/廃止
-  isLatest          Boolean   @default(false) // 最新バージョンフラグ
-  
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  
-  lawMaster         LawMaster @relation(fields: [lawId], references: [id], onDelete: Cascade)
-  currentFor        LawMaster? @relation("CurrentVersion")
-  articles          Article[]
-  
+  id               String     @id
+  lawId            String
+  versionDate      DateTime
+  promulgationDate DateTime?
+  amendmentLawId   String?
+  amendmentDate    DateTime?
+  xmlContent       String
+  status           String     @default("現行")
+  isLatest         Boolean    @default(false)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  articles         Article[]
+  currentFor       LawMaster? @relation("CurrentVersion")
+  lawMaster        LawMaster  @relation(fields: [lawId], references: [id], onDelete: Cascade)
+
   @@unique([lawId, versionDate])
   @@index([lawId, isLatest])
   @@index([versionDate])
@@ -51,73 +45,66 @@ model LawVersion {
 }
 
 model Article {
-  id                String    @id @default(uuid())
-  versionId         String    // LawVersionのID
-  articleNumber     String
-  articleTitle      String?
-  content           String
-  
-  part              String?
-  chapter           String?
-  section           String?
-  subsection        String?
-  division          String?   // 本則/附則の区分
-  sortOrder         Int       @default(0)
-  isDeleted         Boolean   @default(false)
-  
-  version           LawVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
-  paragraphs        Paragraph[]
-  
+  id            String      @id @default(uuid())
+  versionId     String
+  articleNumber String
+  articleTitle  String?
+  content       String
+  part          String?
+  chapter       String?
+  section       String?
+  subsection    String?
+  division      String?
+  sortOrder     Int         @default(0)
+  isDeleted     Boolean     @default(false)
+  version       LawVersion  @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  paragraphs    Paragraph[]
+
   @@unique([versionId, articleNumber])
   @@index([versionId, sortOrder])
 }
 
 model Paragraph {
-  id                String    @id @default(uuid())
-  articleId         String
-  paragraphNumber   Int
-  content           String
-  
-  article           Article   @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  items             Item[]
-  
+  id              String  @id @default(uuid())
+  articleId       String
+  paragraphNumber Int
+  content         String
+  items           Item[]
+  article         Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
   @@unique([articleId, paragraphNumber])
 }
 
 model Item {
-  id                String    @id @default(uuid())
-  paragraphId       String
-  itemNumber        String
-  content           String
-  
-  paragraph         Paragraph @relation(fields: [paragraphId], references: [id], onDelete: Cascade)
-  
+  id          String    @id @default(uuid())
+  paragraphId String
+  itemNumber  String
+  content     String
+  paragraph   Paragraph @relation(fields: [paragraphId], references: [id], onDelete: Cascade)
+
   @@unique([paragraphId, itemNumber])
 }
 
 model Reference {
-  id                String    @id @default(uuid())
-  sourceVersionId   String    // LawVersionのID
-  sourceLawId       String    // 法令番号（検索用）
-  sourceArticle     String
-  targetVersionId   String?   // LawVersionのID
-  targetLawId       String?   // 法令番号（検索用）
-  targetArticle     String?
-  referenceType     String    // internal, external, relative, range, multiple, structural, application, delegation
-  referenceText     String    // 元のテキスト（例：「第123条」）
-  confidence        Float     @default(1.0)
-  metadata          Json?     // 追加情報（相対参照の方向、距離など）
-  
-  // 新規追加フィールド
-  detectionMethod   String    @default("forward") // forward（通常）, reverse（逆引き）, hybrid（ハイブリッド）
-  requiresLLMCheck  Boolean   @default(false)    // LLMチェックが必須かどうか
-  llmCheckResult    Json?     // LLMチェック結果（スコア、理由など）
-  llmCheckedAt      DateTime? // LLMチェック実施日時
-  isAmbiguous       Boolean   @default(false)    // 曖昧な参照かどうか
-  
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  
+  id               String    @id @default(uuid())
+  sourceVersionId  String
+  sourceLawId      String
+  sourceArticle    String
+  targetVersionId  String?
+  targetLawId      String?
+  targetArticle    String?
+  referenceType    String
+  referenceText    String
+  confidence       Float     @default(1.0)
+  metadata         Json?
+  detectionMethod  String    @default("forward")
+  requiresLLMCheck Boolean   @default(false)
+  llmCheckResult   Json?
+  llmCheckedAt     DateTime?
+  isAmbiguous      Boolean   @default(false)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
   @@index([sourceVersionId, sourceArticle])
   @@index([sourceLawId])
   @@index([targetVersionId, targetArticle])
@@ -127,18 +114,16 @@ model Reference {
   @@index([detectionMethod])
 }
 
-// バージョン間の改正関係を管理
 model AmendmentRelation {
-  id                String    @id @default(uuid())
-  originalVersionId String    // 改正前バージョン
-  amendedVersionId  String    // 改正後バージョン
-  amendmentLawId    String    // 改正法令ID
-  amendmentDate     DateTime  // 改正日
-  changeType        String    // 全部改正/一部改正/廃止
-  changeSummary     String?   // 改正概要
-  
-  createdAt         DateTime  @default(now())
-  
+  id                String   @id @default(uuid())
+  originalVersionId String
+  amendedVersionId  String
+  amendmentLawId    String
+  amendmentDate     DateTime
+  changeType        String
+  changeSummary     String?
+  createdAt         DateTime @default(now())
+
   @@index([originalVersionId])
   @@index([amendedVersionId])
   @@index([amendmentLawId])

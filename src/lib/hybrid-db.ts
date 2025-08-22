@@ -143,20 +143,15 @@ export class HybridDBClient {
       const result = await session.run(
         `
         MATCH (source:Article {lawId: $lawId, number: $articleNumber})
-        OPTIONAL MATCH (source)-[r:REFERS_TO|REFERS_TO_LAW|RELATIVE_REF|APPLIES]->(target)
+        OPTIONAL MATCH (source)-[r:REFERENCES]->(target)
         RETURN 
-          type(r) as relType,
+          r.type as relType,
           r.text as text,
           r.confidence as confidence,
           r.metadata as metadata,
           target.lawId as targetLawId,
           target.number as targetArticle
-        ORDER BY CASE 
-          WHEN type(r) = 'REFERS_TO' THEN 1
-          WHEN type(r) = 'RELATIVE_REF' THEN 2
-          WHEN type(r) = 'APPLIES' THEN 3
-          ELSE 4
-        END
+        ORDER BY r.confidence DESC
         `,
         { lawId, articleNumber }
       );
@@ -164,7 +159,7 @@ export class HybridDBClient {
       return result.records
         .filter(record => record.get('relType') !== null)
         .map(record => ({
-          type: this.mapRelationType(record.get('relType')),
+          type: record.get('relType'),
           text: record.get('text'),
           confidence: record.get('confidence') || 1.0,
           metadata: record.get('metadata'),
