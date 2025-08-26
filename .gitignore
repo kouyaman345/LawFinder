@@ -37,3 +37,4 @@ egov_html_cache
 *.old
 
 
+.venv

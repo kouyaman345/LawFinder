@@ -35,9 +35,9 @@ interface ParseResult {
 class EGovHTMLToNeo4jDirect {
   private htmlDir: string;
   private driver: any;
-  private concurrency: number = 2; // 並列度を削減してNeo4j負荷軽減
-  private batchSize: number = 50; // バッチサイズを縮小してメモリ効率化
-  private maxReferencesPerLaw: number = 1000; // 大量参照の閾値
+  private concurrency: number = 1; // 並列度を1に（安定性最優先）
+  private batchSize: number = 10; // バッチサイズを大幅縮小（安定性重視）
+  private maxReferencesPerLaw: number = 200; // 参照数制限を厳しく（エラー回避）
   private stats = {
     processed: 0,
     references: 0,
@@ -232,11 +232,15 @@ class EGovHTMLToNeo4jDirect {
   }
 
   /**
-   * 単一法令をNeo4jに投入
+   * 単一法令をNeo4jに投入（エラーハンドリング強化版）
    */
   private async importLawToNeo4j(lawId: string, htmlPath: string): Promise<void> {
     const session = this.driver.session();
-    try {
+    const maxRetries = 3;
+    let retries = 0;
+    
+    while (retries < maxRetries) {
+      try {
       // HTMLをパース
       const result = this.parseHTML(lawId, htmlPath);
       
@@ -362,12 +366,20 @@ class EGovHTMLToNeo4jDirect {
       this.stats.references += result.references.length;
       
       console.log(chalk.green(`✓ ${lawId}: ${result.references.length}件の参照を投入`));
+      break; // 成功したらループを抜ける
       
     } catch (error: any) {
-      this.stats.errors++;
-      console.error(chalk.red(`✗ ${lawId}: ${error.message}`));
+      retries++;
+      if (retries >= maxRetries) {
+        this.stats.errors++;
+        console.error(chalk.red(`✗ ${lawId}: ${error.message} (${maxRetries}回リトライ後失敗)`));
+      } else {
+        console.log(chalk.yellow(`⚠ ${lawId}: エラー発生、リトライ ${retries}/${maxRetries}`));
+        await new Promise(resolve => setTimeout(resolve, 2000)); // 2秒待機
+      }
     } finally {
       await session.close();
+    }
     }
   }
 
@@ -378,8 +390,9 @@ class EGovHTMLToNeo4jDirect {
     const session = this.driver.session();
     try {
       const result = await session.run(`
-        MATCH (l:Law {processed: true, source: 'egov'})
-        RETURN l.lawId as lawId
+        MATCH (l:Law)
+        WHERE l.source = 'egov'
+        RETURN DISTINCT l.lawId as lawId
       `);
       
       const processed = new Set<string>();
@@ -399,7 +412,7 @@ class EGovHTMLToNeo4jDirect {
   async importAll(options: { clean?: boolean; skipHeavy?: boolean } = {}): Promise<void> {
     // skipHeavyオプションが有効な場合は閾値を調整
     if (options.skipHeavy) {
-      this.maxReferencesPerLaw = 500; // より厳しい閾値
+      this.maxReferencesPerLaw = 150; // さらに厳しい閾値（安全重視）
     }
     
     console.log(chalk.cyan('\n' + '='.repeat(60)));
@@ -445,8 +458,9 @@ class EGovHTMLToNeo4jDirect {
     console.log(`  HTMLファイル総数: ${htmlFiles.length}件`);
     console.log(`  処理済み: ${processed.size}件`);
     console.log(`  処理対象: ${targetFiles.length}件`);
-    console.log(`  並列度: ${this.concurrency}`);
-    console.log(`  バッチサイズ: ${this.batchSize}法令/トランザクション\n`);
+    console.log(`  並列度: ${this.concurrency}（安定性優先）`);
+    console.log(`  バッチサイズ: ${this.batchSize}法令/トランザクション`);
+    console.log(`  参照数制限: ${this.maxReferencesPerLaw}件以上はスキップ\n`);
 
     if (targetFiles.length === 0) {
       console.log(chalk.green('✅ すべて処理済みです'));
