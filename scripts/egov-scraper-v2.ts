@@ -102,10 +102,10 @@ export class EGovScraperV2 {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
       });
 
-      // e-Gov法令ページにアクセス（新URL形式）
+      // e-Gov法令ページにアクセス（elaws.e-gov.go.jpを優先）
       const urls = [
-        `https://laws.e-gov.go.jp/law/${lawId}`,
-        `https://elaws.e-gov.go.jp/document?lawid=${lawId}`
+        `https://elaws.e-gov.go.jp/document?lawid=${lawId}`,
+        `https://laws.e-gov.go.jp/law/${lawId}`
       ];
 
       let loaded = false;
@@ -129,8 +129,8 @@ export class EGovScraperV2 {
         return references;
       }
 
-      // コンテンツの読み込みを待つ
-      await page.waitForSelector('.Article', { timeout: 5000 }).catch(() => {});
+      // コンテンツの読み込みを待つ（タイムアウトを短縮）
+      await page.waitForSelector('.Article, .tocitem', { timeout: 3000 }).catch(() => {});
 
       // 詳細な参照データを抽出
       const extractedData = await page.evaluate(() => {

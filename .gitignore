@@ -27,7 +27,13 @@ logs/
 Report/*.json
 Report/*.log
 Report/archive*
+
+egov_parsed_references
+egov_html_cache
+
 # Temporary files
 *.tmp
 *.bak
 *.old
+
+

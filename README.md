@@ -1,25 +1,27 @@
 # LawFinder - 日本法令検索・法改正支援システム
 
-LawFinderは、日本政府が公開する法令標準XMLデータを活用し、法令間の参照関係を自動抽出・管理することで、法改正時の影響分析を効率化するシステムです。
+LawFinder は、日本政府が公開する法令標準 XML データを活用し、法令間の参照関係を自動抽出・管理することで、法改正時の影響分析を効率化するシステムです。
 
 ## 🚀 特徴
 
 - **法令間の参照関係の可視化**: 複雑な法令間の相互参照を自動検出
-- **AI支援による高精度な参照解析**: ローカルLLMを活用した参照関係の解決
+- **AI 支援による高精度な参照解析**: ローカル LLM を活用した参照関係の解決
 - **改正影響（ハネ改正）の自動検出**: 法改正による影響範囲を自動分析
-- **段階的なアプローチ**: Phase 1で静的サイト、Phase 2で動的システムを構築
+- **段階的なアプローチ**: Phase 1 で静的サイト、Phase 2 で動的システムを構築
 
 ## 📋 要件
 
 ### Phase 1（現在実装中）
-- Node.js 18以上
+
+- Node.js 18 以上
 - npm または yarn
-- TypeScript 5.3以上
-- Ollama（オプション - LLM解析を使用する場合）
+- TypeScript 5.3 以上
+- Ollama（オプション - LLM 解析を使用する場合）
 
 ### Phase 2（計画中）
+
 - PostgreSQL、Neo4j、Elasticsearch、Redis
-- 認証システム、APIサーバー
+- 認証システム、API サーバー
 
 ## 🛠️ インストール
 
@@ -34,13 +36,15 @@ npm install
 
 ## 🏗️ アーキテクチャ
 
-### Phase 1の技術スタック
+### Phase 1 の技術スタック
+
 - **フロントエンド**: Next.js 15 + React 19 + TypeScript
 - **スタイリング**: Tailwind CSS
-- **静的サイト生成**: カスタムNode.jsスクリプト
-- **LLM統合**: Ollama (Mistral)
+- **静的サイト生成**: カスタム Node.js スクリプト
+- **LLM 統合**: Ollama (Mistral)
 
-### Phase 2で追加予定
+### Phase 2 で追加予定
+
 - **バックエンド**: Express.js + TypeScript
 - **データベース**: PostgreSQL (Prisma) + Neo4j
 - **検索エンジン**: Elasticsearch
@@ -94,19 +98,19 @@ LawFinder/
 
 ## 🔧 スクリプト
 
-| コマンド | 説明 |
-|---------|------|
-| `npm run build` | TypeScriptのコンパイル |
-| `npm run build:static` | 静的サイトの生成 |
-| `npm run serve` | 開発サーバーの起動 |
-| `npm run dev:static` | ビルド→静的サイト生成→サーバー起動 |
-| `npm run test` | テストの実行 |
-| `npm run lint` | ESLintによるコード検査 |
-| `npm run typecheck` | TypeScriptの型チェック |
+| コマンド               | 説明                                   |
+| ---------------------- | -------------------------------------- |
+| `npm run build`        | TypeScript のコンパイル                |
+| `npm run build:static` | 静的サイトの生成                       |
+| `npm run serve`        | 開発サーバーの起動                     |
+| `npm run dev:static`   | ビルド → 静的サイト生成 → サーバー起動 |
+| `npm run test`         | テストの実行                           |
+| `npm run lint`         | ESLint によるコード検査                |
+| `npm run typecheck`    | TypeScript の型チェック                |
 
 ## 📊 データ形式
 
-### 入力：政府標準法令XML
+### 入力：政府標準法令 XML
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -128,34 +132,6 @@ LawFinder/
 </Law>
 ```
 
-### 出力：静的HTML（Phase 1）
+### 出力：静的 HTML（Phase 1）
 
-各法令が個別のHTMLファイルとして生成され、条文間の参照が自動的にリンク化されます。
-
-## 🗺️ ロードマップ
-
-### Phase 1（完了）✅
-- [x] XMLパーサーの実装
-- [x] 参照関係抽出エンジン
-- [x] 静的サイト生成
-- [x] 基本的な参照リンク生成
-
-### Phase 2（計画中）
-- [ ] Express.js APIサーバー
-- [ ] PostgreSQL/Neo4j/Elasticsearchの統合
-- [ ] リアルタイム法令更新
-- [ ] 高度な影響分析機能
-- [ ] 管理画面の実装
-
-## 🤝 貢献
-
-プルリクエストを歓迎します。大きな変更の場合は、まずissueを作成して変更内容を議論してください。
-
-## 📄 ライセンス
-
-MIT License
-
-## 🙏 謝辞
-
-- 日本政府e-Gov法令データベース
-- Llama-3-ELYZA-JP-8Bモデル
+各法令が個別の HTML ファイルとして生成され、条文間の参照が自動的にリンク化されます。
