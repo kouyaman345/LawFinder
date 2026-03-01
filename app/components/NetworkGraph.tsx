@@ -104,8 +104,8 @@ export default function NetworkGraph({ lawId, onNodeClick, articleNumber, mode =
 
       const nodeCount = graphData.nodes.length;
       // Dynamically scale repulsion based on node count
-      const gravity = nodeCount > 60 ? -8000 : nodeCount > 30 ? -5000 : -3000;
-      const springLen = nodeCount > 60 ? 350 : nodeCount > 30 ? 280 : 220;
+      const gravity = nodeCount > 60 ? -4000 : nodeCount > 30 ? -2500 : -1500;
+      const springLen = nodeCount > 60 ? 200 : nodeCount > 30 ? 160 : 130;
 
       const options: any = {
         groups: {
