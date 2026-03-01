@@ -23,31 +23,31 @@ function buildStructure(articles: any[]) {
     chapters: [] as any[],  // 章
     sections: [] as any[]   // 節
   };
-  
+
   // 区分・編・章・節の情報を収集
   const divisionsMap = new Map<string, { parts: Set<string>; chapters: Set<string>; articles: Set<string> }>();
   const partsMap = new Map<string, { chapters: Set<string>; articles: Set<string> }>();
   const chaptersMap = new Map<string, { sections: Set<string>; articles: Set<string> }>();
   const sectionsMap = new Map<string, Set<string>>();
-  
+
   articles.forEach(article => {
     const division = article.division || '本則';
     const part = article.part;
     const chapter = article.chapter;
     const section = article.section;
-    
+
     // 区分（本則/附則）レベル
     if (!divisionsMap.has(division)) {
       divisionsMap.set(division, { parts: new Set(), chapters: new Set(), articles: new Set() });
     }
-    
+
     // 編レベル
     if (part) {
       divisionsMap.get(division)!.parts.add(part);
       if (!partsMap.has(part)) {
         partsMap.set(part, { chapters: new Set(), articles: new Set() });
       }
-      
+
       if (chapter) {
         partsMap.get(part)!.chapters.add(chapter);
       } else {
@@ -58,13 +58,13 @@ function buildStructure(articles: any[]) {
     } else {
       divisionsMap.get(division)!.articles.add(article.articleNumber);
     }
-    
+
     // 章レベル
     if (chapter) {
       if (!chaptersMap.has(chapter)) {
         chaptersMap.set(chapter, { sections: new Set(), articles: new Set() });
       }
-      
+
       if (section) {
         chaptersMap.get(chapter)!.sections.add(section);
         if (!sectionsMap.has(section)) {
@@ -76,10 +76,10 @@ function buildStructure(articles: any[]) {
       }
     }
   });
-  
+
   // 区分データを構築（本則を先、附則を後に）
   let divNum = 1;
-  
+
   // まず本則を追加
   if (divisionsMap.has('本則')) {
     const data = divisionsMap.get('本則')!;
@@ -92,7 +92,7 @@ function buildStructure(articles: any[]) {
     });
     divNum++;
   }
-  
+
   // 次に附則を追加（複数の附則がある可能性）
   divisionsMap.forEach((data, divisionTitle) => {
     if (divisionTitle !== '本則') {
@@ -106,7 +106,7 @@ function buildStructure(articles: any[]) {
       divNum++;
     }
   });
-  
+
   // 編データを構築
   let partNum = 1;
   partsMap.forEach((data, partTitle) => {
@@ -118,7 +118,7 @@ function buildStructure(articles: any[]) {
     });
     partNum++;
   });
-  
+
   // 章データを構築
   let chapterNum = 1;
   chaptersMap.forEach((data, chapterTitle) => {
@@ -133,7 +133,7 @@ function buildStructure(articles: any[]) {
         sNum++;
       }
     });
-    
+
     structure.chapters.push({
       num: String(chapterNum),
       title: chapterTitle,
@@ -142,7 +142,7 @@ function buildStructure(articles: any[]) {
     });
     chapterNum++;
   });
-  
+
   // 節データを構築
   let sectionNum = 1;
   sectionsMap.forEach((articleNums, sectionTitle) => {
@@ -153,7 +153,7 @@ function buildStructure(articles: any[]) {
     });
     sectionNum++;
   });
-  
+
   return structure;
 }
 
@@ -168,20 +168,20 @@ export async function generateMetadata(props: { params: Promise<{ id: string }> 
       where: { id: params.id },
       select: { title: true }
     });
-    
+
     if (!law) {
       return {
-        title: '法令が見つかりません | LawFinder'
+        title: '法令が見つかりません | たこつぼ'
       };
     }
-    
+
     return {
-      title: `${law.title} | LawFinder`,
+      title: `${law.title} | たこつぼ`,
       description: `${law.title}の条文と参照関係を表示`
     };
   } catch {
     return {
-      title: '法令が見つかりません | LawFinder'
+      title: '法令が見つかりません | たこつぼ'
     };
   }
 }
@@ -189,10 +189,8 @@ export async function generateMetadata(props: { params: Promise<{ id: string }> 
 export default async function LawDetailPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   const lawId = params.id;
-  
+
   try {
-    // データベースから法令を取得（XMLも含む）
-    // LawMasterとLawVersionの新スキーマに対応
     const lawMaster = await prisma.lawMaster.findUnique({
       where: { id: lawId },
       include: {
@@ -212,11 +210,11 @@ export default async function LawDetailPage(props: { params: Promise<{ id: strin
         }
       }
     });
-    
+
     if (!lawMaster || !lawMaster.currentVersion) {
       throw new Error(`Law ${lawId} not found or has no current version`);
     }
-    
+
     const law = {
       ...lawMaster,
       ...lawMaster.currentVersion,
@@ -224,29 +222,29 @@ export default async function LawDetailPage(props: { params: Promise<{ id: strin
       lawNumber: lawMaster.lawNumber,
       articles: lawMaster.currentVersion.articles
     };
-    
+
     if (!law) {
       throw new Error('Law not found');
     }
-    
+
     // データ形式を変換 - 章節構造を構築
     const structure = buildStructure(law.articles);
-    
+
     // 制定文を抽出
     const enactStatements = extractEnactStatements(law.xmlContent);
-    
+
     const lawData = {
       lawId: law.id,
       lawTitle: law.title,
       lawNum: law.lawNumber || '',
       lawType: law.lawType || 'Act',
       promulgateDate: law.promulgationDate || new Date(),
-      enactStatements, // 制定文を追加
+      enactStatements,
       structure,
       articles: law.articles.map(article => ({
         articleNum: article.articleNumber,
         articleTitle: article.articleTitle,
-        isDeleted: article.isDeleted,  // 削除フラグを追加
+        isDeleted: article.isDeleted,
         paragraphs: article.paragraphs.map(para => ({
           content: para.content,
           items: para.items.map(item => ({
@@ -256,17 +254,15 @@ export default async function LawDetailPage(props: { params: Promise<{ id: strin
         }))
       }))
     };
-    
+
     // Neo4jから参照情報を取得（ハイブリッドDB経由）
-    console.log(`🔍 Neo4jから${lawId}の参照データを取得中...`);
+    console.log(`Neo4jから${lawId}の参照データを取得中...`);
     const allReferences: any[] = [];
-    
-    // 各条文の参照を取得
+
     for (const article of law.articles) {
       try {
         const refs = await hybridDB.getArticleReferences(lawId, article.articleNumber);
-        
-        // 参照データを変換
+
         for (const ref of refs) {
           allReferences.push({
             sourceArticle: article.articleNumber,
@@ -279,12 +275,12 @@ export default async function LawDetailPage(props: { params: Promise<{ id: strin
           });
         }
       } catch (error) {
-        console.warn(`⚠️ 条文${article.articleNumber}の参照取得エラー:`, error);
+        console.warn(`条文${article.articleNumber}の参照取得エラー:`, error);
       }
     }
-    
-    console.log(`✅ Neo4jから${allReferences.length}件の参照を取得しました`);
-    
+
+    console.log(`Neo4jから${allReferences.length}件の参照を取得しました`);
+
     return (
       <LawDetailClient
         lawData={lawData}
@@ -309,10 +305,10 @@ export default async function LawDetailPage(props: { params: Promise<{ id: strin
             </p>
           )}
           <Link
-            href="/laws"
+            href="/"
             className="text-blue-600 hover:text-blue-800 underline"
           >
-            法令一覧に戻る
+            ホームに戻る
           </Link>
         </div>
       </div>

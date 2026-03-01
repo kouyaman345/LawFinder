@@ -32,11 +32,9 @@ export function LawDetailClient({ lawData, allReferences, lawId }: LawDetailClie
       {/* ヘッダー */}
       <div className="gov-header">
         <div className="header-container">
-          <h1 className="site-title">LawFinder 法令検索</h1>
+          <h1 className="site-title">たこつぼ</h1>
           <nav className="header-nav">
             <Link href="/">ホーム</Link>
-            <Link href="/laws">法令検索</Link>
-            <Link href="#">新規制定・改正法令</Link>
           </nav>
         </div>
       </div>
@@ -46,11 +44,9 @@ export function LawDetailClient({ lawData, allReferences, lawId }: LawDetailClie
         <div className="breadcrumb">
           <Link href="/">ホーム</Link>
           <span> &gt; </span>
-          <Link href="/laws">法令一覧</Link>
-          <span> &gt; </span>
           <span>{lawData.lawTitle}</span>
         </div>
-        
+
         {/* 第一項番号表示オプション */}
         <div className="paragraph-number-option">
           <label className="option-label">

@@ -21,8 +21,8 @@ interface NetworkGraphProps {
   mode?: 'law' | 'article';
 }
 
-const STEP = 50;
-const MAX_LIMIT = 200;
+const STEP = 30;
+const MAX_LIMIT = 100;
 
 export default function NetworkGraph({ lawId, onNodeClick, articleNumber, mode = 'law' }: NetworkGraphProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -30,6 +30,9 @@ export default function NetworkGraph({ lawId, onNodeClick, articleNumber, mode =
   const [graphData, setGraphData] = useState<GraphData | null>(null);
   const [limit, setLimit] = useState(STEP);
   const [loading, setLoading] = useState(false);
+  const [stabilizing, setStabilizing] = useState(false);
+  const [stabilizationProgress, setStabilizationProgress] = useState(0);
+  const [physicsEnabled, setPhysicsEnabled] = useState(true);
 
   const fetchGraph = useCallback(async (lim: number) => {
     setLoading(true);
@@ -82,7 +85,7 @@ export default function NetworkGraph({ lawId, onNodeClick, articleNumber, mode =
       }
 
       const truncate = (s: string, max: number) =>
-        s.length > max ? s.slice(0, max) + '…' : s;
+        s.length > max ? s.slice(0, max) + '...' : s;
 
       const visNodes = new DataSet(
         graphData.nodes.map(n => ({
@@ -103,9 +106,13 @@ export default function NetworkGraph({ lawId, onNodeClick, articleNumber, mode =
       );
 
       const nodeCount = graphData.nodes.length;
-      // Dynamically scale repulsion based on node count
-      const gravity = nodeCount > 60 ? -4000 : nodeCount > 30 ? -2500 : -1500;
-      const springLen = nodeCount > 60 ? 200 : nodeCount > 30 ? 160 : 130;
+
+      // Adaptive physics parameters based on node count
+      const gravity = nodeCount > 80 ? -5000 : nodeCount > 40 ? -3000 : -1500;
+      const springLen = nodeCount > 80 ? 250 : nodeCount > 40 ? 180 : 130;
+      const damping = nodeCount > 80 ? 0.5 : nodeCount > 40 ? 0.3 : 0.09;
+      const stabilizationIter = nodeCount > 80 ? 150 : nodeCount > 40 ? 200 : 300;
+      const minVel = nodeCount > 80 ? 3.0 : nodeCount > 40 ? 1.5 : 0.75;
 
       const options: any = {
         groups: {
@@ -144,11 +151,12 @@ export default function NetworkGraph({ lawId, onNodeClick, articleNumber, mode =
             centralGravity: 0.3,
             springLength: springLen,
             springConstant: 0.02,
-            damping: 0.09,
+            damping: damping,
             avoidOverlap: 1,
           },
-          stabilization: { iterations: 300, fit: true },
-          minVelocity: 0.75,
+          stabilization: { iterations: stabilizationIter, fit: true },
+          minVelocity: minVel,
+          maxVelocity: 30,
         },
         interaction: {
           hover: true,
@@ -165,10 +173,26 @@ export default function NetworkGraph({ lawId, onNodeClick, articleNumber, mode =
         options
       );
 
+      // Track stabilization progress
+      setStabilizing(true);
+      setStabilizationProgress(0);
+      setPhysicsEnabled(true);
+
+      network.on('stabilizationProgress', (params: any) => {
+        setStabilizationProgress(Math.round((params.iterations / params.total) * 100));
+      });
+
+      network.on('stabilizationIterationsDone', () => {
+        setStabilizing(false);
+        setStabilizationProgress(100);
+        // Disable physics after stabilization to prevent endless movement
+        network.setOptions({ physics: { enabled: false } });
+        setPhysicsEnabled(false);
+      });
+
       network.on('click', (params: any) => {
         if (params.nodes.length > 0) {
           const clickedId = params.nodes[0] as string;
-          // Extract lawId from node ID (could be "lawId" or "lawId#articleNumber")
           const extractedLawId = clickedId.includes('#') ? clickedId.split('#')[0] : clickedId;
           if (extractedLawId !== lawId) {
             onNodeClick(extractedLawId);
@@ -200,12 +224,31 @@ export default function NetworkGraph({ lawId, onNodeClick, articleNumber, mode =
 
   return (
     <div>
-      {/* Graph container */}
-      <div
-        ref={containerRef}
-        className="w-full bg-gray-50 border border-gray-200 rounded-lg"
-        style={{ height: 500 }}
-      />
+      {/* Graph container with stabilization overlay */}
+      <div className="relative">
+        <div
+          ref={containerRef}
+          className="w-full bg-gray-50 border border-gray-200 rounded-lg"
+          style={{ height: 500 }}
+        />
+
+        {/* Stabilization progress overlay */}
+        {stabilizing && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white/70 rounded-lg z-10">
+            <div className="text-center">
+              <div className="text-sm text-gray-600 mb-2">
+                安定化中... {stabilizationProgress}%
+              </div>
+              <div className="w-48 bg-gray-200 rounded-full h-2">
+                <div
+                  className="bg-blue-600 h-2 rounded-full transition-all"
+                  style={{ width: `${stabilizationProgress}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Legend bar */}
       {graphData && (
@@ -229,6 +272,24 @@ export default function NetworkGraph({ lawId, onNodeClick, articleNumber, mode =
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Physics toggle button */}
+            <button
+              onClick={() => {
+                if (networkRef.current) {
+                  const newState = !physicsEnabled;
+                  networkRef.current.setOptions({ physics: { enabled: newState } });
+                  setPhysicsEnabled(newState);
+                }
+              }}
+              className={`px-2 py-1 rounded text-xs ${
+                physicsEnabled
+                  ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+              }`}
+            >
+              {physicsEnabled ? '物理停止' : '物理開始'}
+            </button>
+
             <span className="text-gray-500">
               {shownConnections}/{totalConnections}件表示
             </span>

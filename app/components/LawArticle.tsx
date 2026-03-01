@@ -38,12 +38,17 @@ interface LawArticleProps {
   showFirstParagraphNumber?: boolean;
 }
 
+// 条文番号のフォーマット: "6_2" → "6の2", "6_2_3" → "6の2の3"
+function formatArticleNumber(num: string): string {
+  return num.replace(/_/g, 'の');
+}
+
 export function LawArticle({ article, references, currentLawId, showFirstParagraphNumber = false }: LawArticleProps) {
   const applyReferenceLinks = (text: string, refs: Reference[]) => {
     if (!refs || refs.length === 0) {
       return text;
     }
-    
+
     // 参照を位置情報付きで準備
     const refsWithPos = refs.map(ref => {
       const index = text.indexOf(ref.text);
@@ -53,7 +58,7 @@ export function LawArticle({ article, references, currentLawId, showFirstParagra
         endPos: index >= 0 ? index + ref.text.length : -1
       };
     }).filter(r => r.startPos >= 0);
-    
+
     // 重複を除去（より長い参照を優先）
     const nonOverlappingRefs: typeof refsWithPos = [];
     for (const ref of refsWithPos) {
@@ -75,20 +80,20 @@ export function LawArticle({ article, references, currentLawId, showFirstParagra
         nonOverlappingRefs.push(ref);
       }
     }
-    
+
     // 位置でソート
     nonOverlappingRefs.sort((a, b) => a.startPos - b.startPos);
-    
+
     // React要素として返すため、分割して処理
     const elements: React.ReactNode[] = [];
     let lastIndex = 0;
-    
+
     for (const ref of nonOverlappingRefs) {
       // 参照前のテキスト
       if (ref.startPos > lastIndex) {
         elements.push(text.substring(lastIndex, ref.startPos));
       }
-      
+
       // 参照リンク
       if (ref.type === 'external' && ref.targetLawId && ref.targetArticle) {
         elements.push(
@@ -144,49 +149,53 @@ export function LawArticle({ article, references, currentLawId, showFirstParagra
           </span>
         );
       }
-      
+
       lastIndex = ref.endPos;
     }
-    
+
     // 残りのテキスト
     if (lastIndex < text.length) {
       elements.push(text.substring(lastIndex));
     }
-    
+
     return elements;
   };
-  
+
   // この条文に関連する参照を抽出
-  const articleRefs = references.filter(r => 
+  const articleRefs = references.filter(r =>
     String(r.sourceArticle) === String(article.articleNum)
   );
-  
+
   // 削除条文の場合は簡略表示
   if (article.isDeleted) {
     return (
       <article className="law-article deleted-article" id={`art${article.articleNum}`}>
         <div className="article-number" style={{ color: '#666', fontStyle: 'italic' }}>
-          第{article.articleNum}条　削除
+          第{formatArticleNumber(article.articleNum)}条　削除
         </div>
       </article>
     );
   }
-  
+
   return (
     <article className="law-article" id={`art${article.articleNum}`}>
       <div className="article-number">
-        第{article.articleNum}条
+        第{formatArticleNumber(article.articleNum)}条
         {article.articleTitle && !article.articleTitle.startsWith('第') && (
           <span className="article-title">　{article.articleTitle}</span>
         )}
       </div>
-      
+
       <div className="article-content">
-        {article.paragraphs.map((para, idx) => {
+        {article.paragraphs.length === 0 || article.paragraphs.every(p => !p.content && p.items.length === 0) ? (
+          <div className="text-gray-400 text-sm italic py-2">
+            （条文テキストは取得されていません）
+          </div>
+        ) : article.paragraphs.map((para, idx) => {
           // 項が複数ある場合のみ番号付けを考慮
           const hasMutipleParagraphs = article.paragraphs.length > 1;
           const paragraphNum = hasMutipleParagraphs ? idx + 1 : 0;
-          
+
           // 項番号表示の判定
           let shouldShowNumber = false;
           if (hasMutipleParagraphs) {
@@ -198,11 +207,11 @@ export function LawArticle({ article, references, currentLawId, showFirstParagra
               shouldShowNumber = paragraphNum > 1;
             }
           }
-          
-          const paragraphRefs = articleRefs.filter(r => 
+
+          const paragraphRefs = articleRefs.filter(r =>
             para.content && para.content.includes(r.text)
           );
-          
+
           return (
             <div key={idx} className="article-paragraph">
               {shouldShowNumber && (
@@ -211,26 +220,26 @@ export function LawArticle({ article, references, currentLawId, showFirstParagra
               <span>
                 {applyReferenceLinks(para.content, paragraphRefs)}
               </span>
-              
+
               {para.items.length > 0 && (
                 <div className="article-items">
                   {para.items.map((item, itemIdx) => {
-                    const itemRefs = articleRefs.filter(r => 
+                    const itemRefs = articleRefs.filter(r =>
                       item.content && item.content.includes(r.text)
                     );
-                    
+
                     return (
                       <div key={itemIdx} className="article-item">
                         <span className="item-number">{item.title}</span>
                         <span>{applyReferenceLinks(item.content, itemRefs)}</span>
-                        
+
                         {item.subitems && item.subitems.length > 0 && (
                           <div className="subitems">
                             {item.subitems.map((subitem, subIdx) => {
-                              const subitemRefs = articleRefs.filter(r => 
+                              const subitemRefs = articleRefs.filter(r =>
                                 subitem.content && subitem.content.includes(r.text)
                               );
-                              
+
                               return (
                                 <div key={subIdx} className="subitem">
                                   <span className="subitem-number">{subitem.title}</span>
