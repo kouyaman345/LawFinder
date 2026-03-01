@@ -42,7 +42,7 @@ LawFinder は、政府が公開する法的標準 XML ファイルを処理す�
 
 # 開発ガイドライン
 
-- Python を使う時には必ず venv を使用してください
+- Python を使う時には必ず .venv を使用してください
 - レポートを生成する際は、`Report/` ディレクトリ内に `yyyymmddhhmm_reportname.md` の形式で作成してください
 - .gitignore も適宜追加更新すること
 - 実装に着手する前に、必ず `docs/` 配下の要件定義・仕様書（.md）や `CLAUDE.md` を最新化し、それに基づいてタスクを進めてください

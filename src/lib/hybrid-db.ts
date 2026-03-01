@@ -10,7 +10,7 @@ import { cache } from 'react';
 // 環境変数から設定を取得
 const NEO4J_URI = process.env.NEO4J_URI || 'bolt://localhost:7687';
 const NEO4J_USER = process.env.NEO4J_USER || 'neo4j';
-const NEO4J_PASSWORD = process.env.NEO4J_PASSWORD || 'password';
+const NEO4J_PASSWORD = process.env.NEO4J_PASSWORD || 'lawfinder123';
 
 /**
  * ハイブリッドDBクライアント
@@ -138,19 +138,21 @@ export class HybridDBClient {
    */
   async getArticleReferences(lawId: string, articleNumber: string) {
     const session = this.getNeo4jSession();
-    
+
     try {
       const result = await session.run(
         `
-        MATCH (source:Article {lawId: $lawId, number: $articleNumber})
+        MATCH (source:Article {lawId: $lawId, articleNumber: $articleNumber})
         OPTIONAL MATCH (source)-[r:REFERENCES]->(target)
-        RETURN 
+        WHERE target.lawId <> $lawId
+        RETURN
           r.type as relType,
           r.text as text,
           r.confidence as confidence,
           r.metadata as metadata,
           target.lawId as targetLawId,
-          target.number as targetArticle
+          target.articleNumber as targetArticle,
+          CASE WHEN target:Law THEN target.title ELSE null END as targetTitle
         ORDER BY r.confidence DESC
         `,
         { lawId, articleNumber }
@@ -159,47 +161,38 @@ export class HybridDBClient {
       return result.records
         .filter(record => record.get('relType') !== null)
         .map(record => ({
-          type: record.get('relType'),
+          type: record.get('relType') || 'external',
           text: record.get('text'),
-          confidence: record.get('confidence') || 1.0,
+          confidence: record.get('confidence')?.toNumber?.() ?? record.get('confidence') ?? 1.0,
           metadata: record.get('metadata'),
           targetLawId: record.get('targetLawId'),
-          targetArticle: record.get('targetArticle')
+          targetArticle: record.get('targetArticle'),
+          targetTitle: record.get('targetTitle')
         }));
     } finally {
       await session.close();
     }
   }
   
-  /**
-   * Neo4jのリレーションタイプをアプリケーションの参照タイプにマッピング
-   */
-  private mapRelationType(relType: string): string {
-    const mapping: { [key: string]: string } = {
-      'REFERS_TO': 'internal',
-      'REFERS_TO_LAW': 'external',
-      'RELATIVE_REF': 'relative',
-      'APPLIES': 'application'
-    };
-    return mapping[relType] || relType.toLowerCase();
-  }
 
   /**
    * ハネ改正影響分析（Neo4j）
    */
   async analyzeAmendmentImpact(lawId: string, articleNumber: string, depth: number = 3) {
     const session = this.getNeo4jSession();
-    
+    const safeDepth = Math.min(Math.max(depth, 1), 5);
+
     try {
       const result = await session.run(
         `
-        MATCH path = (source:Article {lawId: $lawId, number: $articleNumber})
-          <-[:REFERS_TO|REFERS_TO_LAW|APPLIES|RELATIVE_REF*1..${depth}]-(affected:Article)
+        MATCH path = (source:Article {lawId: $lawId, articleNumber: $articleNumber})
+          <-[:REFERENCES*1..${safeDepth}]-(affected)
+        WHERE affected.lawId <> $lawId
         WITH affected, path, length(path) as distance
-        RETURN DISTINCT 
+        RETURN DISTINCT
           affected.lawId as lawId,
-          affected.number as articleNumber,
-          affected.title as articleTitle,
+          affected.articleNumber as articleNumber,
+          labels(affected)[0] as nodeType,
           min(distance) as impactLevel,
           count(distinct path) as pathCount
         ORDER BY impactLevel, pathCount DESC
@@ -211,7 +204,7 @@ export class HybridDBClient {
       return result.records.map(record => ({
         lawId: record.get('lawId'),
         articleNumber: record.get('articleNumber'),
-        articleTitle: record.get('articleTitle'),
+        nodeType: record.get('nodeType'),
         impactLevel: record.get('impactLevel').toNumber(),
         pathCount: record.get('pathCount').toNumber(),
       }));
@@ -225,56 +218,58 @@ export class HybridDBClient {
    */
   async getReferenceGraph(lawId: string, maxNodes: number = 50) {
     const session = this.getNeo4jSession();
-    
+
     try {
       const result = await session.run(
         `
-        MATCH (l:Law {id: $lawId})-[:HAS_ARTICLE]->(a:Article)
-        WITH a
-        LIMIT ${maxNodes}
-        OPTIONAL MATCH (a)-[r:REFERS_TO|REFERS_TO_LAW|APPLIES|RELATIVE_REF]-(related)
+        MATCH (a:Article {lawId: $lawId})
+        WITH a LIMIT $maxNodes
+        OPTIONAL MATCH (a)-[r:REFERENCES]-(related)
+        WHERE related.lawId <> $lawId
         RETURN a, r, related
         `,
-        { lawId }
+        { lawId, maxNodes: neo4j.int(maxNodes) }
       );
 
       const nodes = new Map();
-      const edges = [];
+      const edges: any[] = [];
 
       result.records.forEach(record => {
         const source = record.get('a');
         const relationship = record.get('r');
         const target = record.get('related');
 
-        // ソースノードを追加
         if (source) {
-          const nodeId = source.properties.id;
+          const nodeId = `${source.properties.lawId}#${source.properties.articleNumber}`;
           if (!nodes.has(nodeId)) {
             nodes.set(nodeId, {
               id: nodeId,
-              label: `第${source.properties.number}条`,
+              label: `第${source.properties.articleNumber}条`,
               type: 'article',
               properties: source.properties
             });
           }
         }
 
-        // ターゲットノードとエッジを追加
         if (target && relationship) {
-          const targetId = target.properties.id;
+          const isLaw = target.labels.includes('Law');
+          const targetId = isLaw
+            ? target.properties.lawId
+            : `${target.properties.lawId}#${target.properties.articleNumber}`;
           if (!nodes.has(targetId)) {
             nodes.set(targetId, {
               id: targetId,
-              label: target.labels[0] === 'Law' 
-                ? target.properties.title 
-                : `第${target.properties.number}条`,
-              type: target.labels[0].toLowerCase(),
+              label: isLaw
+                ? target.properties.title
+                : `第${target.properties.articleNumber}条`,
+              type: isLaw ? 'law' : 'article',
               properties: target.properties
             });
           }
 
+          const sourceId = `${source.properties.lawId}#${source.properties.articleNumber}`;
           edges.push({
-            source: source.properties.id,
+            source: sourceId,
             target: targetId,
             type: relationship.type,
             properties: relationship.properties
@@ -286,6 +281,40 @@ export class HybridDBClient {
         nodes: Array.from(nodes.values()),
         edges
       };
+    } finally {
+      await session.close();
+    }
+  }
+
+  /**
+   * 法令の条文一覧を参照数付きで取得（Neo4j）
+   */
+  async getArticlesWithReferences(lawId: string) {
+    const session = this.getNeo4jSession();
+
+    try {
+      const result = await session.run(
+        `
+        MATCH (a:Article {lawId: $lawId})
+        OPTIONAL MATCH (a)-[outR:REFERENCES]->()
+        WITH a, count(outR) AS outRefs
+        OPTIONAL MATCH (a)<-[inR:REFERENCES]-()
+        WITH a, outRefs, count(inR) AS inRefs
+        WHERE outRefs + inRefs > 0
+        RETURN a.articleNumber AS articleNumber,
+               outRefs, inRefs,
+               outRefs + inRefs AS totalRefs
+        ORDER BY totalRefs DESC
+        `,
+        { lawId }
+      );
+
+      return result.records.map(record => ({
+        articleNumber: record.get('articleNumber'),
+        outgoing: record.get('outRefs').toNumber(),
+        incoming: record.get('inRefs').toNumber(),
+        total: record.get('totalRefs').toNumber(),
+      }));
     } finally {
       await session.close();
     }
@@ -304,17 +333,16 @@ export class HybridDBClient {
     try {
       const refResult = await session.run(
         `
-        MATCH ()-[r]->()
-        WHERE type(r) IN ['REFERS_TO', 'REFERS_TO_LAW', 'APPLIES', 'RELATIVE_REF']
+        MATCH ()-[r:REFERENCES]->()
         RETURN count(r) as referenceCount
         `
       );
-      
+
       const topReferencedResult = await session.run(
         `
-        MATCH (a:Article)<-[r]-()
+        MATCH (a:Article)<-[r:REFERENCES]-()
         WITH a, count(r) as refCount
-        RETURN a.lawId as lawId, a.number as articleNumber, refCount
+        RETURN a.lawId as lawId, a.articleNumber as articleNumber, refCount
         ORDER BY refCount DESC
         LIMIT 10
         `

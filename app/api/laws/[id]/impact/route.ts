@@ -1,89 +1,120 @@
 import { NextRequest, NextResponse } from 'next/server';
-import HybridDBClient from '../../../../../src/lib/hybrid-db';
+import neo4j, { Driver } from 'neo4j-driver';
+
+let driver: Driver | null = null;
+
+function getDriver(): Driver {
+  if (!driver) {
+    driver = neo4j.driver(
+      process.env.NEO4J_URI || 'bolt://localhost:7687',
+      neo4j.auth.basic(
+        process.env.NEO4J_USER || 'neo4j',
+        process.env.NEO4J_PASSWORD || 'lawfinder123'
+      )
+    );
+  }
+  return driver;
+}
 
 /**
  * ハネ改正影響分析API
- * GET /api/laws/[id]/impact?article=XXX&depth=3
+ * GET /api/laws/[id]/impact?article=XXX&depth=2
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { id: lawId } = await context.params;
+
   try {
     const { searchParams } = new URL(request.url);
     const articleNumber = searchParams.get('article');
-    const depth = parseInt(searchParams.get('depth') || '3');
+    const depth = Math.min(Math.max(parseInt(searchParams.get('depth') || '2'), 1), 5);
 
     if (!articleNumber) {
       return NextResponse.json(
-        { error: '条番号を指定してください' },
+        { error: '条番号を指定してください (article parameter required)' },
         { status: 400 }
       );
     }
 
-    if (depth < 1 || depth > 5) {
-      return NextResponse.json(
-        { error: '探索深度は1から5の間で指定してください' },
-        { status: 400 }
+    const session = getDriver().session({ defaultAccessMode: neo4j.session.READ });
+
+    try {
+      // Run impact analysis directly with correct schema
+      const result = await session.run(
+        `
+        MATCH path = (source:Article {lawId: $lawId, articleNumber: $articleNumber})
+          <-[:REFERENCES*1..${depth}]-(affected)
+        WHERE affected.lawId <> $lawId
+        WITH affected, path, length(path) as distance
+        RETURN DISTINCT
+          affected.lawId as lawId,
+          affected.articleNumber as articleNumber,
+          labels(affected)[0] as nodeType,
+          min(distance) as impactLevel,
+          count(distinct path) as pathCount
+        ORDER BY impactLevel, pathCount DESC
+        LIMIT 100
+        `,
+        { lawId, articleNumber }
       );
-    }
 
-    const client = HybridDBClient.getInstance();
-    
-    // ハネ改正影響分析の実行
-    const impacts = await client.analyzeAmendmentImpact(
-      params.id,
-      articleNumber,
-      depth
-    );
+      const impacts = result.records.map(record => ({
+        lawId: record.get('lawId') as string,
+        articleNumber: record.get('articleNumber') as string | null,
+        nodeType: record.get('nodeType') as string,
+        impactLevel: record.get('impactLevel').toNumber(),
+        pathCount: record.get('pathCount').toNumber(),
+      }));
 
-    // 影響を受ける法令の詳細情報を取得
-    const prisma = client.getPrisma();
-    const affectedLawIds = [...new Set(impacts.map(i => i.lawId))];
-    const laws = await prisma.law.findMany({
-      where: { id: { in: affectedLawIds } },
-      select: {
-        id: true,
-        title: true,
-        lawType: true,
-        status: true
+      // Get law titles from Neo4j (faster than PostgreSQL for this)
+      const affectedLawIds = [...new Set(impacts.map(i => i.lawId))];
+
+      let titleMap = new Map<string, string>();
+      if (affectedLawIds.length > 0) {
+        const titleResult = await session.run(`
+          UNWIND $ids AS lid
+          MATCH (l:Law {lawId: lid})
+          RETURN l.lawId AS lawId, l.title AS title
+        `, { ids: affectedLawIds });
+
+        for (const rec of titleResult.records) {
+          titleMap.set(rec.get('lawId') as string, (rec.get('title') as string) || '');
+        }
       }
-    });
 
-    const lawMap = new Map(laws.map(l => [l.id, l]));
+      // Score and enrich impacts
+      const scored = impacts.map(impact => {
+        const impactScore = calculateImpactScore(impact.impactLevel, impact.pathCount);
+        return {
+          ...impact,
+          lawTitle: titleMap.get(impact.lawId) || impact.lawId,
+          impactScore,
+        };
+      });
 
-    // 結果を整形
-    const result = {
-      sourceLawId: params.id,
-      sourceArticle: articleNumber,
-      analysisDepth: depth,
-      totalImpacted: impacts.length,
-      impactedLaws: affectedLawIds.length,
-      impacts: impacts.map(impact => ({
-        ...impact,
-        lawTitle: lawMap.get(impact.lawId)?.title || '不明',
-        lawType: lawMap.get(impact.lawId)?.lawType || '',
-        impactScore: calculateImpactScore(impact.impactLevel, impact.pathCount)
-      }))
-    };
+      // Group by severity
+      const high = scored.filter(i => i.impactScore >= 0.7);
+      const medium = scored.filter(i => i.impactScore >= 0.4 && i.impactScore < 0.7);
+      const low = scored.filter(i => i.impactScore < 0.4);
 
-    // 影響度でグループ化
-    const impactGroups = {
-      high: result.impacts.filter(i => i.impactScore >= 0.7),
-      medium: result.impacts.filter(i => i.impactScore >= 0.4 && i.impactScore < 0.7),
-      low: result.impacts.filter(i => i.impactScore < 0.4)
-    };
-
-    return NextResponse.json({
-      ...result,
-      summary: {
-        highImpact: impactGroups.high.length,
-        mediumImpact: impactGroups.medium.length,
-        lowImpact: impactGroups.low.length
-      },
-      impactGroups
-    });
-
+      return NextResponse.json({
+        sourceLawId: lawId,
+        sourceArticle: articleNumber,
+        analysisDepth: depth,
+        totalImpacted: impacts.length,
+        impactedLaws: affectedLawIds.length,
+        summary: {
+          highImpact: high.length,
+          mediumImpact: medium.length,
+          lowImpact: low.length,
+        },
+        impactGroups: { high, medium, low },
+      });
+    } finally {
+      await session.close();
+    }
   } catch (error) {
     console.error('影響分析エラー:', error);
     return NextResponse.json(
@@ -95,14 +126,11 @@ export async function GET(
 
 /**
  * 影響度スコアの計算
+ * impactScore = 1 / impactLevel * log(pathCount + 1)
+ * Normalized to 0-1 range
  */
 function calculateImpactScore(impactLevel: number, pathCount: number): number {
-  // 距離による減衰（近いほど影響大）
-  const distanceScore = 1 / (impactLevel * 0.5);
-  
-  // 経路数による重み（多いほど影響大）
-  const pathScore = Math.min(pathCount / 10, 1);
-  
-  // 総合スコア（0-1の範囲）
-  return Math.min((distanceScore * 0.7 + pathScore * 0.3), 1);
+  const raw = (1 / impactLevel) * Math.log(pathCount + 1);
+  // Normalize: log(101) ≈ 4.6, so max raw ≈ 4.6 at level 1
+  return Math.min(raw / Math.log(11), 1);
 }

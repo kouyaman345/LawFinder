@@ -63,6 +63,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "uuid": "^11.1.0",
+    "vis-data": "^8.0.3",
+    "vis-network": "^10.0.2",
     "xml2js": "^0.6.2"
   },
   "dependencies-phase2": {

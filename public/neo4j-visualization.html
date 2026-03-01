@@ -294,7 +294,7 @@
                 <input type="text" id="neo4j-url" value="bolt://localhost:7687" placeholder="Neo4j URL">
                 <input type="text" id="neo4j-user" value="neo4j" placeholder="ユーザー名">
                 <input type="password" id="neo4j-password" value="lawfinder123" placeholder="パスワード">
-                <button onclick="connectToNeo4j()">接続</button>
+                <button id="connect-btn">接続</button>
             </div>
             <div id="connection-status"></div>
         </div>
@@ -303,17 +303,18 @@
         <div class="panel" style="margin-bottom: 20px;">
             <h3>🎯 グラフプリセット選択</h3>
             <div class="form-group">
-                <select id="graph-preset" onchange="loadGraphPreset()" style="min-width: 300px;">
-                    <option value="enhanced">拡張参照ネットワーク（位置情報付き）</option>
-                    <option value="civil">民法の参照ネットワーク</option>
-                    <option value="commercial">商法の参照ネットワーク</option>
-                    <option value="criminal">刑法の参照ネットワーク</option>
-                    <option value="mutual">相互参照ネットワーク</option>
-                    <option value="chain">参照チェーン（3段階）</option>
-                    <option value="hierarchy">法令階層構造</option>
-                    <option value="density">高密度参照ノード</option>
+                <select id="graph-preset" style="min-width: 300px;">
+                    <option value="law-overview">法令同士の参照関係（全体像）</option>
+                    <option value="top-referenced">被参照TOP10の法令</option>
+                    <option value="tax-law">地方税法ネットワーク</option>
+                    <option value="company-law">会社法ネットワーク</option>
+                    <option value="mutual-refs">双方向参照（相互参照）</option>
+                    <option value="hub-laws">ハブ法令（中心的法令）</option>
+                    <option value="high-frequency">高頻度参照（50回以上）</option>
+                    <option value="tax-system">税法系統ネットワーク</option>
+                    <option value="admin-system">行政法系統ネットワーク</option>
                 </select>
-                <button onclick="loadGraphPreset()">グラフ更新</button>
+                <button id="load-btn">グラフ更新</button>
                 <span id="graph-status" style="margin-left: 10px; color: #666;"></span>
             </div>
         </div>
@@ -331,15 +332,15 @@
                     </div>
                     <div class="legend-item">
                         <div class="legend-color" style="background: #2196F3;"></div>
-                        <span>条文</span>
+                        <span>1-20回</span>
                     </div>
                     <div class="legend-item">
                         <div class="legend-color" style="background: #FF9800;"></div>
-                        <span>項</span>
+                        <span>21-50回</span>
                     </div>
                     <div class="legend-item">
-                        <div class="legend-color" style="background: #9C27B0;"></div>
-                        <span>拡張参照</span>
+                        <div class="legend-color" style="background: #FF0000;"></div>
+                        <span>51回以上</span>
                     </div>
                 </div>
             </div>
@@ -359,11 +360,11 @@
                 <h3>📈 統計情報</h3>
                 <div class="stats-grid" id="stats-grid">
                     <div class="stat-card">
-                        <h4>拡張参照数</h4>
+                        <h4>総参照数</h4>
                         <div class="value" id="enhanced-count">-</div>
                     </div>
                     <div class="stat-card">
-                        <h4>平均信頼度</h4>
+                        <h4>平均参照回数</h4>
                         <div class="value" id="avg-confidence">-</div>
                     </div>
                     <div class="stat-card">
@@ -371,7 +372,7 @@
                         <div class="value" id="law-count">-</div>
                     </div>
                     <div class="stat-card">
-                        <h4>条文数</h4>
+                        <h4>ユニーク参照</h4>
                         <div class="value" id="article-count">-</div>
                     </div>
                 </div>
@@ -398,15 +399,20 @@ RETURN
   target.number as 参照先条文
 LIMIT 10</textarea>
                 <div class="form-group" style="margin-top: 10px;">
-                    <button onclick="executeQuery()">クエリ実行</button>
+                    <button id="execute-btn">クエリ実行</button>
                     <select id="preset-queries" onchange="loadPresetQuery()">
                         <option value="">プリセットクエリを選択...</option>
-                        <option value="enhanced">拡張参照一覧</option>
-                        <option value="civil">民法の参照</option>
-                        <option value="commercial">商法の参照</option>
-                        <option value="mutual">相互参照</option>
-                        <option value="chain">参照チェーン</option>
-                        <option value="stats">統計情報</option>
+                        <option value="law-overview">法令同士の参照関係（全体像）</option>
+                        <option value="top-referenced">被参照TOP10</option>
+                        <option value="tax-law">地方税法ネットワーク</option>
+                        <option value="company-law">会社法ネットワーク</option>
+                        <option value="mutual-refs">双方向参照（相互参照）</option>
+                        <option value="hub-laws">ハブ法令（中心的法令）</option>
+                        <option value="tax-system">税法系統ネットワーク</option>
+                        <option value="admin-system">行政法系統ネットワーク</option>
+                        <option value="ordinance-law">施行令・規則と本法</option>
+                        <option value="high-frequency">高頻度参照（50回以上）</option>
+                        <option value="stats">統計サマリー</option>
                     </select>
                 </div>
                 <div class="query-result" id="query-result"></div>
@@ -420,7 +426,7 @@ LIMIT 10</textarea>
         let nodes = null;
         let edges = null;
         
-        // プリセットクエリ
+        // プリセットクエリ定義を先に移動
         const presetQueries = {
             enhanced: `MATCH (source)-[r:REFERENCES]->(target)
 WHERE r.enhanced = true
@@ -473,7 +479,7 @@ RETURN
         };
         
         // Neo4j接続
-        async function connectToNeo4j() {
+        window.connectToNeo4j = async function() {
             const url = document.getElementById('neo4j-url').value;
             const user = document.getElementById('neo4j-user').value;
             const password = document.getElementById('neo4j-password').value;
@@ -505,86 +511,105 @@ RETURN
         
         // グラフプリセットクエリ
         const graphPresets = {
-            enhanced: {
-                title: '拡張参照ネットワーク（位置情報付き）',
-                query: `MATCH (source)-[r:REFERENCES]->(target)
-                        WHERE r.enhanced = true
+            'law-overview': {
+                title: '法令同士の参照関係（全体像）',
+                query: `MATCH (source:Law)-[r:REFERENCES_AGGREGATED]->(target:Law)
+                        WHERE source.lawId <> target.lawId
+                        WITH source, target, SUM(r.count) as totalRefs
+                        WHERE totalRefs > 5
+                        RETURN source, target, {type: 'REFERENCES_AGGREGATED', properties: {count: totalRefs, type: 'external'}} as r
+                        ORDER BY totalRefs DESC
+                        LIMIT 200`
+            },
+            'top-referenced': {
+                title: '被参照TOP10の法令ネットワーク',
+                query: `MATCH (target:Law)<-[r:REFERENCES_AGGREGATED]-(source:Law)
+                        WITH target, COUNT(DISTINCT source) as refCount
+                        ORDER BY refCount DESC
+                        LIMIT 10
+                        MATCH (target)<-[r:REFERENCES_AGGREGATED]-(source:Law)
+                        WHERE r.count > 5
                         RETURN source, r, target
                         LIMIT 100`
             },
-            civil: {
-                title: '民法の参照ネットワーク',
-                query: `MATCH (civil:Law {id: '129AC0000000089'})-[:HAS_ARTICLE]->(article:Article)
-                        OPTIONAL MATCH (article)-[r:REFERENCES]->(target)
-                        RETURN article as source, r, target
-                        LIMIT 100`
-            },
-            commercial: {
-                title: '商法の参照ネットワーク',
-                query: `MATCH (commercial:Law {id: '132AC0000000048'})-[:HAS_ARTICLE]->(article:Article)
-                        OPTIONAL MATCH (article)-[r:REFERENCES]->(target)
-                        RETURN article as source, r, target
-                        LIMIT 100`
-            },
-            criminal: {
-                title: '刑法の参照ネットワーク',
-                query: `MATCH (criminal:Law {id: '140AC0000000045'})-[:HAS_ARTICLE]->(article:Article)
-                        OPTIONAL MATCH (article)-[r:REFERENCES]->(target)
-                        RETURN article as source, r, target
-                        LIMIT 100`
-            },
-            mutual: {
-                title: '相互参照ネットワーク',
-                query: `MATCH (a)-[r1:REFERENCES]->(b)
-                        MATCH (b)-[r2:REFERENCES]->(a)
-                        WHERE r1.enhanced = true OR r2.enhanced = true
-                        RETURN a as source, r1 as r, b as target
-                        UNION
-                        MATCH (a)-[r1:REFERENCES]->(b)
-                        MATCH (b)-[r2:REFERENCES]->(a)
-                        WHERE r1.enhanced = true OR r2.enhanced = true
-                        RETURN b as source, r2 as r, a as target
+            'tax-law': {
+                title: '地方税法を中心とした参照ネットワーク',
+                query: `MATCH (center:Law {lawId: '325AC0000000226'})
+                        OPTIONAL MATCH (center)-[r1:REFERENCES_AGGREGATED]->(outTarget:Law)
+                        WHERE r1.count > 10
+                        OPTIONAL MATCH (inSource:Law)-[r2:REFERENCES_AGGREGATED]->(center)
+                        WHERE r2.count > 10
+                        WITH center, COLLECT(DISTINCT {node: outTarget, rel: r1}) as outgoing,
+                             COLLECT(DISTINCT {node: inSource, rel: r2}) as incoming
+                        UNWIND (outgoing + incoming) as conn
+                        WITH center, conn.node as connected, conn.rel as r
+                        WHERE connected IS NOT NULL
+                        RETURN center, r, connected
                         LIMIT 50`
             },
-            chain: {
-                title: '参照チェーン（3段階）',
-                query: `MATCH path = (start:Article)-[:REFERENCES*1..3]->(end:Article)
-                        WHERE ALL(r IN relationships(path) WHERE r.enhanced = true OR r.confidence > 0.8)
-                        WITH path, nodes(path) as nodes, relationships(path) as rels
-                        UNWIND range(0, size(nodes)-2) as i
-                        RETURN nodes[i] as source, rels[i] as r, nodes[i+1] as target
-                        LIMIT 100`
+            'company-law': {
+                title: '会社法の参照ネットワーク',
+                query: `MATCH (company:Law {lawId: '417AC0000000086'})
+                        OPTIONAL MATCH (source:Law)-[r:REFERENCES_AGGREGATED]->(company)
+                        WHERE r.count > 5
+                        RETURN source, r, company as target
+                        LIMIT 50`
             },
-            hierarchy: {
-                title: '法令階層構造',
-                query: `MATCH (law:Law)-[:HAS_ARTICLE]->(article:Article)
-                        WHERE law.id IN ['129AC0000000089', '132AC0000000048', '140AC0000000045']
-                        OPTIONAL MATCH (article)-[:HAS_PARAGRAPH]->(paragraph:Paragraph)
-                        WITH law, article, paragraph
-                        RETURN law as source, 
-                               {type: 'HAS_ARTICLE', properties: {type: 'structure'}} as r, 
-                               article as target
+            'mutual-refs': {
+                title: '双方向参照（相互に参照し合う法令）',
+                query: `MATCH (l1:Law)-[r1:REFERENCES_AGGREGATED]->(l2:Law)
+                        MATCH (l2)-[r2:REFERENCES_AGGREGATED]->(l1)
+                        WHERE l1.lawId < l2.lawId AND r1.count > 5 AND r2.count > 5
+                        RETURN l1 as source, r1 as r, l2 as target
                         UNION
-                        MATCH (article:Article)-[:HAS_PARAGRAPH]->(paragraph:Paragraph)
-                        RETURN article as source,
-                               {type: 'HAS_PARAGRAPH', properties: {type: 'structure'}} as r,
-                               paragraph as target
+                        MATCH (l1:Law)-[r1:REFERENCES_AGGREGATED]->(l2:Law)
+                        MATCH (l2)-[r2:REFERENCES_AGGREGATED]->(l1)
+                        WHERE l1.lawId < l2.lawId AND r1.count > 5 AND r2.count > 5
+                        RETURN l2 as source, r2 as r, l1 as target
                         LIMIT 100`
             },
-            density: {
-                title: '高密度参照ノード',
-                query: `MATCH (article:Article)
-                        WITH article, size((article)-[:REFERENCES]->()) as outDegree,
-                             size((article)<-[:REFERENCES]-()) as inDegree
-                        WHERE outDegree + inDegree > 3
-                        MATCH (article)-[r:REFERENCES]-(connected)
-                        RETURN article as source, r, connected as target
+            'hub-laws': {
+                title: 'ハブ法令（入出力が多い中心的法令）',
+                query: `MATCH (hub:Law)
+                        WITH hub,
+                             SIZE([(hub)<-[:REFERENCES_AGGREGATED]-() | 1]) as inDegree,
+                             SIZE([(hub)-[:REFERENCES_AGGREGATED]->() | 1]) as outDegree
+                        WHERE inDegree > 100 OR outDegree > 100
+                        MATCH (hub)-[r:REFERENCES_AGGREGATED]-(connected:Law)
+                        WHERE r.count > 10
+                        RETURN hub as source, r, connected as target
+                        LIMIT 150`
+            },
+            'high-frequency': {
+                title: '高頻度参照（50回以上）',
+                query: `MATCH (source:Law)-[r:REFERENCES_AGGREGATED]->(target:Law)
+                        WHERE r.count >= 50
+                        RETURN source, target, r
+                        ORDER BY r.count DESC
+                        LIMIT 100`
+            },
+            'tax-system': {
+                title: '税法系統の参照ネットワーク',
+                query: `MATCH (source:Law)-[r:REFERENCES_AGGREGATED]->(target:Law)
+                        WHERE (source.lawTitle CONTAINS '税' OR target.lawTitle CONTAINS '税')
+                          AND source.lawId <> target.lawId
+                          AND r.count > 10
+                        RETURN source, target, r
+                        LIMIT 100`
+            },
+            'admin-system': {
+                title: '行政法系統の参照ネットワーク',
+                query: `MATCH (source:Law)-[r:REFERENCES_AGGREGATED]->(target:Law)
+                        WHERE (source.lawTitle CONTAINS '行政' OR target.lawTitle CONTAINS '行政')
+                          AND source.lawId <> target.lawId
+                          AND r.count > 10
+                        RETURN source, target, r
                         LIMIT 100`
             }
         };
         
         // グラフプリセット読み込み
-        async function loadGraphPreset() {
+        window.loadGraphPreset = async function() {
             const preset = document.getElementById('graph-preset').value;
             const statusSpan = document.getElementById('graph-status');
             const titleSpan = document.getElementById('graph-title');
@@ -658,6 +683,12 @@ RETURN
             if (!node) return 'unknown';
             const labels = node.labels || [];
             const props = node.properties || {};
+            
+            // Law ノードの場合は lawId を使用
+            if (labels.includes('Law')) {
+                return `Law_${props.lawId}`;
+            }
+            
             return `${labels[0] || 'Node'}_${props.id || props.lawId + '_' + props.number || Math.random()}`;
         }
         
@@ -665,6 +696,21 @@ RETURN
         function createNodeData(node, id) {
             const labels = node.labels || [];
             const props = node.properties || {};
+            
+            // Law ノードの場合は lawTitle を表示
+            if (labels.includes('Law')) {
+                const title = props.lawTitle || props.title || props.name || props.lawId || 'Unknown Law';
+                const shortTitle = title.length > 30 ? title.substring(0, 30) + '...' : title;
+                return {
+                    id: id,
+                    label: shortTitle,
+                    group: 'Law',
+                    title: `法令ID: ${props.lawId || 'N/A'}\n法令名: ${title}\nソース: ${props.source || 'N/A'}`,
+                    color: { background: '#4CAF50', border: '#388E3C' },
+                    font: { color: '#fff' }
+                };
+            }
+            
             return {
                 id: id,
                 label: props.number || props.id || props.name || 'Unknown',
@@ -676,18 +722,34 @@ RETURN
         // エッジデータ作成
         function createEdgeData(sourceId, targetId, ref) {
             const props = ref.properties || {};
+            const refType = ref.type || 'REFERENCES_AGGREGATED';
+            
+            // REFERENCES_AGGREGATED の場合
+            if (refType === 'REFERENCES_AGGREGATED') {
+                const count = props.count || 1;
+                const sampleTexts = props.sampleTexts || [];
+                
+                return {
+                    from: sourceId,
+                    to: targetId,
+                    label: `${count}回`,
+                    title: `参照タイプ: ${props.type || 'external'}\n参照回数: ${count}回\n${sampleTexts.length > 0 ? 'サンプル:\n' + sampleTexts.slice(0, 3).map(t => '• ' + t).join('\n') : ''}`,
+                    color: count > 50 ? '#FF0000' : count > 20 ? '#FF9800' : '#2196F3',
+                    width: Math.min(Math.log(count + 1), 10),
+                    arrows: 'to',
+                    data: props
+                };
+            }
+            
+            // 通常の REFERENCES の場合（後方互換性）
             return {
                 from: sourceId,
                 to: targetId,
-                label: props.type || ref.type || 'REFERENCES',
-                title: `参照テキスト: ${props.sourceText || 'N/A'}
-開始位置: ${props.sourceStartPos || 'N/A'}
-終了位置: ${props.sourceEndPos || 'N/A'}
-行番号: ${props.sourceLineNumber || 'N/A'}
-信頼度: ${props.confidence || 'N/A'}`,
-                color: props.enhanced ? '#9C27B0' : (ref.type === 'HAS_ARTICLE' || ref.type === 'HAS_PARAGRAPH' ? '#4CAF50' : '#999'),
+                label: props.type || refType,
+                title: `参照テキスト: ${props.sourceText || 'N/A'}\n開始位置: ${props.sourceStartPos || 'N/A'}\n終了位置: ${props.sourceEndPos || 'N/A'}\n行番号: ${props.sourceLineNumber || 'N/A'}\n信頼度: ${props.confidence || 'N/A'}`,
+                color: props.enhanced ? '#9C27B0' : (refType === 'HAS_ARTICLE' || refType === 'HAS_PARAGRAPH' ? '#4CAF50' : '#999'),
                 width: props.confidence ? props.confidence * 3 : 1,
-                arrows: ref.type === 'REFERENCES' ? 'to' : '',
+                arrows: refType === 'REFERENCES' ? 'to' : '',
                 data: props
             };
         }
@@ -821,11 +883,15 @@ RETURN
             detailsDiv.innerHTML = `
                 <div class="detail-item">
                     <h4>参照情報</h4>
-                    <p><strong>参照タイプ:</strong> ${data.type || 'N/A'}</p>
-                    <p><strong>参照テキスト:</strong> ${data.sourceText || 'N/A'}</p>
-                    <p><strong>信頼度:</strong> ${data.confidence ? (data.confidence * 100).toFixed(1) + '%' : 'N/A'}</p>
-                    <p><strong>検出方法:</strong> ${data.detectionMethod || 'N/A'}</p>
+                    <p><strong>参照タイプ:</strong> ${data.type || 'external'}</p>
+                    <p><strong>参照回数:</strong> ${data.count || 'N/A'}回</p>
+                    ${data.sampleTexts && data.sampleTexts.length > 0 ? `
+                    <p><strong>サンプルテキスト:</strong></p>
+                    <ul>
+                        ${data.sampleTexts.slice(0, 5).map(text => `<li>${text}</li>`).join('')}
+                    </ul>` : ''}
                     
+                    ${data.sourceStartPos || data.sourceEndPos || data.sourceLineNumber ? `
                     <div class="position-info">
                         <span>
                             <span class="label">📍 開始位置:</span>
@@ -844,7 +910,7 @@ RETURN
                             <span class="value">${data.sourceEndPos && data.sourceStartPos ? 
                                 (data.sourceEndPos - data.sourceStartPos) + ' 文字' : 'N/A'}</span>
                         </span>
-                    </div>
+                    </div>` : ''}
                 </div>
             `;
         }
@@ -854,25 +920,30 @@ RETURN
             const session = driver.session();
             
             try {
-                // 統計クエリ実行
+                // 統計クエリ実行（REFERENCES_AGGREGATED を使用）
                 const result = await session.run(`
                     MATCH (l:Law)
                     WITH count(l) as lawCount
-                    MATCH (a:Article)
-                    WITH lawCount, count(a) as articleCount
-                    MATCH ()-[r:REFERENCES]->()
-                    WHERE r.enhanced = true
-                    WITH lawCount, articleCount, count(r) as enhancedCount, avg(r.confidence) as avgConfidence
-                    RETURN lawCount, articleCount, enhancedCount, avgConfidence
+                    MATCH ()-[r:REFERENCES_AGGREGATED]->()
+                    WITH lawCount, 
+                         COUNT(r) as uniqueRefs, 
+                         SUM(r.count) as totalRefs,
+                         MAX(r.count) as maxCount
+                    RETURN lawCount, uniqueRefs, totalRefs, maxCount
                 `);
                 
                 if (result.records.length > 0) {
                     const record = result.records[0];
-                    document.getElementById('law-count').textContent = record.get('lawCount').toNumber();
-                    document.getElementById('article-count').textContent = record.get('articleCount').toNumber();
-                    document.getElementById('enhanced-count').textContent = record.get('enhancedCount').toNumber();
+                    const lawCount = neo4j.integer.toNumber(record.get('lawCount'));
+                    const uniqueRefs = neo4j.integer.toNumber(record.get('uniqueRefs'));
+                    const totalRefs = neo4j.integer.toNumber(record.get('totalRefs'));
+                    const maxCount = neo4j.integer.toNumber(record.get('maxCount'));
+                    
+                    document.getElementById('law-count').textContent = lawCount;
+                    document.getElementById('article-count').textContent = uniqueRefs; // ユニーク参照数を表示
+                    document.getElementById('enhanced-count').textContent = totalRefs; // 総参照数を表示
                     document.getElementById('avg-confidence').textContent = 
-                        (record.get('avgConfidence') * 100).toFixed(1) + '%';
+                        (totalRefs / uniqueRefs).toFixed(1) + '回'; // 平均参照回数
                 }
                 
                 // 位置情報分布グラフ
@@ -889,10 +960,10 @@ RETURN
             
             try {
                 const result = await session.run(`
-                    MATCH ()-[r:REFERENCES]->()
-                    WHERE r.enhanced = true AND r.sourceLineNumber IS NOT NULL
-                    RETURN r.sourceLineNumber as line, count(*) as count
-                    ORDER BY line
+                    MATCH (source:Law)-[r:REFERENCES_AGGREGATED]->(target:Law)
+                    WHERE r.count > 10
+                    RETURN source.lawTitle as sourceLaw, SUM(r.count) as totalRefs
+                    ORDER BY totalRefs DESC
                     LIMIT 20
                 `);
                 
@@ -900,8 +971,12 @@ RETURN
                 const data = [];
                 
                 result.records.forEach(record => {
-                    labels.push(`行 ${record.get('line')}`);
-                    data.push(record.get('count').toNumber());
+                    const lawTitle = record.get('sourceLaw');
+                    // 長いタイトルは短縮
+                    const shortTitle = lawTitle && lawTitle.length > 20 ? 
+                        lawTitle.substring(0, 20) + '...' : lawTitle || 'Unknown';
+                    labels.push(shortTitle);
+                    data.push(neo4j.integer.toNumber(record.get('totalRefs')));
                 });
                 
                 const ctx = document.getElementById('position-chart').getContext('2d');
@@ -923,7 +998,7 @@ RETURN
                         plugins: {
                             title: {
                                 display: true,
-                                text: '行番号別参照分布'
+                                text: '法令別参照数TOP20'
                             }
                         },
                         scales: {
@@ -939,8 +1014,18 @@ RETURN
             }
         }
         
+        // プリセットクエリ読み込み関数（先に定義）
+        window.loadPresetQuery = function() {
+            const select = document.getElementById('preset-queries');
+            const editor = document.getElementById('custom-query');
+            
+            if (select.value && presetQueriesForEditor[select.value]) {
+                editor.value = presetQueriesForEditor[select.value];
+            }
+        }
+        
         // クエリ実行
-        async function executeQuery() {
+        window.executeQuery = async function() {
             const query = document.getElementById('custom-query').value;
             const resultDiv = document.getElementById('query-result');
             
@@ -988,22 +1073,138 @@ RETURN
             }
         }
         
-        // プリセットクエリ読み込み
-        function loadPresetQuery() {
-            const select = document.getElementById('preset-queries');
-            const editor = document.getElementById('custom-query');
+        // プリセットクエリ定義（重複を削除）
+        const presetQueriesForEditor = {
+            'law-overview': `// 法令同士の直接参照関係（全体像）
+MATCH (source:Law)-[r:REFERENCES_AGGREGATED]->(target:Law)
+WHERE source.lawId <> target.lawId
+WITH source, target, SUM(r.count) as totalRefs
+WHERE totalRefs > 5
+RETURN source, target, {count: totalRefs} as r
+ORDER BY totalRefs DESC
+LIMIT 200`,
             
-            if (select.value && presetQueries[select.value]) {
-                editor.value = presetQueries[select.value];
-            }
-        }
+            'top-referenced': `// 被参照TOP10の法令ネットワーク
+MATCH (target:Law)<-[r:REFERENCES_AGGREGATED]-(source:Law)
+WITH target, COUNT(DISTINCT source) as refCount
+ORDER BY refCount DESC
+LIMIT 10
+MATCH (target)<-[r:REFERENCES_AGGREGATED]-(source:Law)
+RETURN target, source, r
+LIMIT 100`,
+            
+            'tax-law': `// 地方税法を中心とした参照ネットワーク
+MATCH (center:Law {lawId: '325AC0000000226'})
+OPTIONAL MATCH (center)-[out:REFERENCES_AGGREGATED]->(outTarget:Law)
+OPTIONAL MATCH (inSource:Law)-[in:REFERENCES_AGGREGATED]->(center)
+WITH center, 
+     COLLECT(DISTINCT outTarget)[0..20] as outTargets,
+     COLLECT(DISTINCT inSource)[0..20] as inSources
+UNWIND outTargets + inSources as related
+MATCH (center)-[r:REFERENCES_AGGREGATED]-(related)
+RETURN center, related, r`,
+            
+            'company-law': `// 会社法の参照ネットワーク
+MATCH (company:Law {lawId: '417AC0000000086'})
+OPTIONAL MATCH path = (company)-[:REFERENCES_AGGREGATED*1..2]-(related:Law)
+WHERE related.lawId <> '417AC0000000086'
+WITH company, related, relationships(path) as rels
+UNWIND rels as r
+WITH company, related, r
+WHERE r.count > 5
+RETURN company, related, r
+LIMIT 50`,
+            
+            'mutual-refs': `// 双方向参照（相互に参照し合う法令）
+MATCH (l1:Law)-[r1:REFERENCES_AGGREGATED]->(l2:Law)
+MATCH (l2)-[r2:REFERENCES_AGGREGATED]->(l1)
+WHERE l1.lawId < l2.lawId AND r1.count > 5 AND r2.count > 5
+RETURN l1, l2, r1, r2
+ORDER BY r1.count + r2.count DESC
+LIMIT 50`,
+            
+            'hub-laws': `// ハブ法令（入出力が多い中心的法令）
+MATCH (hub:Law)
+WITH hub,
+     SIZE([(hub)<-[:REFERENCES_AGGREGATED]-() | 1]) as inDegree,
+     SIZE([(hub)-[:REFERENCES_AGGREGATED]->() | 1]) as outDegree
+WHERE inDegree > 100 OR outDegree > 100
+MATCH (hub)-[r:REFERENCES_AGGREGATED]-(connected:Law)
+WHERE r.count > 10
+RETURN hub, connected, r
+LIMIT 150`,
+            
+            'tax-system': `// 税法系統の参照ネットワーク
+MATCH (source:Law)-[r:REFERENCES_AGGREGATED]->(target:Law)
+WHERE (source.lawTitle CONTAINS '税' OR target.lawTitle CONTAINS '税')
+  AND source.lawId <> target.lawId
+  AND r.count > 10
+RETURN source, target, r
+LIMIT 100`,
+            
+            'admin-system': `// 行政法系統の参照ネットワーク
+MATCH (source:Law)-[r:REFERENCES_AGGREGATED]->(target:Law)
+WHERE (source.lawTitle CONTAINS '行政' OR target.lawTitle CONTAINS '行政')
+  AND source.lawId <> target.lawId
+  AND r.count > 10
+RETURN source, target, r
+LIMIT 100`,
+            
+            'ordinance-law': `// 施行令・施行規則と本法の関係
+MATCH (source:Law)-[r:REFERENCES_AGGREGATED]->(target:Law)
+WHERE (source.lawTitle CONTAINS '施行令' OR source.lawTitle CONTAINS '施行規則')
+  AND NOT (target.lawTitle CONTAINS '施行令' OR target.lawTitle CONTAINS '施行規則')
+  AND r.count > 20
+RETURN source, target, r
+ORDER BY r.count DESC
+LIMIT 100`,
+            
+            'high-frequency': `// 高頻度参照（50回以上）
+MATCH (source:Law)-[r:REFERENCES_AGGREGATED]->(target:Law)
+WHERE r.count >= 50
+RETURN source, target, r
+ORDER BY r.count DESC
+LIMIT 100`,
+            
+            'stats': `// 統計サマリー
+MATCH (l:Law)
+WITH COUNT(l) as totalLaws
+MATCH ()-[r:REFERENCES_AGGREGATED]->()
+WITH totalLaws, COUNT(r) as totalRefs, SUM(r.count) as totalCount
+RETURN 
+  totalLaws as '法令数',
+  totalRefs as 'ユニーク参照',
+  totalCount as '総参照回数',
+  totalCount * 1.0 / totalRefs as '平均参照回数'`
+        };
         
-        // ページ読み込み時に自動接続試行
+        // ページ読み込み時にイベントリスナー設定
         window.addEventListener('DOMContentLoaded', () => {
+            // ボタンのイベントリスナーを設定
+            const connectBtn = document.getElementById('connect-btn');
+            if (connectBtn) {
+                connectBtn.addEventListener('click', window.connectToNeo4j);
+            }
+            
+            const loadBtn = document.getElementById('load-btn');
+            if (loadBtn) {
+                loadBtn.addEventListener('click', window.loadGraphPreset);
+            }
+            
+            const executeBtn = document.getElementById('execute-btn');
+            if (executeBtn) {
+                executeBtn.addEventListener('click', window.executeQuery);
+            }
+            
+            const presetSelect = document.getElementById('graph-preset');
+            if (presetSelect) {
+                presetSelect.addEventListener('change', window.loadGraphPreset);
+            }
+            
             // 自動接続（ローカル環境の場合）
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
                 setTimeout(() => {
-                    connectToNeo4j();
+                    window.connectToNeo4j();
                 }, 500);
             }
         });
