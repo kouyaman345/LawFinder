@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import neo4j, { Driver } from 'neo4j-driver';
+import { PrismaClient } from '@prisma/client';
 
 let driver: Driver | null = null;
+const prisma = new PrismaClient();
 
 function getDriver(): Driver {
   if (!driver) {
@@ -14,6 +16,16 @@ function getDriver(): Driver {
     );
   }
   return driver;
+}
+
+// Natural sort for article numbers like "1", "2", "10", "90", "附則2_1"
+function naturalCompareArticle(a: string, b: string): number {
+  const numA = parseInt(a, 10);
+  const numB = parseInt(b, 10);
+  if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+  if (!isNaN(numA)) return -1;
+  if (!isNaN(numB)) return 1;
+  return a.localeCompare(b, 'ja');
 }
 
 export async function GET(request: NextRequest) {
@@ -178,28 +190,69 @@ export async function GET(request: NextRequest) {
           return NextResponse.json({ error: 'Missing lawId parameter' }, { status: 400 });
         }
 
+        // 1. PostgreSQLから全条文を取得（sortOrder順）
+        const lawMaster = await prisma.lawMaster.findUnique({
+          where: { id: lawId },
+          select: { currentVersionId: true },
+        });
+
+        let allArticles: { articleNumber: string; sortOrder: number }[] = [];
+        if (lawMaster?.currentVersionId) {
+          allArticles = await prisma.article.findMany({
+            where: { versionId: lawMaster.currentVersionId, isDeleted: false },
+            select: { articleNumber: true, sortOrder: true },
+            orderBy: { sortOrder: 'asc' },
+          });
+        }
+
+        // 2. Neo4jから参照数を取得
         const result = await session.run(`
           MATCH (a:Article {lawId: $lawId})
           OPTIONAL MATCH (a)-[outR:REFERENCES]->()
           WITH a, count(outR) AS outRefs
           OPTIONAL MATCH (a)<-[inR:REFERENCES]-()
-          WITH a, outRefs, count(inR) AS inRefs
-          WHERE outRefs + inRefs > 0
           RETURN a.articleNumber AS articleNumber,
-                 outRefs, inRefs,
-                 outRefs + inRefs AS totalRefs
-          ORDER BY totalRefs DESC
+                 outRefs, count(inR) AS inRefs
         `, { lawId });
 
-        return NextResponse.json({
-          lawId,
-          articles: result.records.map(r => ({
-            articleNumber: r.get('articleNumber'),
+        const refMap = new Map<string, { outgoing: number; incoming: number }>();
+        for (const r of result.records) {
+          const artNum = r.get('articleNumber');
+          refMap.set(artNum, {
             outgoing: r.get('outRefs').toNumber(),
             incoming: r.get('inRefs').toNumber(),
-            total: r.get('totalRefs').toNumber(),
-          })),
-        });
+          });
+        }
+
+        // 3. マージ: PostgreSQL全条文 + Neo4j参照数
+        let articles: { articleNumber: string; outgoing: number; incoming: number; total: number }[];
+
+        if (allArticles.length > 0) {
+          // PostgreSQLに条文データがある場合: sortOrder順で全条文返却
+          articles = allArticles.map(a => {
+            const refs = refMap.get(a.articleNumber);
+            return {
+              articleNumber: a.articleNumber,
+              outgoing: refs?.outgoing ?? 0,
+              incoming: refs?.incoming ?? 0,
+              total: (refs?.outgoing ?? 0) + (refs?.incoming ?? 0),
+            };
+          });
+        } else {
+          // PostgreSQLにデータがない場合: Neo4jのみ（参照ありのみ、条文番号順）
+          articles = result.records.map(r => {
+            const out = r.get('outRefs').toNumber();
+            const inc = r.get('inRefs').toNumber();
+            return {
+              articleNumber: r.get('articleNumber'),
+              outgoing: out,
+              incoming: inc,
+              total: out + inc,
+            };
+          }).sort((a, b) => naturalCompareArticle(a.articleNumber, b.articleNumber));
+        }
+
+        return NextResponse.json({ lawId, articles });
       }
 
       case 'article-graph': {

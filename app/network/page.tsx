@@ -409,7 +409,12 @@ export default function NetworkPage() {
                 {articleList.length > 0 && (
                   <div className="px-4 py-3 border-b bg-blue-50">
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-sm font-bold text-gray-700">条文別参照分析</h3>
+                      <h3 className="text-sm font-bold text-gray-700">
+                        条文別参照分析
+                        <span className="ml-2 text-xs font-normal text-gray-500">
+                          全{articleList.length}条
+                        </span>
+                      </h3>
                       {selectedArticle && (
                         <button
                           onClick={returnToLawView}
@@ -419,7 +424,7 @@ export default function NetworkPage() {
                         </button>
                       )}
                     </div>
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto">
                       {articleList.map(art => (
                         <button
                           key={art.articleNumber}
@@ -427,12 +432,16 @@ export default function NetworkPage() {
                           className={`px-2 py-1 text-xs rounded border transition-colors ${
                             selectedArticle === art.articleNumber
                               ? 'bg-blue-600 text-white border-blue-600'
-                              : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400 hover:bg-blue-50'
+                              : art.total > 0
+                                ? 'bg-white text-gray-700 border-gray-300 hover:border-blue-400 hover:bg-blue-50'
+                                : 'bg-gray-50 text-gray-400 border-gray-200'
                           }`}
                           title={`参照: ${art.outgoing}件 / 被参照: ${art.incoming}件`}
                         >
                           第{art.articleNumber}条
-                          <span className="ml-1 opacity-70">({art.total})</span>
+                          {art.total > 0 && (
+                            <span className="ml-1 opacity-70">({art.total})</span>
+                          )}
                         </button>
                       ))}
                     </div>
