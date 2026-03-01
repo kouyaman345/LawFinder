@@ -89,6 +89,7 @@
     "p-queue": "^7.4.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@types/glob": "^9.0.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^20.10.4",
