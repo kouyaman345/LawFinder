@@ -276,7 +276,9 @@ export default function NetworkPage() {
             </button>
           </div>
           {searchResults.length > 0 && (
-            <div className="mt-3 border rounded-lg divide-y max-h-60 overflow-y-auto">
+            <div className={`mt-3 border rounded-lg divide-y overflow-y-auto ${
+              selectedLaw ? 'max-h-32' : 'max-h-60'
+            }`}>
               {searchResults.map(law => (
                 <button
                   key={law.lawId}

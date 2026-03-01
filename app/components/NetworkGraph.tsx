@@ -82,13 +82,13 @@ export default function NetworkGraph({ lawId, onNodeClick, articleNumber, mode =
       }
 
       const truncate = (s: string, max: number) =>
-        s.length > max ? s.slice(0, max) + '...' : s;
+        s.length > max ? s.slice(0, max) + '…' : s;
 
       const visNodes = new DataSet(
         graphData.nodes.map(n => ({
           id: n.id,
-          label: truncate(n.label, 20),
-          title: n.label, // tooltip on hover
+          label: truncate(n.label, 10),
+          title: n.label, // full name on hover tooltip
           group: n.group,
         }))
       );
@@ -102,47 +102,57 @@ export default function NetworkGraph({ lawId, onNodeClick, articleNumber, mode =
         }))
       );
 
+      const nodeCount = graphData.nodes.length;
+      // Dynamically scale repulsion based on node count
+      const gravity = nodeCount > 60 ? -8000 : nodeCount > 30 ? -5000 : -3000;
+      const springLen = nodeCount > 60 ? 350 : nodeCount > 30 ? 280 : 220;
+
       const options: any = {
         groups: {
           center: {
-            color: { background: '#3B82F6', border: '#1D4ED8' },
-            font: { color: '#ffffff', size: 14, multi: 'html' },
+            color: { background: '#2563EB', border: '#1E40AF', highlight: { background: '#1D4ED8', border: '#1E3A8A' } },
+            font: { color: '#ffffff', size: 14, bold: { color: '#ffffff' } },
             shape: 'box',
             borderWidth: 2,
-            size: 30,
+            margin: 8,
           },
           outgoing: {
-            color: { background: '#10B981', border: '#059669' },
-            font: { color: '#ffffff', size: 11, multi: 'html' },
+            color: { background: '#059669', border: '#047857', highlight: { background: '#047857', border: '#065F46' } },
+            font: { color: '#ffffff', size: 11 },
             shape: 'box',
             borderWidth: 1,
+            margin: 5,
           },
           incoming: {
-            color: { background: '#F97316', border: '#EA580C' },
-            font: { color: '#ffffff', size: 11, multi: 'html' },
+            color: { background: '#EA580C', border: '#C2410C', highlight: { background: '#C2410C', border: '#9A3412' } },
+            font: { color: '#ffffff', size: 11 },
             shape: 'box',
             borderWidth: 1,
+            margin: 5,
           },
         },
         edges: {
-          color: { color: '#6B7280', highlight: '#3B82F6' },
+          color: { color: '#CBD5E1', highlight: '#3B82F6', opacity: 0.4 },
           width: 1,
-          smooth: { type: 'continuous' as const },
+          smooth: { type: 'continuous' as const, roundness: 0.2 },
+          arrows: { to: { scaleFactor: 0.4 } },
         },
         physics: {
-          solver: 'forceAtlas2Based' as const,
-          forceAtlas2Based: {
-            gravitationalConstant: -40,
-            centralGravity: 0.01,
-            springLength: 120,
+          solver: 'barnesHut' as const,
+          barnesHut: {
+            gravitationalConstant: gravity,
+            centralGravity: 0.3,
+            springLength: springLen,
             springConstant: 0.02,
-            damping: 0.4,
+            damping: 0.09,
+            avoidOverlap: 1,
           },
-          stabilization: { iterations: 100, fit: true },
+          stabilization: { iterations: 300, fit: true },
+          minVelocity: 0.75,
         },
         interaction: {
           hover: true,
-          tooltipDelay: 200,
+          tooltipDelay: 100,
           zoomView: true,
           dragView: true,
         },
@@ -193,8 +203,8 @@ export default function NetworkGraph({ lawId, onNodeClick, articleNumber, mode =
       {/* Graph container */}
       <div
         ref={containerRef}
-        className="w-full bg-gray-900 rounded-lg"
-        style={{ height: 400 }}
+        className="w-full bg-gray-50 border border-gray-200 rounded-lg"
+        style={{ height: 500 }}
       />
 
       {/* Legend bar */}
@@ -236,8 +246,8 @@ export default function NetworkGraph({ lawId, onNodeClick, articleNumber, mode =
       )}
 
       {loading && !graphData && (
-        <div className="flex items-center justify-center h-[400px] bg-gray-900 rounded-lg">
-          <div className="text-gray-400">グラフを読み込み中...</div>
+        <div className="flex items-center justify-center h-[500px] bg-gray-50 border border-gray-200 rounded-lg">
+          <div className="text-gray-500">グラフを読み込み中...</div>
         </div>
       )}
     </div>
